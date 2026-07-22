@@ -46,13 +46,16 @@ class KnowledgeBridge:
         tag_list = tags or [category.lower(), "knowledge_bridge"]
         alias_list = aliases or []
 
+        tags_str = ", ".join(f'"{t}"' for t in tag_list)
+        aliases_str = ", ".join(f'"{a}"' for a in alias_list)
+
         frontmatter_str = (
             "---\n"
-            f"title: \"{title}\"\n"
-            f"category: \"{category}\"\n"
-            f"scope: \"{scope}\"\n"
-            f"tags: [{', '.join(f'\"{t}\"' for t in tag_list)}]\n"
-            f"aliases: [{', '.join(f'\"{a}\"' for a in alias_list)}]\n"
+            f'title: "{title}"\n'
+            f'category: "{category}"\n'
+            f'scope: "{scope}"\n'
+            f"tags: [{tags_str}]\n"
+            f"aliases: [{aliases_str}]\n"
             "---\n\n"
         )
 
