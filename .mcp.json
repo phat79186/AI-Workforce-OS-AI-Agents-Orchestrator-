@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "ai-orchestrator": {
+      "command": "python",
+      "args": ["-m", "mcp_server.server"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "ORCHESTRATOR_CONTEXT_DB": "${workspaceFolder}/.context/context.db"
+      },
+      "description": "AI Coding Tools Orchestrator MCP Server - provides code analysis, security scanning, testing, DevOps, and context memory tools"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-filesystem", "${workspaceFolder}"],
+      "description": "Filesystem access for reading and writing project files"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-github"],
+      "env": {
+        "GITHUB_TOKEN": "${env:GITHUB_TOKEN}"
+      },
+      "description": "GitHub integration for repository operations"
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-memory"],
+      "description": "Persistent memory storage for conversation context"
+    }
+  },
+  "defaults": {
+    "autoStart": ["ai-orchestrator"],
+    "timeout": 30000
+  }
+}

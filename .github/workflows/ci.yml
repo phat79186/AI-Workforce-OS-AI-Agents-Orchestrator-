@@ -1,0 +1,214 @@
+name: 🚀 CI/CD Pipeline — AI Coding Tools
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # ── Job 1: Lint, Format, Type-check ────────────────────────────────────────
+  lint-and-format:
+    name: "🔍 Code Quality"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🧹 Lint — flake8
+        run: |
+          pip install flake8
+          flake8 orchestrator/ agentic_team/ mcp_server/ context_dashboard/ tests/ \
+            --max-line-length=120 \
+            --exclude=__pycache__,.git,*.egg-info
+        continue-on-error: true
+
+      - name: 🎨 Format check — black
+        run: |
+          pip install "black>=26.3.1"
+          black --check orchestrator/ agentic_team/ mcp_server/ context_dashboard/ tests/
+        continue-on-error: true
+
+      - name: 📐 Import order check — isort
+        run: |
+          pip install isort
+          isort --check-only orchestrator/ agentic_team/ mcp_server/ context_dashboard/ tests/
+        continue-on-error: true
+
+      - name: 🔎 Type check — mypy
+        run: |
+          pip install mypy
+          mypy orchestrator/ agentic_team/ mcp_server/ context_dashboard/ --ignore-missing-imports || true
+        continue-on-error: true
+
+      - name: 🛡️ Security scan — bandit
+        run: |
+          pip install bandit
+          bandit -r orchestrator/ agentic_team/ mcp_server/ context_dashboard/ -c pyproject.toml || true
+        continue-on-error: true
+
+      - name: 🔒 Dependency audit — pip-audit
+        run: |
+          pip install pip-audit
+          pip-audit --strict || true
+        continue-on-error: true
+
+  # ── Job 2: Test suite ────────────────────────────────────────────────────────
+  test:
+    name: "🧪 Tests"
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-timeout
+
+      - name: ✅ Run tests
+        run: |
+          python -m pytest tests/ --override-ini="addopts=" -q --timeout=30 -m "not integration and not slow"
+
+  # ── Job 3: Validate MCP Server ─────────────────────────────────────────────
+  validate-mcp:
+    name: "🔌 Validate MCP Server"
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Validate MCP server imports
+        run: |
+          python -c "import asyncio; from mcp_server.server import mcp; tools = asyncio.run(mcp.list_tools()); print(f'MCP server loaded: {len(tools)} tools')"
+
+  # ── Job 4: Validate Context Dashboard ────────────────────────────────────────
+  validate-dashboard:
+    name: "📊 Validate Context Dashboard"
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Validate dashboard imports
+        run: python -c "from context_dashboard.app import app; print('Context dashboard loaded OK')"
+
+  # ── Job 5: Build Docker image ────────────────────────────────────────────────
+  build:
+    name: "🐳 Build Docker Image"
+    runs-on: ubuntu-latest
+    needs: [test, validate-mcp, validate-dashboard]
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🏗️ Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/ai-coding-tools:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/ai-coding-tools:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          outputs: type=docker,dest=/tmp/ai-coding-tools.tar
+
+      - name: 📤 Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/ai-coding-tools.tar
+          retention-days: 1
+
+  # ── Job 6: Publish to GHCR (main branch only) ───────────────────────────────
+  push-to-ghcr:
+    name: "📦 Publish Image to GHCR"
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: 📥 Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+
+      - name: 🐳 Load Docker image
+        run: docker load --input /tmp/ai-coding-tools.tar
+
+      - name: 🔑 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🚀 Push Docker image to GHCR
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/ai-coding-tools:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository_owner }}/ai-coding-tools:latest
+
+  # ── Job 7: CI Summary ────────────────────────────────────────────────────────
+  pipeline-summary:
+    name: "📊 CI Summary"
+    runs-on: ubuntu-latest
+    needs: [push-to-ghcr, validate-mcp, validate-dashboard]
+    if: always()
+
+    steps:
+      - name: 📝 Write summary
+        run: |
+          echo "## 🚀 CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 Lint & Format | ${{ needs.lint-and-format.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Tests | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔌 MCP Validation | ${{ needs.validate-mcp.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 Dashboard Validation | ${{ needs.validate-dashboard.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🐳 Docker Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📦 GHCR Publish | ${{ needs.push-to-ghcr.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🏷️ Image: \`ghcr.io/${{ github.repository_owner }}/ai-coding-tools:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY

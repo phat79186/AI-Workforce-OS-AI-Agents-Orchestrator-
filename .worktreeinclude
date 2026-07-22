@@ -1,0 +1,6 @@
+# Environment files to copy into worktrees
+.env
+.env.local
+
+# Local Claude Code settings (gitignored)
+.claude/settings.local.json

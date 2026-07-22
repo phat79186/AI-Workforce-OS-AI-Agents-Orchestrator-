@@ -1,0 +1,255 @@
+#!/usr/bin/env python3
+"""
+AI Agentic Team - Main CLI Entry Point
+
+Role-based multi-agent collaboration with free inter-role communication.
+"""
+
+import logging
+import sys
+from pathlib import Path
+
+import click
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.panel import Panel
+from rich.table import Table
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent))
+
+from agentic_team import AgenticInteractiveShell, AgenticTeamEngine  # noqa: E402
+
+console = Console()
+
+
+def setup_logging(log_level: str, log_file: str = "ai-agentic-team.log"):
+    """Setup logging configuration."""
+    handlers = [RichHandler(rich_tracebacks=True, console=console)]
+    if log_file:
+        handlers.append(logging.FileHandler(log_file))
+    logging.basicConfig(
+        level=getattr(logging, log_level.upper(), logging.INFO),
+        format="%(message)s",
+        handlers=handlers,
+    )
+
+
+@click.group()
+@click.version_option(version="2.0.0")
+def cli():
+    """AI Agentic Team — role-based multi-agent collaboration.
+
+    Coordinates a team of AI agents (Project Manager, Architect, Developer,
+    QA Engineer, DevOps Engineer) that communicate freely to solve tasks.
+    Only the lead role (Project Manager) can finalize and deliver results.
+    """
+    pass
+
+
+@cli.command()
+@click.argument("task")
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to config file")
+@click.option("--max-turns", "-t", type=int, default=12, help="Max team turns")
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
+@click.option("--offline", is_flag=True, help="Force offline mode (local models only)")
+def run(task, config, max_turns, verbose, offline):
+    """Execute a task with the agentic team."""
+    setup_logging("DEBUG" if verbose else "INFO")
+
+    config_path = config or str(Path(__file__).parent / "agentic_team" / "config" / "agents.yaml")
+    engine = AgenticTeamEngine(config_path=config_path, force_offline=offline)
+
+    console.print(Panel(f"[bold]{task}[/bold]", title="Task", border_style="cyan"))
+    console.print(f"Agents: {engine.get_available_agents()}")
+    console.print(f"Max turns: {max_turns}")
+    console.print()
+
+    def on_turn(step):
+        turn = step.get("turn", "?")
+        from_role = step.get("from_role", "?")
+        to_role = step.get("to_role", "?")
+        action = step.get("action", "message")
+        agent = step.get("agent", "?")
+        success = step.get("success", True)
+        message = step.get("message", "")
+        output = step.get("output", "")
+
+        icon = ">>>" if action == "finalize" else "-->"
+        color = "green" if success else "red"
+        console.print(
+            f"\n  [{color}]Turn {turn}: {from_role} ({agent}) {icon} {to_role} [{action}][/{color}]"
+        )
+
+        # Show the agent's message (what it's routing to the next role)
+        if message and message != output:
+            console.print(f"  [dim]Message: {message[:200]}[/dim]")
+
+        # Show full agent output
+        if output:
+            console.print(
+                Panel(
+                    output[:3000],
+                    title=f"{from_role} ({agent}) output",
+                    border_style="cyan" if success else "red",
+                )
+            )
+
+        if not success and step.get("error"):
+            console.print(f"  [red]Error: {step['error']}[/red]")
+
+    import signal
+    import threading
+
+    _cancelled = threading.Event()
+    _done = threading.Event()
+    _result_box: list = [None]
+
+    original_sigint = signal.getsignal(signal.SIGINT)
+
+    def _on_cancel(signum, frame):
+        if not _cancelled.is_set():
+            _cancelled.set()
+            _done.set()
+            console.print(
+                "\n[yellow]Cancellation requested — press Ctrl+C again to force quit[/yellow]"
+            )
+            signal.signal(signal.SIGINT, original_sigint)
+
+    signal.signal(signal.SIGINT, _on_cancel)
+
+    def _run():
+        try:
+            _result_box[0] = engine.execute_task(
+                task=task, max_turns=max_turns, turn_callback=on_turn
+            )
+        except Exception as exc:
+            _result_box[0] = exc
+        finally:
+            _done.set()
+
+    worker = threading.Thread(target=_run, daemon=True)
+    worker.start()
+    _done.wait()
+    worker.join(timeout=5)
+    signal.signal(signal.SIGINT, original_sigint)
+
+    if _cancelled.is_set():
+        console.print("\n[bold yellow]Execution cancelled by user.[/bold yellow]")
+        result = _result_box[0]
+        if not isinstance(result, dict):
+            sys.exit(130)
+    elif isinstance(_result_box[0], Exception):
+        console.print(f"\n[bold red]Error: {_result_box[0]}[/bold red]")
+        sys.exit(1)
+    else:
+        result = _result_box[0]
+
+    console.print()
+    console.print(f"Termination: {result['termination_reason']}")
+    console.print(f"Turns: {result['stats']['turns_executed']}")
+    console.print(f"Duration: {result['duration_ms']}ms")
+
+    if result["success"]:
+        console.print(Panel(result["final_output"], title="Final Result", border_style="green"))
+    else:
+        console.print(
+            Panel(
+                result.get("final_output", "No output"), title="Incomplete", border_style="yellow"
+            )
+        )
+
+
+@cli.command()
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to config file")
+@click.option("--max-turns", "-t", type=int, default=12, help="Default max turns")
+@click.option("--offline", is_flag=True, help="Force offline mode")
+def shell(config, max_turns, offline):
+    """Start interactive agentic team REPL."""
+    setup_logging("INFO")
+    shell = AgenticInteractiveShell(
+        config_path=config,
+        default_max_turns=max_turns,
+        force_offline=offline,
+    )
+    shell.start()
+
+
+@cli.command()
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to config file")
+def agents(config):
+    """List available agents."""
+    config_path = config or str(Path(__file__).parent / "agentic_team" / "config" / "agents.yaml")
+    engine = AgenticTeamEngine(config_path=config_path)
+
+    table = Table(title="Available Agents")
+    table.add_column("Name", style="cyan")
+    table.add_column("Status", style="green")
+
+    for name in engine.get_available_agents():
+        table.add_row(name, "available")
+
+    console.print(table)
+
+
+@cli.command()
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to config file")
+def team(config):
+    """Show team configuration and role mappings."""
+    config_path = config or str(Path(__file__).parent / "agentic_team" / "config" / "agents.yaml")
+    engine = AgenticTeamEngine(config_path=config_path)
+    tc = engine.get_team_config()
+
+    table = Table(title=f"Team Configuration (lead: {tc['lead_role']})")
+    table.add_column("Role", style="cyan")
+    table.add_column("Title")
+    table.add_column("Agent", style="green")
+    table.add_column("Responsibilities")
+
+    for name, spec in tc["roles"].items():
+        is_lead = " (lead)" if name == tc["lead_role"] else ""
+        table.add_row(
+            name + is_lead,
+            spec.get("title", ""),
+            spec.get("agent", "?"),
+            spec.get("responsibilities", "")[:50],
+        )
+
+    console.print(table)
+
+    validation = engine.validate_team_bindings()
+    if validation["valid"]:
+        console.print("[green]Team configuration is valid[/green]")
+    else:
+        console.print(f"[red]Invalid: {validation.get('reason')}[/red]")
+        for m in validation.get("missing_roles", []):
+            console.print(f"  Missing: {m['role']} -> {m['agent']}")
+
+
+@cli.command()
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to config file")
+def validate(config):
+    """Validate team configuration."""
+    config_path = config or str(Path(__file__).parent / "agentic_team" / "config" / "agents.yaml")
+    engine = AgenticTeamEngine(config_path=config_path)
+    validation = engine.validate_team_bindings()
+
+    if validation["valid"]:
+        console.print("[green]Configuration is valid[/green]")
+        console.print(f"Available agents: {validation['available_agents']}")
+    else:
+        console.print(f"[red]Configuration invalid: {validation.get('reason')}[/red]")
+        for m in validation.get("missing_roles", []):
+            console.print(f"  {m['role']} -> {m['agent']} (not available)")
+        sys.exit(1)
+
+
+@cli.command()
+def version():
+    """Show version information."""
+    console.print("[bold]AI Agentic Team[/bold] v2.0.0")
+    console.print("Role-based multi-agent collaboration engine")
+
+
+if __name__ == "__main__":
+    cli()

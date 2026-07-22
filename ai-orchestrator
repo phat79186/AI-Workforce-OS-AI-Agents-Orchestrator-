@@ -1,0 +1,787 @@
+#!/usr/bin/env python3
+"""
+AI Orchestrator - Main CLI Entry Point
+
+Coordinates multiple AI coding assistants to collaborate on software development tasks.
+"""
+
+import logging
+import os
+import subprocess
+import sys
+from collections import defaultdict
+from pathlib import Path
+from typing import Any, Dict, List
+
+import click
+import yaml
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.table import Table
+
+from agentic_team import AgenticInteractiveShell
+from orchestrator.adapters import LlamaCppAdapter, OllamaAdapter
+
+
+# Setup Node.js environment before anything else
+def setup_node_environment():
+    """Ensure Node.js >= v20 without downgrading an already-newer runtime."""
+    import glob
+
+    # Keep current runtime if it's already modern enough.
+    try:
+        current = subprocess.check_output(
+            ["node", "--version"], text=True, stderr=subprocess.DEVNULL
+        ).strip()
+        if current.startswith("v"):
+            major = int(current.lstrip("v").split(".", 1)[0])
+            if major >= 20:
+                return False
+    except Exception:
+        pass
+
+    nvm_dir = os.path.expanduser("~/.nvm")
+    if os.path.exists(nvm_dir):
+        # Find the latest v20 node installation
+        node_versions_dir = os.path.join(nvm_dir, "versions", "node")
+        if os.path.exists(node_versions_dir):
+            # Look for any v20.x.x version
+            v20_dirs = glob.glob(os.path.join(node_versions_dir, "v20.*"))
+            if v20_dirs:
+                # Use the latest v20 found
+                node_v20_path = os.path.join(sorted(v20_dirs)[-1], "bin")
+                if os.path.exists(node_v20_path):
+                    # Prepend to PATH to ensure it takes precedence
+                    current_path = os.environ.get("PATH", "")
+                    os.environ["PATH"] = f"{node_v20_path}:{current_path}"
+                    return True
+    return False
+
+
+# Setup Node environment
+if setup_node_environment():
+    # Verify the setup
+    try:
+        node_version = subprocess.check_output(
+            ["node", "--version"], text=True, stderr=subprocess.DEVNULL
+        ).strip()
+        if node_version.startswith("v"):
+            major = int(node_version.lstrip("v").split(".", 1)[0])
+            if major < 20:
+                print(
+                    f"Warning: Node.js v20+ not active. Current version: {node_version}",
+                    file=sys.stderr,
+                )
+        else:
+            print(f"Warning: Unable to parse Node.js version: {node_version}", file=sys.stderr)
+    except Exception:
+        pass
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent))
+
+from orchestrator import InteractiveShell, Orchestrator
+
+console = Console()
+
+
+def setup_logging(log_level: str, log_file: str):
+    """Setup logging configuration."""
+    logging.basicConfig(
+        level=getattr(logging, log_level.upper()),
+        format="%(message)s",
+        handlers=[
+            RichHandler(rich_tracebacks=True, console=console),
+            logging.FileHandler(log_file),
+        ],
+    )
+
+
+def normalize_workflow_steps(workflow_config: Any) -> List[Dict[str, Any]]:
+    """Normalize workflow config to list of steps."""
+    if isinstance(workflow_config, list):
+        return workflow_config
+    if isinstance(workflow_config, dict):
+        steps = workflow_config.get("steps", [])
+        if isinstance(steps, list):
+            return steps
+    return []
+
+
+@click.group()
+@click.version_option(version="1.0.0")
+def cli():
+    """
+    AI Orchestrator - Coordinate multiple AI coding assistants.
+
+    This tool enables Codex, Gemini, Claude, and Copilot to collaborate
+    on software development tasks with automated implementation, review,
+    and refinement cycles.
+    """
+    pass
+
+
+@cli.command()
+@click.argument("task")
+@click.option(
+    "--workflow", "-w", default="default", help="Workflow to use (default, quick, thorough, etc.)"
+)
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+@click.option("--max-iterations", "-m", type=int, help="Maximum number of refinement iterations")
+@click.option("--output", "-o", type=click.Path(), help="Output directory for generated code")
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
+@click.option("--dry-run", is_flag=True, help="Show execution plan without running")
+@click.option("--agents", help="Comma-separated list of agents to use")
+@click.option(
+    "--offline",
+    is_flag=True,
+    help="Force local/offline agent execution only (fails if local workflow is unavailable)",
+)
+def run(task, workflow, config, max_iterations, output, verbose, dry_run, agents, offline):
+    """
+    Execute a task using AI agent collaboration.
+
+    Example:
+        ai-orchestrator run "Create a REST API with user authentication"
+    """
+    # Load config
+    config_path = config or Path(__file__).parent / "orchestrator" / "config" / "agents.yaml"
+
+    # Setup logging
+    log_level = "DEBUG" if verbose else "INFO"
+    setup_logging(log_level, "ai-orchestrator.log")
+
+    # Create orchestrator
+    try:
+        orchestrator = Orchestrator(
+            str(config_path) if config_path else None, force_offline=offline
+        )
+    except Exception as e:
+        console.print(f"[red]Error initializing orchestrator: {e}[/red]")
+        sys.exit(1)
+
+    if offline and workflow == "default" and "offline-default" in orchestrator.get_workflows():
+        workflow = "offline-default"
+
+    # Show header
+    console.print(
+        Panel.fit(
+            (
+                f"[bold cyan]AI Orchestrator[/bold cyan]\n"
+                f"Task: {task}\n"
+                f"Workflow: {workflow}\n"
+                f"Offline Mode: {'ON' if offline else 'AUTO'}"
+            ),
+            border_style="cyan",
+        )
+    )
+
+    # Show available agents
+    available = orchestrator.get_available_agents()
+    console.print(f"\n[green]Available agents:[/green] {', '.join(available)}")
+
+    if not available:
+        if offline:
+            console.print(
+                "[red]No local agents available in offline mode. "
+                "Check local endpoints and agent config.[/red]"
+            )
+        else:
+            console.print(
+                "[red]No agents available! Please install and configure AI CLI tools.[/red]"
+            )
+        sys.exit(1)
+
+    # Dry run - show plan
+    if dry_run:
+        console.print("\n[yellow]Dry run - execution plan:[/yellow]")
+        workflows = orchestrator.config.get("workflows", {})
+        workflow_config = workflows.get(workflow, [])
+        steps = normalize_workflow_steps(workflow_config)
+
+        table = Table(title=f"Workflow: {workflow}")
+        table.add_column("Step", style="cyan")
+        table.add_column("Agent", style="green")
+        table.add_column("Task", style="yellow")
+
+        for i, step in enumerate(steps, 1):
+            task_name = step.get("task") or step.get("role") or "unknown"
+            table.add_row(str(i), step.get("agent", "unknown"), task_name)
+
+        console.print(table)
+        return
+
+    # Execute task
+    console.print("\n[bold]Starting execution...[/bold]\n")
+
+    # Live status handler — captures orchestrator logs and updates a status line
+    import threading
+
+    current_status = ["⏳ Starting..."]
+
+    class StatusLogHandler(logging.Handler):
+        """Captures orchestrator logs to update the status display."""
+
+        def emit(self, record):
+            msg = record.getMessage()
+            # Update status for key events
+            if "Step " in msg and ":" in msg:
+                current_status[0] = f"⚙️  {msg.strip()}"
+            elif "completed successfully" in msg:
+                current_status[0] = f"✅ {msg.strip()}"
+            elif "Iteration " in msg and "/" in msg:
+                current_status[0] = f"🔄 {msg.strip()}"
+            elif "failed" in msg.lower() or "error" in msg.lower():
+                current_status[0] = f"❌ {msg.strip()}"
+
+    status_handler = StatusLogHandler()
+    status_handler.setLevel(logging.INFO)
+    logging.getLogger("orchestrator").addHandler(status_handler)
+    logging.getLogger("workflow_engine").addHandler(status_handler)
+    logging.getLogger().addHandler(status_handler)
+
+    try:
+        import signal
+        from concurrent.futures import Future, ThreadPoolExecutor
+
+        from rich.live import Live
+        from rich.text import Text
+
+        _done = threading.Event()
+        _cancelled = threading.Event()
+        _results_box: list = [None]
+
+        def _run_task():
+            try:
+                _results_box[0] = orchestrator.execute_task(
+                    task=task, workflow_name=workflow, max_iterations=max_iterations
+                )
+            except Exception as exc:
+                _results_box[0] = exc
+            finally:
+                _done.set()
+
+        # Handle Ctrl+C / ESC for cancellation
+        original_sigint = signal.getsignal(signal.SIGINT)
+
+        def _on_cancel(signum, frame):
+            if not _cancelled.is_set():
+                _cancelled.set()
+                _done.set()
+                current_status[0] = "🛑 Cancelling... (waiting for current agent to finish)"
+                console.print(
+                    "\n[yellow]Cancellation requested — press Ctrl+C again to force quit[/yellow]"
+                )
+                signal.signal(signal.SIGINT, original_sigint)  # Second Ctrl+C = hard exit
+
+        signal.signal(signal.SIGINT, _on_cancel)
+
+        worker = threading.Thread(target=_run_task, daemon=True)
+        worker.start()
+
+        with Live(
+            Text(current_status[0], style="cyan"),
+            console=console,
+            refresh_per_second=4,
+            transient=True,
+        ) as live:
+            while not _done.is_set():
+                status_text = current_status[0]
+                if not _cancelled.is_set():
+                    status_text += "  [dim](Ctrl+C to cancel)[/dim]"
+                live.update(Text.from_markup(f"  {status_text}"))
+                _done.wait(0.25)
+
+        worker.join(timeout=5)
+        signal.signal(signal.SIGINT, original_sigint)
+
+        # Cleanup handler
+        logging.getLogger("orchestrator").removeHandler(status_handler)
+        logging.getLogger("workflow_engine").removeHandler(status_handler)
+        logging.getLogger().removeHandler(status_handler)
+
+        if _cancelled.is_set():
+            console.print("\n[bold yellow]Execution cancelled by user.[/bold yellow]")
+            # Still show partial results if available
+            results = _results_box[0]
+            if isinstance(results, dict):
+                console.print("[dim]Partial results may be available below.[/dim]\n")
+            else:
+                sys.exit(130)
+        elif isinstance(_results_box[0], Exception):
+            raise _results_box[0]
+        else:
+            results = _results_box[0]
+
+        # Display results
+        console.print("\n[bold green]Execution complete![/bold green]\n")
+
+        # Show each step's full output
+        for i, iteration in enumerate(results.get("iterations", []), 1):
+            console.print(f"\n[bold]Iteration {i}:[/bold]")
+
+            for step in iteration.get("steps", []):
+                status_icon = "✓" if step.get("success") else "✗"
+                color = "green" if step.get("success") else "red"
+                agent = step.get("agent")
+                task_type = step.get("task")
+                fallback_from = step.get("fallback_from")
+
+                header = f"{agent} ({task_type})"
+                if fallback_from:
+                    header += f" [dim](fallback from {fallback_from})[/dim]"
+
+                console.print(f"\n  [{color}]{status_icon} {header}[/{color}]")
+
+                # Show the agent's full output
+                step_output = step.get("output", "")
+                if step_output:
+                    console.print(
+                        Panel(
+                            step_output,
+                            title=f"{agent} output",
+                            border_style="cyan" if step.get("success") else "red",
+                            expand=True,
+                        )
+                    )
+
+                # Show error if failed
+                if step.get("error"):
+                    console.print(f"  [red]Error: {step['error']}[/red]")
+
+                # Show suggestions
+                if step.get("suggestions"):
+                    console.print(f"  [yellow]Suggestions ({len(step['suggestions'])}):[/yellow]")
+                    for s in step["suggestions"][:10]:
+                        console.print(f"    • {s}")
+
+        # Show generated files with contents
+        files_created = []
+        for iteration in results.get("iterations", []):
+            for step in iteration.get("steps", []):
+                if step.get("files_modified"):
+                    files_created.extend(step["files_modified"])
+
+        if files_created:
+            console.print(f"\n[bold]Files Created/Modified ({len(files_created)}):[/bold]")
+            for file_path in files_created:
+                console.print(f"  📄 [cyan]{file_path}[/cyan]")
+                # Show file contents if they exist and are readable
+                try:
+                    fp = Path(file_path)
+                    if fp.exists() and fp.stat().st_size < 50000:
+                        ext = fp.suffix.lstrip(".")
+                        content = fp.read_text(encoding="utf-8")
+                        from rich.syntax import Syntax
+
+                        lang = {
+                            "py": "python",
+                            "js": "javascript",
+                            "ts": "typescript",
+                            "yaml": "yaml",
+                            "json": "json",
+                            "md": "markdown",
+                        }.get(ext, ext)
+                        console.print(Syntax(content, lang, theme="monokai", line_numbers=True))
+                except Exception:
+                    pass  # Skip unreadable files
+
+        # Show success status
+        if results.get("success"):
+            console.print("\n[bold green]Task completed successfully! ✓[/bold green]")
+        else:
+            console.print("\n[bold yellow]Task completed with some issues[/bold yellow]")
+
+    except Exception as e:
+        console.print(f"\n[bold red]Error during execution: {e}[/bold red]")
+        if verbose:
+            console.print_exception()
+        sys.exit(1)
+
+
+@cli.command()
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+def agents(config):
+    """List available agents and their status."""
+    config_path = config or Path(__file__).parent / "orchestrator" / "config" / "agents.yaml"
+
+    try:
+        orchestrator = Orchestrator(str(config_path))
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        sys.exit(1)
+
+    table = Table(title="AI Agents")
+    table.add_column("Agent", style="cyan")
+    table.add_column("Status", style="green")
+    table.add_column("Command", style="yellow")
+    table.add_column("Role", style="magenta")
+
+    agents_config = orchestrator.config.get("agents", {})
+
+    for name, adapter in orchestrator.adapters.items():
+        agent_config = agents_config.get(name, {})
+        table.add_row(name, "✓ Available", adapter.command, agent_config.get("role", "N/A"))
+
+    # Show unavailable agents
+    for name, agent_config in agents_config.items():
+        if name not in orchestrator.adapters:
+            status = "✗ Not available"
+            if not agent_config.get("enabled"):
+                status = "○ Disabled"
+
+            table.add_row(
+                name, status, agent_config.get("command", "N/A"), agent_config.get("role", "N/A")
+            )
+
+    console.print(table)
+
+
+@cli.command()
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+def workflows(config):
+    """List available workflows."""
+    config_path = config or Path(__file__).parent / "orchestrator" / "config" / "agents.yaml"
+
+    with open(config_path) as f:
+        config_data = yaml.safe_load(f)
+
+    workflows_config = config_data.get("workflows", {})
+
+    table = Table(title="Available Workflows")
+    table.add_column("Workflow", style="cyan")
+    table.add_column("Steps", style="green")
+    table.add_column("Description", style="yellow")
+
+    for name, workflow_config in workflows_config.items():
+        steps = normalize_workflow_steps(workflow_config)
+        step_summary = " → ".join([step.get("agent", "?") for step in steps])
+        if isinstance(workflow_config, dict):
+            description = workflow_config.get("description", "N/A")
+        else:
+            description = steps[0].get("description", "N/A") if steps else "N/A"
+
+        table.add_row(name, step_summary, description)
+
+    console.print(table)
+
+
+@cli.group()
+def models():
+    """Manage local model backends (Ollama/llama.cpp/OpenAI-compatible)."""
+    pass
+
+
+def _load_config_file(config_path: str) -> Dict[str, Any]:
+    with open(config_path) as f:
+        return yaml.safe_load(f) or {}
+
+
+def _build_local_adapter(agent_name: str, agent_config: Dict[str, Any]):
+    runtime_config = dict(agent_config)
+    runtime_config["name"] = agent_name
+    agent_type = str(agent_config.get("type", "")).lower()
+    if agent_type == "ollama":
+        return OllamaAdapter(runtime_config)
+    if agent_type in {"llamacpp", "localai", "text-generation-webui", "openai-compatible"}:
+        return LlamaCppAdapter(runtime_config)
+    return None
+
+
+def _iter_local_adapters_from_config(config_data: Dict[str, Any]):
+    agents = config_data.get("agents", {})
+    for agent_name, agent_config in agents.items():
+        agent_type = str(agent_config.get("type", "")).lower()
+        if agent_type not in {
+            "ollama",
+            "llamacpp",
+            "localai",
+            "text-generation-webui",
+            "openai-compatible",
+        } and not agent_config.get("offline", False):
+            continue
+
+        adapter = _build_local_adapter(agent_name, agent_config)
+        if adapter:
+            yield agent_name, agent_type or "unknown", adapter
+
+
+@models.command("status")
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+def models_status(config):
+    """Check health/status of local model endpoints and configured models."""
+    config_path = str(config or Path(__file__).parent / "config" / "agents.yaml")
+    config_data = _load_config_file(config_path)
+
+    table = Table(title="Local Model Status")
+    table.add_column("Agent", style="cyan")
+    table.add_column("Backend", style="yellow")
+    table.add_column("Endpoint", style="magenta")
+    table.add_column("Status", style="green")
+    table.add_column("Models", style="white")
+
+    found = False
+    for agent_name, agent_type, adapter in _iter_local_adapters_from_config(config_data):
+        found = True
+        endpoint = getattr(adapter, "endpoint", "N/A")
+        online = adapter.is_available()
+        models = adapter.list_models() if online and hasattr(adapter, "list_models") else []
+        model_preview = ", ".join(models[:3]) if models else "N/A"
+        if len(models) > 3:
+            model_preview = f"{model_preview}, +{len(models) - 3} more"
+        table.add_row(
+            agent_name,
+            agent_type,
+            endpoint,
+            "● Online" if online else "○ Offline",
+            model_preview,
+        )
+
+    if not found:
+        console.print("[yellow]No local model agents configured.[/yellow]")
+        return
+
+    console.print(table)
+
+
+@models.command("list")
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+def models_list(config):
+    """List models discovered from configured local endpoints."""
+    config_path = str(config or Path(__file__).parent / "config" / "agents.yaml")
+    config_data = _load_config_file(config_path)
+
+    grouped: Dict[str, List[str]] = defaultdict(list)
+    for agent_name, _agent_type, adapter in _iter_local_adapters_from_config(config_data):
+        if not adapter.is_available() or not hasattr(adapter, "list_models"):
+            continue
+        for model_name in adapter.list_models():
+            grouped[agent_name].append(model_name)
+
+    if not grouped:
+        console.print("[yellow]No reachable local model endpoints or no models found.[/yellow]")
+        return
+
+    for agent_name, models_for_agent in grouped.items():
+        console.print(f"[bold cyan]{agent_name}[/bold cyan]")
+        for model_name in sorted(set(models_for_agent)):
+            console.print(f"  • {model_name}")
+
+
+@models.command("pull")
+@click.argument("model")
+@click.option("--endpoint", help="Ollama endpoint (default from config or http://localhost:11434)")
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+def models_pull(model, endpoint, config):
+    """Pull an Ollama model for offline use."""
+    resolved_endpoint = endpoint
+    config_path = str(config or Path(__file__).parent / "config" / "agents.yaml")
+    config_data = _load_config_file(config_path)
+
+    if not resolved_endpoint:
+        for _agent_name, agent_type, adapter in _iter_local_adapters_from_config(config_data):
+            if agent_type == "ollama":
+                resolved_endpoint = adapter.endpoint
+                break
+    resolved_endpoint = resolved_endpoint or "http://localhost:11434"
+
+    adapter = OllamaAdapter({"name": "models-cli", "endpoint": resolved_endpoint, "model": model})
+    result = adapter.pull_model(model)
+    if result.success:
+        console.print(f"[green]✓ {result.output}[/green]")
+    else:
+        console.print(f"[red]✗ {result.error}[/red]")
+        sys.exit(1)
+
+
+@models.command("remove")
+@click.argument("model")
+@click.option("--endpoint", help="Ollama endpoint (default from config or http://localhost:11434)")
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+def models_remove(model, endpoint, config):
+    """Remove an Ollama model from local cache."""
+    resolved_endpoint = endpoint
+    config_path = str(config or Path(__file__).parent / "config" / "agents.yaml")
+    config_data = _load_config_file(config_path)
+
+    if not resolved_endpoint:
+        for _agent_name, agent_type, adapter in _iter_local_adapters_from_config(config_data):
+            if agent_type == "ollama":
+                resolved_endpoint = adapter.endpoint
+                break
+    resolved_endpoint = resolved_endpoint or "http://localhost:11434"
+
+    adapter = OllamaAdapter({"name": "models-cli", "endpoint": resolved_endpoint, "model": model})
+    result = adapter.remove_model(model)
+    if result.success:
+        console.print(f"[green]✓ {result.output}[/green]")
+    else:
+        console.print(f"[red]✗ {result.error}[/red]")
+        sys.exit(1)
+
+
+@cli.command()
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+def validate(config):
+    """Validate configuration and check agent availability."""
+    config_path = config or Path(__file__).parent / "orchestrator" / "config" / "agents.yaml"
+
+    console.print("[bold]Validating configuration...[/bold]\n")
+
+    # Check config file exists
+    if not Path(config_path).exists():
+        console.print(f"[red]✗ Config file not found: {config_path}[/red]")
+        sys.exit(1)
+
+    console.print(f"[green]✓ Config file found: {config_path}[/green]")
+
+    # Try to load config
+    try:
+        with open(config_path) as f:
+            config_data = yaml.safe_load(f)
+        console.print("[green]✓ Config file is valid YAML[/green]")
+    except Exception as e:
+        console.print(f"[red]✗ Invalid YAML: {e}[/red]")
+        sys.exit(1)
+
+    # Check required sections
+    required_sections = ["agents", "workflows", "settings"]
+    for section in required_sections:
+        if section in config_data:
+            console.print(f"[green]✓ Section '{section}' present[/green]")
+        else:
+            console.print(f"[yellow]! Section '{section}' missing[/yellow]")
+
+    # Initialize orchestrator
+    try:
+        orchestrator = Orchestrator(str(config_path))
+        console.print(f"\n[green]✓ Orchestrator initialized successfully[/green]")
+        console.print(f"[green]✓ {len(orchestrator.adapters)} agents available[/green]")
+    except Exception as e:
+        console.print(f"\n[red]✗ Orchestrator initialization failed: {e}[/red]")
+        sys.exit(1)
+
+    console.print("\n[bold green]Configuration is valid! ✓[/bold green]")
+
+
+@cli.command()
+@click.argument("agent_name")
+@click.argument("task")
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+def test_agent(agent_name, task, config):
+    """Run a direct test task on a specific agent."""
+    config_path = str(config or Path(__file__).parent / "config" / "agents.yaml")
+
+    try:
+        orchestrator = Orchestrator(config_path)
+    except Exception as e:
+        console.print(f"[red]Error loading orchestrator: {e}[/red]")
+        sys.exit(1)
+
+    adapter = orchestrator.adapters.get(agent_name)
+    if not adapter:
+        console.print(f"[red]Agent '{agent_name}' is not available.[/red]")
+        sys.exit(1)
+
+    result = adapter.execute_task(task, {"role": "implement", "working_dir": "./workspace"})
+    if result.success:
+        console.print(f"[bold green]Agent '{agent_name}' succeeded[/bold green]")
+        if result.metadata:
+            console.print(f"[dim]metadata: {result.metadata}[/dim]")
+        console.print(Panel(result.output or "(empty output)", border_style="green"))
+    else:
+        console.print(f"[bold red]Agent '{agent_name}' failed: {result.error}[/bold red]")
+        sys.exit(1)
+
+
+@cli.command()
+def version():
+    """Show version information."""
+    console.print("[bold cyan]AI Orchestrator[/bold cyan] version 1.0.0")
+    console.print("A collaborative AI coding assistant orchestration system")
+
+
+@cli.command()
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+@click.option("--workflow", "-w", default="default", help="Default workflow to use")
+def shell(config, workflow):
+    """
+    Start an interactive shell for multi-round conversations.
+
+    The interactive shell provides a REPL-style interface similar to
+    Claude Code and Codex CLIs, allowing multi-round conversations,
+    context preservation, and iterative development.
+
+    Examples:
+        ai-orchestrator shell
+        ai-orchestrator shell --workflow thorough
+    """
+    config_path = config or Path(__file__).parent / "orchestrator" / "config" / "agents.yaml"
+
+    # Setup logging for shell
+    setup_logging("INFO", "ai-orchestrator.log")
+
+    try:
+        # Create and start interactive shell
+        interactive_shell = InteractiveShell(str(config_path) if config_path else None)
+        interactive_shell.history.workflow = workflow
+        interactive_shell.start()
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Exiting...[/yellow]")
+    except Exception as e:
+        console.print(f"[red]Error starting shell: {e}[/red]")
+        sys.exit(1)
+
+
+@cli.command()
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+@click.option("--workflow", "-w", default="default", help="Default workflow to use")
+def interactive(config, workflow):
+    """
+    Alias for 'shell' command - start interactive mode.
+
+    Same as running 'ai-orchestrator shell'.
+    """
+    # Just call shell with same parameters
+    ctx = click.get_current_context()
+    ctx.invoke(shell, config=config, workflow=workflow)
+
+
+@cli.command("agentic-shell")
+@click.option("--config", "-c", type=click.Path(exists=True), help="Path to configuration file")
+@click.option("--max-turns", "-t", type=int, default=12, help="Max team communication turns")
+@click.option(
+    "--offline",
+    is_flag=True,
+    help="Force local/offline agents only for agentic team mode",
+)
+def agentic_shell(config, max_turns, offline):
+    """
+    Start standalone Agentic Team REPL (separate from orchestrator workflows).
+
+    Examples:
+        ai-orchestrator agentic-shell
+        ai-orchestrator agentic-shell --max-turns 16
+        ai-orchestrator agentic-shell --offline
+    """
+    config_path = config or Path(__file__).parent / "orchestrator" / "config" / "agents.yaml"
+    setup_logging("INFO", "ai-orchestrator.log")
+
+    try:
+        shell = AgenticInteractiveShell(
+            config_path=str(config_path) if config_path else None,
+            default_max_turns=max_turns,
+            force_offline=offline,
+        )
+        shell.start()
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Exiting...[/yellow]")
+    except Exception as e:
+        console.print(f"[red]Error starting agentic shell: {e}[/red]")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    cli()

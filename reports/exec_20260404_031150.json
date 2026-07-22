@@ -1,0 +1,35 @@
+{
+  "report_type": "execution_summary",
+  "report_id": "exec_20260404_031150",
+  "generated_at": "2026-04-04T03:11:50.727010+00:00",
+  "task": "Add comprehensive test suite for auth module",
+  "workflow": "review-only",
+  "success": true,
+  "iterations": 1,
+  "duration_seconds": 58.5,
+  "available_agents": ["codex", "gemini", "claude"],
+  "total_suggestions": 3,
+  "fallback_count": 0,
+  "steps": [
+    {
+      "agent": "gemini",
+      "task_type": "review",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [],
+      "suggestion_count": 3,
+      "fallback_from": null
+    },
+    {
+      "agent": "claude",
+      "task_type": "refine",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": ["tests/test_auth.py", "tests/conftest.py"],
+      "suggestion_count": 0,
+      "fallback_from": null
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+[Unit]
+Description=AI Coding Tools Context Dashboard (port 5003)
+Documentation=https://github.com/hoangsonww/AI-Coding-Tools-Collaborative
+After=network.target ai-orchestrator.service agentic-team.service
+Wants=ai-orchestrator.service agentic-team.service
+
+[Service]
+Type=simple
+User=orchestrator
+Group=orchestrator
+WorkingDirectory=/opt/ai-coding-tools
+
+Environment="PATH=/opt/ai-coding-tools/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONUNBUFFERED=1"
+Environment="LOG_LEVEL=INFO"
+EnvironmentFile=-/etc/ai-coding-tools/environment
+
+ExecStart=/opt/ai-coding-tools/venv/bin/python -m context_dashboard
+
+Restart=on-failure
+RestartSec=10s
+StartLimitInterval=200
+StartLimitBurst=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/ai-coding-tools /var/log/ai-coding-tools /home/orchestrator/.ai-orchestrator /home/orchestrator/.agentic-team
+
+LimitNOFILE=65536
+MemoryLimit=1G
+CPUQuota=100%
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=context-dashboard
+
+[Install]
+WantedBy=multi-user.target

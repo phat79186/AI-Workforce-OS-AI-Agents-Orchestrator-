@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Agentic Team Studio is a standalone live workspace for autonomous role-based AI collaboration."
+    />
+    <meta
+      name="keywords"
+      content="agentic team, multi-agent UI, ai collaboration, team lead agent, software architect, qa engineer"
+    />
+    <meta name="robots" content="index,follow" />
+    <meta name="application-name" content="Agentic Team Studio" />
+    <meta name="theme-color" content="#071a2d" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Agentic Team Studio" />
+    <meta
+      property="og:description"
+      content="Watch autonomous AI roles coordinate tasks in real time with interactive communication visualization."
+    />
+    <meta property="og:site_name" content="Agentic Team Studio" />
+    <meta property="og:image" content="/android-chrome-512x512.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Agentic Team Studio" />
+    <meta
+      name="twitter:description"
+      content="Standalone role-based AI team collaboration UI with live handoff graph and timeline."
+    />
+    <meta name="twitter:image" content="/android-chrome-512x512.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Agentic Team Studio" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <link rel="manifest" href="/agentic.webmanifest" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <title>Agentic Team Studio</title>
+    <link rel="stylesheet" href="/static/agentic_team.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Standalone Experience</p>
+          <h1>Agentic Team Studio</h1>
+          <p class="subtitle">
+            Dedicated UI for true multi-agent collaboration with live handoff
+            visualization.
+          </p>
+        </div>
+        <div class="hero-status">
+          <span id="status-pill" class="pill status-idle">Idle</span>
+          <span id="socket-pill" class="pill socket-offline">Disconnected</span>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="control-panel card">
+          <section>
+            <h2>Task</h2>
+            <textarea
+              id="task-input"
+              placeholder="Describe the work for your agentic team..."
+            ></textarea>
+            <div class="field-row">
+              <label for="max-turns">Max Turns</label>
+              <input id="max-turns" type="number" min="1" max="30" value="12" />
+            </div>
+            <div class="button-row">
+              <button id="execute-btn" class="btn btn-primary">Run Team</button>
+              <button id="followup-btn" class="btn">Follow-up</button>
+              <button id="clear-btn" class="btn">Clear</button>
+            </div>
+          </section>
+
+          <section>
+            <h2>Team Snapshot</h2>
+            <div class="meta-list">
+              <div><span>Lead</span><strong id="meta-lead">-</strong></div>
+              <div>
+                <span>Configured Roles</span><strong id="meta-roles">0</strong>
+              </div>
+              <div>
+                <span>Live Turns</span><strong id="meta-turns">0</strong>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>Local Model Note</h2>
+            <p class="hint">
+              Limitation: local adapters (Ollama/llama.cpp) return text only and
+              do not directly edit files.
+            </p>
+            <p class="hint">
+              Best use: offline drafting, review, and fallback routing when
+              cloud agents fail.
+            </p>
+          </section>
+
+          <section>
+            <div class="section-title-row">
+              <h2>Config Studio</h2>
+              <div class="button-row compact">
+                <button id="reload-config-btn" class="btn btn-ghost">
+                  Reload
+                </button>
+                <button id="save-config-btn" class="btn btn-primary">
+                  Save
+                </button>
+              </div>
+            </div>
+            <p id="config-path" class="hint"></p>
+            <div id="config-form" class="config-form"></div>
+            <p id="config-status" class="hint"></p>
+          </section>
+        </aside>
+
+        <section class="main-panel">
+          <section class="card stats-grid">
+            <article>
+              <span>Current Route</span>
+              <strong id="stat-route">-</strong>
+            </article>
+            <article>
+              <span>Latest Action</span>
+              <strong id="stat-action">-</strong>
+            </article>
+            <article>
+              <span>Result State</span>
+              <strong id="stat-result">-</strong>
+            </article>
+          </section>
+
+          <section class="card graph-card">
+            <div class="section-title-row">
+              <h2>Live Communication Graph</h2>
+              <p class="hint">
+                Click timeline items to focus a specific handoff.
+              </p>
+            </div>
+            <svg
+              id="graph"
+              viewBox="0 0 980 520"
+              role="img"
+              aria-label="Agent communication graph"
+            ></svg>
+          </section>
+
+          <section class="card timeline-card">
+            <div class="section-title-row">
+              <h2>Team Timeline</h2>
+              <p class="hint">Chronological messages between roles.</p>
+            </div>
+            <div id="timeline" class="timeline"></div>
+          </section>
+
+          <section class="card comms-card">
+            <div class="section-title-row">
+              <h2>Live Agent Communications</h2>
+              <p class="hint">
+                Readable handoffs between roles and their mapped agents.
+              </p>
+            </div>
+            <div id="live-comms" class="comms"></div>
+          </section>
+
+          <section class="card output-card">
+            <div class="section-title-row">
+              <h2>Lead Output</h2>
+              <p class="hint">Final gated response back to user.</p>
+            </div>
+            <pre id="final-output"></pre>
+          </section>
+
+          <section class="card logs-card">
+            <div class="section-title-row">
+              <h2>Runtime Logs</h2>
+              <p class="hint">Backend and execution events.</p>
+            </div>
+            <div id="logs" class="logs"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="/static/agentic_team.js"></script>
+  </body>
+</html>

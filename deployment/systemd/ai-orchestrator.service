@@ -1,0 +1,58 @@
+[Unit]
+Description=AI Orchestrator UI Service (orchestrator/ui/app.py)
+Documentation=https://github.com/hoangsonww/AI-Coding-Tools-Collaborative
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=orchestrator
+Group=orchestrator
+
+# Working directory is the project root where orchestrator/ lives
+WorkingDirectory=/opt/ai-coding-tools
+
+Environment="PATH=/opt/ai-coding-tools/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONUNBUFFERED=1"
+Environment="PORT=5001"
+Environment="APP_ENV=production"
+Environment="LOG_LEVEL=INFO"
+
+# Optional: load secrets / site-specific overrides from an environment file
+# Create this file with KEY=value lines (no export statements needed)
+EnvironmentFile=-/etc/ai-coding-tools/environment
+
+ExecStartPre=/bin/mkdir -p /var/log/ai-coding-tools
+ExecStartPre=/bin/mkdir -p /var/lib/ai-coding-tools/output
+ExecStartPre=/bin/mkdir -p /var/lib/ai-coding-tools/workspace
+ExecStartPre=/bin/mkdir -p /var/lib/ai-coding-tools/reports
+ExecStartPre=/bin/mkdir -p /var/lib/ai-coding-tools/sessions
+
+# Entry point: orchestrator UI backend
+ExecStart=/opt/ai-coding-tools/venv/bin/python /opt/ai-coding-tools/orchestrator/ui/app.py
+
+Restart=on-failure
+RestartSec=10s
+StartLimitInterval=200
+StartLimitBurst=5
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/ai-coding-tools /var/log/ai-coding-tools
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+MemoryLimit=2G
+CPUQuota=200%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ai-orchestrator
+
+[Install]
+WantedBy=multi-user.target

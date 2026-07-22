@@ -1,0 +1,93 @@
+[
+  {
+    "report_id": "perf_20260404_031141",
+    "type": "agent_performance",
+    "summary": "3 agents, 8 runs",
+    "file": "perf_20260404_031141.json",
+    "generated_at": "2026-04-04T03:11:41.846929+00:00"
+  },
+  {
+    "report_id": "workflow_20260404_031141",
+    "type": "workflow_analytics",
+    "summary": "5 workflows",
+    "file": "workflow_20260404_031141.json",
+    "generated_at": "2026-04-04T03:11:41.847275+00:00"
+  },
+  {
+    "report_id": "health_20260404_031141",
+    "type": "system_health",
+    "summary": "unhealthy",
+    "file": "health_20260404_031141.json",
+    "generated_at": "2026-04-04T03:11:41.877915+00:00"
+  },
+  {
+    "report_id": "config_20260404_031141",
+    "type": "config_audit",
+    "summary": "7 agents",
+    "file": "config_20260404_031141.json",
+    "generated_at": "2026-04-04T03:11:41.882979+00:00"
+  },
+  {
+    "report_id": "dashboard_20260404_031141",
+    "type": "html_dashboard",
+    "summary": "8 tasks",
+    "file": "dashboard_20260404_031141.html",
+    "generated_at": "2026-04-04T03:11:41.883402+00:00"
+  },
+  {
+    "report_id": "exec_20260404_031142",
+    "type": "execution_summary",
+    "summary": "Implement user authentication with JWT tokens",
+    "file": "exec_20260404_031142.json",
+    "generated_at": "2026-04-04T03:11:42.988520+00:00"
+  },
+  {
+    "report_id": "exec_20260404_031144",
+    "type": "execution_summary",
+    "summary": "Build REST API for task management with CRUD operations",
+    "file": "exec_20260404_031144.json",
+    "generated_at": "2026-04-04T03:11:44.095415+00:00"
+  },
+  {
+    "report_id": "exec_20260404_031145",
+    "type": "execution_summary",
+    "summary": "Set up CI/CD pipeline with GitHub Actions",
+    "file": "exec_20260404_031145.json",
+    "generated_at": "2026-04-04T03:11:45.200707+00:00"
+  },
+  {
+    "report_id": "exec_20260404_031146",
+    "type": "execution_summary",
+    "summary": "Refactor database layer to support async operations",
+    "file": "exec_20260404_031146.json",
+    "generated_at": "2026-04-04T03:11:46.308023+00:00"
+  },
+  {
+    "report_id": "exec_20260404_031147",
+    "type": "execution_summary",
+    "summary": "Add WebSocket support for real-time notifications",
+    "file": "exec_20260404_031147.json",
+    "generated_at": "2026-04-04T03:11:47.412502+00:00"
+  },
+  {
+    "report_id": "exec_20260404_031148",
+    "type": "execution_summary",
+    "summary": "Generate API documentation with OpenAPI spec",
+    "file": "exec_20260404_031148.json",
+    "generated_at": "2026-04-04T03:11:48.519053+00:00"
+  },
+  {
+    "report_id": "exec_20260404_031149",
+    "type": "execution_summary",
+    "summary": "Implement rate limiting middleware",
+    "file": "exec_20260404_031149.json",
+    "generated_at": "2026-04-04T03:11:49.621564+00:00"
+  },
+  {
+    "report_id": "exec_20260404_031150",
+    "type": "execution_summary",
+    "summary": "Add comprehensive test suite for auth module",
+    "file": "exec_20260404_031150.json",
+    "generated_at": "2026-04-04T03:11:50.729961+00:00"
+  }
+]

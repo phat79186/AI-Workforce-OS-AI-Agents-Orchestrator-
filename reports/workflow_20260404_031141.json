@@ -1,0 +1,48 @@
+{
+  "report_type": "workflow_analytics",
+  "report_id": "workflow_20260404_031141",
+  "generated_at": "2026-04-04T03:11:41.847062+00:00",
+  "executions_analysed": 8,
+  "workflows": {
+    "default": {
+      "total_runs": 4,
+      "successes": 3,
+      "failures": 1,
+      "total_iterations": 4,
+      "success_rate": 0.75,
+      "avg_iterations": 1.0
+    },
+    "quick": {
+      "total_runs": 1,
+      "successes": 1,
+      "failures": 0,
+      "total_iterations": 1,
+      "success_rate": 1.0,
+      "avg_iterations": 1.0
+    },
+    "thorough": {
+      "total_runs": 1,
+      "successes": 1,
+      "failures": 0,
+      "total_iterations": 2,
+      "success_rate": 1.0,
+      "avg_iterations": 2.0
+    },
+    "document": {
+      "total_runs": 1,
+      "successes": 1,
+      "failures": 0,
+      "total_iterations": 1,
+      "success_rate": 1.0,
+      "avg_iterations": 1.0
+    },
+    "review-only": {
+      "total_runs": 1,
+      "successes": 1,
+      "failures": 0,
+      "total_iterations": 1,
+      "success_rate": 1.0,
+      "avg_iterations": 1.0
+    }
+  }
+}

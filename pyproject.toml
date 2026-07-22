@@ -1,0 +1,227 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-coding-tools-collaborative"
+version = "1.0.0"
+description = "Comprehensive AI coding collaboration platform with role-based teams, orchestration, and MCP integration"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Son Nguyen"}
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "click>=8.1.0",
+    "pyyaml>=6.0",
+    "colorama>=0.4.6",
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "tenacity>=8.2.0",
+    "python-dotenv>=1.0.0",
+    "structlog>=23.1.0",
+    "prometheus-client>=0.17.0",
+    "fastmcp>=0.1.0",
+    "flask>=2.3.0",
+    "flask-cors>=4.0.0",
+    "flask-socketio>=5.3.0",
+    "python-socketio>=5.8.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ai-coding-tools/collaborative"
+"Repository" = "https://github.com/ai-coding-tools/collaborative.git"
+"Documentation" = "https://github.com/ai-coding-tools/collaborative/tree/main/docs"
+"Bug Tracker" = "https://github.com/ai-coding-tools/collaborative/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.11.0",
+    "pytest-timeout>=2.1.0",
+    "black>=23.7.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "flake8-docstrings>=1.7.0",
+    "flake8-bugbear>=23.7.10",
+    "mypy>=1.5.0",
+    "pylint>=2.17.0",
+    "bandit>=1.7.5",
+    "safety>=2.3.5",
+    "pre-commit>=3.3.3",
+    "coverage[toml]>=7.3.0",
+]
+
+[project.scripts]
+ai-agentic-team = "agentic_team.cli:main"
+ai-orchestrator = "orchestrator.cli:main"
+ai-mcp-server = "mcp_server.server:main"
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | workspace
+  | sessions
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = false
+warn_unused_ignores = false
+warn_no_return = false
+strict_equality = false
+ignore_missing_imports = true
+follow_imports = "skip"
+allow_untyped_calls = true
+allow_untyped_defs = true
+allow_incomplete_defs = true
+exclude = [
+    "^ai-agentic-team$",
+    "^ai-orchestrator$",
+    "ai-agentic-team-wrapper",
+    "ai-orchestrator-wrapper",
+    "workspace/",
+    "sessions/"
+]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+check_untyped_defs = false
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=orchestrator",
+    "--cov=agentic_team",
+    "--cov=mcp_server",
+    "--cov-branch",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "security: marks tests as security tests",
+    "agentic_team: marks tests as agentic team tests",
+]
+
+[tool.coverage.run]
+source = ["orchestrator", "adapters", "agentic_team"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/virtualenv/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.pylint.main]
+max-line-length = 120
+disable = [
+    "C0111",  # missing-docstring
+    "C0103",  # invalid-name
+    "R0903",  # too-few-public-methods
+    "R0913",  # too-many-arguments
+    "W0212",  # protected-access
+    "R0801",  # duplicate-code (orchestrator/agentic_team are independent by design)
+    "R0902",  # too-many-instance-attributes (domain dataclasses)
+    "R0917",  # too-many-positional-arguments (domain methods)
+    "C0415",  # import-outside-toplevel (lazy imports for optional deps)
+    "W0718",  # broad-exception-caught (error boundaries)
+    "R0914",  # too-many-locals (complex algorithms)
+    "W0613",  # unused-argument (interface conformance)
+    "W0603",  # global-statement (singleton patterns)
+]
+good-names = ["i", "j", "k", "ex", "Run", "_", "id", "db", "logger", "e", "f", "n"]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.messages_control]
+max-parents = 10
+
+[tool.pylint.similarities]
+min-similarity-lines = 8
+ignore-imports = true
+ignore-docstrings = true
+ignore-comments = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "test_*.py"]
+skips = ["B101", "B601", "B404", "B603", "B607", "B602", "B110", "B605", "B105", "B201", "B104", "B112", "B314", "B405", "B608"]

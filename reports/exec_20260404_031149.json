@@ -1,0 +1,45 @@
+{
+  "report_type": "execution_summary",
+  "report_id": "exec_20260404_031149",
+  "generated_at": "2026-04-04T03:11:49.620463+00:00",
+  "task": "Implement rate limiting middleware",
+  "workflow": "default",
+  "success": true,
+  "iterations": 1,
+  "duration_seconds": 53.0,
+  "available_agents": ["codex", "gemini", "claude"],
+  "total_suggestions": 1,
+  "fallback_count": 0,
+  "steps": [
+    {
+      "agent": "codex",
+      "task_type": "implement",
+      "success": false,
+      "has_output": false,
+      "error": "ConnectionError: API unreachable",
+      "files_modified": [],
+      "suggestion_count": 0,
+      "fallback_from": null
+    },
+    {
+      "agent": "gemini",
+      "task_type": "review",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [],
+      "suggestion_count": 1,
+      "fallback_from": null
+    },
+    {
+      "agent": "claude",
+      "task_type": "refine",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": ["middleware/rate_limit.py", "config.py"],
+      "suggestion_count": 0,
+      "fallback_from": null
+    }
+  ]
+}

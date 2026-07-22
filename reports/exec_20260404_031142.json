@@ -1,0 +1,45 @@
+{
+  "report_type": "execution_summary",
+  "report_id": "exec_20260404_031142",
+  "generated_at": "2026-04-04T03:11:42.986991+00:00",
+  "task": "Implement user authentication with JWT tokens",
+  "workflow": "default",
+  "success": true,
+  "iterations": 1,
+  "duration_seconds": 20.0,
+  "available_agents": ["codex", "gemini", "claude"],
+  "total_suggestions": 4,
+  "fallback_count": 0,
+  "steps": [
+    {
+      "agent": "codex",
+      "task_type": "implement",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": ["auth.py", "middleware.py", "models/user.py"],
+      "suggestion_count": 2,
+      "fallback_from": null
+    },
+    {
+      "agent": "gemini",
+      "task_type": "review",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [],
+      "suggestion_count": 2,
+      "fallback_from": null
+    },
+    {
+      "agent": "claude",
+      "task_type": "refine",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": ["auth.py", "validators.py"],
+      "suggestion_count": 0,
+      "fallback_from": null
+    }
+  ]
+}

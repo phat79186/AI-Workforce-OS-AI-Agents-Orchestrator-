@@ -1,0 +1,2325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="AI Coding Tools Orchestrator - Production-ready system for coordinating multiple AI coding assistants"
+    />
+    <meta
+      name="keywords"
+      content="AI, coding, orchestrator, Claude, Codex, Gemini, Copilot, collaborative AI"
+    />
+    <meta name="author" content="AI Orchestrator Team" />
+    <link rel="icon" href="packages/favicon.ico" type="image/x-icon" />
+    <title>
+      AI Coding Tools Orchestrator | Multi-Agent Collaboration Platform
+    </title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="packages/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="container">
+        <div class="nav-brand">
+          <span class="logo" aria-hidden="true"
+            ><i class="fa-solid fa-robot"></i
+          ></span>
+          <span class="brand-name">AI Orchestrator</span>
+        </div>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="#overview" class="nav-link">Overview</a></li>
+          <li><a href="#features" class="nav-link">Features</a></li>
+          <li class="nav-dropdown">
+            <a href="#architecture" class="nav-link nav-dropdown-toggle">Systems <i class="fa-solid fa-chevron-down" style="font-size:0.6em;margin-left:2px;vertical-align:1px"></i></a>
+            <ul class="nav-dropdown-menu">
+              <div class="nav-dropdown-menu-inner">
+              <li><a href="#agentic-infra" class="nav-link">Agentic Infra</a></li>
+              <li><a href="#architecture" class="nav-link">Architecture</a></li>
+              <li><a href="#agentic-team" class="nav-link">Agentic Team</a></li>
+              <li><a href="#graphify" class="nav-link">Graphify</a></li>
+              </div>
+            </ul>
+          </li>
+          <li><a href="#screenshots" class="nav-link">Screenshots</a></li>
+          <li><a href="#quick-start" class="nav-link">Quick Start</a></li>
+          <li><a href="#workflows" class="nav-link">Workflows</a></li>
+          <li><a href="#documentation" class="nav-link">Docs</a></li>
+          <li><a href="#community" class="nav-link">Community</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+      <!-- Scroll Progress Bar -->
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+      <div class="hero-content">
+        <div class="badge">Production Ready</div>
+        <h1 class="hero-title">AI Coding Tools Orchestrator</h1>
+        <p class="hero-subtitle">
+          Five independent systems coordinating AI coding assistants with enterprise-grade
+          agentic infrastructure: specialized agents, skills library, 34+ MCP tools,
+          project-scoped context memory, and Graphify codebase knowledge graphs
+        </p>
+        <div class="hero-buttons">
+          <a href="#quick-start" class="btn btn-primary">Get Started</a>
+          <a href="#agentic-infra" class="btn btn-secondary">Agentic Infra</a>
+          <a
+            href="https://github.com/hoangsonww/AI-Agents-Orchestrator"
+            class="btn btn-secondary"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub Repo</a
+          >
+        </div>
+        <div class="hero-marquee-container">
+          <div class="hero-marquee-track">
+            <span class="tech-badge">Python 3.8+</span>
+            <span class="tech-badge">Vue 3</span>
+            <span class="tech-badge">Nuxt 3</span>
+            <span class="tech-badge">Docker Ready</span>
+            <span class="tech-badge">Kubernetes</span>
+            <span class="tech-badge">Prometheus</span>
+            <span class="tech-badge">MCP Server</span>
+            <span class="tech-badge">FastMCP 3.x</span>
+            <span class="tech-badge">Flask</span>
+            <span class="tech-badge">Socket.IO</span>
+            <span class="tech-badge">Pydantic</span>
+            <span class="tech-badge">TailwindCSS</span>
+            <span class="tech-badge">Monaco Editor</span>
+            <span class="tech-badge">Chart.js</span>
+            <span class="tech-badge">Terraform</span>
+            <span class="tech-badge">GitHub Actions</span>
+            <span class="tech-badge">structlog</span>
+            <span class="tech-badge">Grafana</span>
+            <span class="tech-badge">386+ Tests</span>
+            <span class="tech-badge">6 AI Agents</span>
+            <!-- duplicate for seamless loop -->
+            <span class="tech-badge">Python 3.8+</span>
+            <span class="tech-badge">Vue 3</span>
+            <span class="tech-badge">Nuxt 3</span>
+            <span class="tech-badge">Docker Ready</span>
+            <span class="tech-badge">Kubernetes</span>
+            <span class="tech-badge">Prometheus</span>
+            <span class="tech-badge">MCP Server</span>
+            <span class="tech-badge">FastMCP 3.x</span>
+            <span class="tech-badge">Flask</span>
+            <span class="tech-badge">Socket.IO</span>
+            <span class="tech-badge">Pydantic</span>
+            <span class="tech-badge">TailwindCSS</span>
+            <span class="tech-badge">Monaco Editor</span>
+            <span class="tech-badge">Chart.js</span>
+            <span class="tech-badge">Terraform</span>
+            <span class="tech-badge">GitHub Actions</span>
+            <span class="tech-badge">structlog</span>
+            <span class="tech-badge">Grafana</span>
+            <span class="tech-badge">386+ Tests</span>
+            <span class="tech-badge">6 AI Agents</span>
+            <span class="tech-badge">9 Specialized Agents</span>
+            <span class="tech-badge">24 Skills</span>
+            <span class="tech-badge">34+ MCP Tools</span>
+            <span class="tech-badge">Graph Context</span>
+            <span class="tech-badge">Hybrid Search</span>
+            <span class="tech-badge">Sentence Transformers</span>
+          </div>
+        </div>
+        <div class="hero-highlights">
+          <div class="hero-highlight">
+            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+            <span>Dual Runtime: Orchestrator + Agentic Team</span>
+          </div>
+          <div class="hero-highlight">
+            <i class="fa-solid fa-brain" aria-hidden="true"></i>
+            <span>9 Specialized Agents + 24 Skills + 34+ MCP Tools</span>
+          </div>
+          <div class="hero-highlight">
+            <i class="fa-solid fa-database" aria-hidden="true"></i>
+            <span>Graph Context Memory with Hybrid Search</span>
+          </div>
+          <div class="hero-highlight">
+            <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+            <span>Production Monitoring and Resilience</span>
+          </div>
+          <div class="hero-highlight">
+            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+            <span>Enterprise Security &amp; Audit Logging</span>
+          </div>
+          <div class="hero-highlight">
+            <i class="fa-solid fa-plug" aria-hidden="true"></i>
+            <span>Extensible Plugin &amp; Adapter Architecture</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Overview Section -->
+    <section id="overview" class="section">
+      <div class="container">
+        <h2 class="section-title">Overview</h2>
+        <div class="overview-grid">
+          <div class="overview-card">
+            <div class="card-icon">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <h3>Multi-Agent Collaboration</h3>
+            <p>
+              Coordinate Claude, Codex, Gemini, Copilot, and local model
+              backends with intelligent workflows.
+            </p>
+          </div>
+          <div class="overview-card">
+            <div class="card-icon">
+              <i class="fa-solid fa-laptop-code"></i>
+            </div>
+            <h3>Interactive CLI & Web UI</h3>
+            <p>
+              Choose between a powerful command-line interface or modern web UI
+              with real-time updates.
+            </p>
+          </div>
+          <div class="overview-card">
+            <div class="card-icon">
+              <i class="fa-solid fa-gears"></i>
+            </div>
+            <h3>Configurable Workflows</h3>
+            <p>
+              Define custom collaboration patterns or use built-in workflows for
+              different scenarios, including offline and hybrid execution.
+            </p>
+          </div>
+          <div class="overview-card">
+            <div class="card-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3>Production Ready</h3>
+            <p>
+              Security, monitoring, rate limiting, retry logic, and
+              comprehensive test coverage built-in.
+            </p>
+          </div>
+          <div class="overview-card">
+            <div class="card-icon">
+              <i class="fa-solid fa-brain"></i>
+            </div>
+            <h3>Agentic Infrastructure</h3>
+            <p>
+              9 specialized agents, 24 skills, and 34+ MCP tools provide
+              enterprise-grade support for any development task.
+            </p>
+          </div>
+          <div class="overview-card">
+            <div class="card-icon">
+              <i class="fa-solid fa-database"></i>
+            </div>
+            <h3>Project-Scoped Context Memory</h3>
+            <p>
+              Graph-based memory with hybrid search and project-scoped isolation
+              lets agents learn from past tasks and avoid repeating mistakes.
+            </p>
+          </div>
+          <div class="overview-card">
+            <div class="card-icon">
+              <i class="fa-solid fa-share-nodes"></i>
+            </div>
+            <h3>Graphify</h3>
+            <p>
+              Turn any directory into a queryable knowledge graph. AST-based code
+              analysis for 19 languages, REST API, interactive HTML visualization,
+              and multi-format export (JSON, GraphML, DOT, Markdown, Obsidian vault).
+            </p>
+          </div>
+          <div class="overview-card">
+            <div class="card-icon">
+              <i class="fa-solid fa-gem"></i>
+            </div>
+            <h3>Obsidian Vault Export</h3>
+            <p>
+              Export code graphs and context memory as
+              <a href="https://obsidian.md" target="_blank">Obsidian</a> vaults.
+              Pre-configured graph view with color-coded node types, [[wikilinks]],
+              and YAML frontmatter - across all three graph systems.
+            </p>
+          </div>
+          <div class="overview-card">
+            <div class="card-icon">
+              <i class="fa-solid fa-people-group"></i>
+            </div>
+            <h3>Agentic Team Runtime</h3>
+            <p>
+              Multi-role team collaboration with free inter-agent communication,
+              lead-gated responses, configurable turn limits, and live
+              communication graphs.
+            </p>
+          </div>
+        </div>
+
+        <div class="architecture-description" style="margin-top: 1.25rem">
+          <p>
+            The project is organized into five standalone systems - Orchestrator,
+            Agentic Team, MCP Server, Context Dashboard, and Graphify - and is
+            built to coordinate real coding workflows across Claude, Codex,
+            Gemini, Copilot, and local backends. Orchestrator drives step-based
+            execution and fallback, Agentic Team runs role-based collaboration,
+            MCP Server exposes automation tools, Context Dashboard surfaces
+            memory/telemetry, and Graphify builds AST-powered knowledge graphs
+            across 19 programming languages.
+          </p>
+          <div class="local-model-note">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+            <p>
+              <strong>Local model note:</strong> Local adapters are fully wired
+              into routing/offline/fallback flows, but they currently return text
+              outputs only and do not directly edit files. They are best for
+              offline drafting, review, and continuity fallback.
+            </p>
+          </div>
+        </div>
+
+        <!-- Simple Workflow Diagram -->
+        <div class="diagram-container">
+          <h3 class="diagram-title">How It Works</h3>
+          <pre class="mermaid">
+graph LR
+    A[User Request] --> B[AI Orchestrator]
+    B --> C{Offline Mode?}
+    C -->|Yes| D[Route to Local Agent by type]
+    C -->|No| E[Route to Cloud or Local Agent]
+    D --> F[Execute Workflow Step]
+    E --> F
+    F --> G{Step Success?}
+    G -->|Yes| H[Next Step]
+    G -->|Recoverable failure| I[Fallback Agent]
+    I --> H
+    H --> J[Final Output + Files]
+
+    style A fill:#3b82f6,stroke:#3b82f6,color:#fff
+    style B fill:#2563eb,stroke:#2563eb,color:#fff
+    style D fill:#10b981,stroke:#10b981,color:#fff
+    style E fill:#60a5fa,stroke:#60a5fa,color:#fff
+    style I fill:#60a5fa,stroke:#60a5fa,color:#fff
+    style J fill:#10b981,stroke:#059669,color:#fff
+                </pre
+          >
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">6</div>
+            <div class="stat-label">AI Agent Adapters</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">52</div>
+            <div class="stat-label">Python Modules</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">386</div>
+            <div class="stat-label">Automated Tests</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">34+</div>
+            <div class="stat-label">MCP Tools</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">7</div>
+            <div class="stat-label">Workflows</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Independent Systems</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">9</div>
+            <div class="stat-label">Specialized Agents</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">24</div>
+            <div class="stat-label">Reusable Skills</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">10</div>
+            <div class="stat-label">Node Types</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">12</div>
+            <div class="stat-label">Edge Types</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section section-dark">
+      <div class="container">
+        <h2 class="section-title">Core Features</h2>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
+            <h3>Multi-Agent Collaboration</h3>
+            <p>Coordinate multiple AI assistants with specialized roles:</p>
+            <ul class="feature-list">
+              <li><strong>Codex:</strong> Initial implementation</li>
+              <li><strong>Gemini:</strong> Code review & analysis</li>
+              <li><strong>Claude:</strong> Refinement & documentation</li>
+              <li><strong>Copilot:</strong> Alternative suggestions</li>
+              <li>
+                <strong>Ollama/llama.cpp:</strong> Local offline execution
+              </li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-hard-drive"></i>
+            </div>
+            <h3>Offline + Local LLM Support</h3>
+            <ul class="feature-list">
+              <li>Run local-only workflows with <code>--offline</code></li>
+              <li>Dynamic agent keys resolved by <code>type</code></li>
+              <li>
+                Supported local types: <code>ollama</code>,
+                <code>llamacpp</code>, <code>localai</code>,
+                <code>text-generation-webui</code>
+              </li>
+              <li>Built-in cloud-to-local fallback routing</li>
+              <li>CLI local model lifecycle: status/list/pull/remove</li>
+              <li>
+                Limitation: local adapters return text output only and do not
+                directly edit files
+              </li>
+              <li>
+                Best use: offline drafting/review and cloud-to-local fallback;
+                use CLI agents for direct file edits
+              </li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-terminal"></i></div>
+            <h3>Interactive Shell</h3>
+            <ul class="feature-list">
+              <li>REPL-style conversation interface</li>
+              <li>Smart follow-up detection</li>
+              <li>Full readline support & history</li>
+              <li>Session save/restore</li>
+              <li>Colored output with Rich</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-window-maximize"></i>
+            </div>
+            <h3>Modern Web UI</h3>
+            <ul class="feature-list">
+              <li>Vue 3 with Composition API</li>
+              <li>Real-time updates via Socket.IO</li>
+              <li>Monaco code editor (VS Code)</li>
+              <li>Pinia state management</li>
+              <li>File management & downloads</li>
+              <li>Conversation mode toggle</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <h3>Monitoring, Metrics & Reports</h3>
+            <ul class="feature-list">
+              <li>Prometheus metrics integration</li>
+              <li>Structured logging (structlog)</li>
+              <li>Health & readiness checks</li>
+              <li>Auto-generated execution reports (JSON)</li>
+              <li>Interactive HTML dashboard with Chart.js</li>
+              <li>Agent performance & workflow analytics</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3>Security Features</h3>
+            <ul class="feature-list">
+              <li>Input validation & sanitization</li>
+              <li>Rate limiting (token bucket)</li>
+              <li>Audit logging</li>
+              <li>Secret management</li>
+              <li>Security scanning (Bandit)</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+            <h3>Performance</h3>
+            <ul class="feature-list">
+              <li>Async execution support</li>
+              <li>Multi-layer caching</li>
+              <li>Connection pooling</li>
+              <li>Retry logic with backoff</li>
+              <li>Circuit breaker pattern</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-ship"></i></div>
+            <h3>Deployment Options</h3>
+            <ul class="feature-list">
+              <li>Docker & Docker Compose</li>
+              <li>Kubernetes manifests</li>
+              <li>Systemd service files</li>
+              <li>CI/CD with GitHub Actions</li>
+              <li>Multi-environment configs</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-screwdriver-wrench"></i>
+            </div>
+            <h3>Code Quality</h3>
+            <ul class="feature-list">
+              <li>Pylint 10.00/10 (zero warnings)</li>
+              <li>386+ tests (pytest)</li>
+              <li>15 pre-commit hooks passing</li>
+              <li>Black + isort + flake8 + MyPy</li>
+              <li>Type hints with Pydantic</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-plug"></i></div>
+            <h3>MCP Server (Model Context Protocol)</h3>
+            <ul class="feature-list">
+              <li>FastMCP 3.x - 34+ tools, 2 resources</li>
+              <li>Claude Desktop integration (stdio)</li>
+              <li>Remote access via HTTP transport</li>
+              <li>Both engines accessible from any MCP client</li>
+              <li>Python client wrappers included</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+            <h3>Graph Context Memory</h3>
+            <ul class="feature-list">
+              <li>SQLite + FTS5 graph database</li>
+              <li>10 node types, 12 edge types</li>
+              <li>Hybrid search (BM25 + semantic)</li>
+              <li>Sentence transformer embeddings</li>
+              <li>Auto-storage of tasks &amp; mistakes</li>
+              <li>Obsidian vault export with graph view</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-user-tie"></i></div>
+            <h3>Specialized Agents &amp; Skills</h3>
+            <ul class="feature-list">
+              <li>9 domain-specific agents (Claude + Codex)</li>
+              <li>24 reusable skills across 6 categories</li>
+              <li>10 domain-specific rules per platform</li>
+              <li>Web, API, Security, DevOps, AI/ML, DB</li>
+              <li>Extensible YAML/TOML configuration</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-share-nodes"></i>
+            </div>
+            <h3>Graphify</h3>
+            <ul class="feature-list">
+              <li>AST analysis for 19 languages via tree-sitter grammars</li>
+              <li>SQLite + FTS5 graph store with WAL mode</li>
+              <li>REST API (34+ endpoints) with Flask</li>
+              <li>Interactive HTML visualization (vis.js)</li>
+              <li>Multi-format export: JSON, GraphML, DOT, Markdown, Obsidian</li>
+              <li>File watcher for live incremental rebuilds</li>
+              <li>God-node detection &amp; hotspot analysis</li>
+              <li>Thread-safe, project-scoped, enterprise-grade</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-gem"></i></div>
+            <h3>Obsidian Integration</h3>
+            <ul class="feature-list">
+              <li>Export all 3 graph systems as <a href="https://obsidian.md" target="_blank">Obsidian</a> vaults</li>
+              <li>[[Wikilinks]] between nodes - classes, tasks, decisions</li>
+              <li>YAML frontmatter with type, tags, importance, timestamps</li>
+              <li>Pre-configured <code>.obsidian/graph.json</code> color groups</li>
+              <li>_Index.md Map of Content with stats &amp; category links</li>
+              <li>Dark theme &amp; core plugins auto-enabled</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-people-group"></i></div>
+            <h3>Agentic Team Runtime</h3>
+            <ul class="feature-list">
+              <li>5 specialist roles with free inter-role communication</li>
+              <li>Team Lead gatekeeping for final responses</li>
+              <li>Configurable turn limits &amp; escalation safety</li>
+              <li>Live communication graph &amp; timeline UI</li>
+              <li>Independent context memory &amp; fallback routing</li>
+              <li>Dedicated REPL &amp; web studio interface</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agentic Infrastructure Section -->
+    <section id="agentic-infra" class="section">
+      <div class="container">
+        <h2 class="section-title">Agentic Infrastructure</h2>
+
+        <div class="architecture-description">
+          <p>
+            Beyond the core engines, we provide enterprise-grade infrastructure
+            that empowers AI agents to accomplish any development task effectively.
+            This includes specialized agents, reusable skills, MCP tools, and
+            persistent context memory with project-scoped isolation.
+          </p>
+        </div>
+
+        <!-- Agentic Infrastructure Diagram -->
+        <div class="diagram-container">
+          <h3 class="diagram-title">Infrastructure Overview</h3>
+          <pre class="mermaid">
+graph TB
+    subgraph "🧠 Agentic Infrastructure"
+        direction TB
+
+        subgraph AGENTS["Specialized Agents (9)"]
+            WEB[Web Frontend]
+            API[Backend API]
+            SEC[Security]
+            OPS[DevOps]
+            ML[AI/ML]
+            DB[Database]
+        end
+
+        subgraph SKILLS["Skills Library (22)"]
+            DEV[Development]
+            TEST[Testing]
+            SECS[Security Skills]
+            DEVOPS[DevOps Skills]
+            AIML[AI/ML Skills]
+            DOCS[Documentation]
+        end
+
+        subgraph TOOLS["MCP Tools (34+)"]
+            CODE[Code Analysis]
+            SCAN[Security Scan]
+            TTOOLS[Testing]
+            DTOOLS[DevOps]
+            CTX[Context Memory]
+        end
+
+        subgraph CONTEXT["Graph Context System"]
+            GRAPH[(SQLite + FTS5)]
+            SEARCH[Hybrid Search]
+            EMBED[Embeddings]
+        end
+    end
+
+    AGENTS --> SKILLS
+    SKILLS --> TOOLS
+    TOOLS --> CONTEXT
+          </pre>
+        </div>
+
+        <!-- Infrastructure Components -->
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-user-tie"></i></div>
+            <h3>Specialized Agents (9)</h3>
+            <p>Domain experts for every development area:</p>
+            <ul class="feature-list">
+              <li><strong>web-frontend:</strong> React, Vue, Angular, CSS</li>
+              <li><strong>backend-api:</strong> REST, GraphQL, Microservices</li>
+              <li><strong>security-specialist:</strong> OWASP, Secure Coding</li>
+              <li><strong>devops-infrastructure:</strong> Docker, K8s, CI/CD</li>
+              <li><strong>ai-ml-engineer:</strong> ML Pipelines, RAG, LLMs</li>
+              <li><strong>database-architect:</strong> Schema, Optimization</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-book"></i></div>
+            <h3>Skills Library (22)</h3>
+            <p>Reusable task templates across 6 categories:</p>
+            <ul class="feature-list">
+              <li><strong>Development:</strong> react-components, rest-api-design</li>
+              <li><strong>Testing:</strong> unit-testing, integration-testing, tdd</li>
+              <li><strong>Security:</strong> input-validation, authentication</li>
+              <li><strong>DevOps:</strong> docker, ci-cd, kubernetes</li>
+              <li><strong>AI/ML:</strong> embeddings, llm-integration, rag</li>
+              <li><strong>Docs:</strong> api-docs, architecture-docs</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-toolbox"></i></div>
+            <h3>MCP Tools (34+)</h3>
+            <p>Tools exposed via Model Context Protocol:</p>
+            <ul class="feature-list">
+              <li><strong>Code Analysis:</strong> complexity, patterns, deps</li>
+              <li><strong>Security:</strong> secrets scan, injection detection</li>
+              <li><strong>Testing:</strong> test cases, stubs, coverage</li>
+              <li><strong>DevOps:</strong> dockerfile, compose, CI config</li>
+              <li><strong>Context:</strong> store, search, log mistakes</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+            <h3>Graph Context System</h3>
+            <p>Persistent memory with intelligent retrieval:</p>
+            <ul class="feature-list">
+              <li><strong>10 Node Types:</strong> Task, Mistake, Pattern, etc.</li>
+              <li><strong>12 Edge Types:</strong> RELATED_TO, CAUSED_BY, etc.</li>
+              <li><strong>Hybrid Search:</strong> BM25 + Semantic embeddings</li>
+              <li><strong>Auto-storage:</strong> Tasks stored automatically</li>
+              <li><strong>Learning:</strong> Agents learn from mistakes</li>
+              <li><strong>Project Scoping:</strong> Project-scoped context graphs with multi-project isolation, automatic codebase scanning, and portable configuration via PROJECT_PATH</li>
+              <li><strong>Obsidian Export:</strong> Export context graphs as Obsidian vaults with [[wikilinks]], color-coded graph view, and YAML frontmatter</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+            <h3>Domain Rules (10)</h3>
+            <p>Enforce best practices across domains:</p>
+            <ul class="feature-list">
+              <li><strong>Security:</strong> OWASP, input validation</li>
+              <li><strong>Database:</strong> Indexing, query optimization</li>
+              <li><strong>API Design:</strong> REST/GraphQL standards</li>
+              <li><strong>Performance:</strong> Caching, async patterns</li>
+              <li><strong>AI/ML:</strong> Pipeline best practices</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-expand"></i></div>
+            <h3>Extensibility</h3>
+            <p>Easy to extend with new capabilities:</p>
+            <ul class="feature-list">
+              <li><strong>Add agents:</strong> YAML/TOML definitions</li>
+              <li><strong>Add skills:</strong> Markdown templates</li>
+              <li><strong>Add tools:</strong> Python MCP functions</li>
+              <li><strong>Add rules:</strong> Domain-specific guidelines</li>
+              <li><strong>Plug &amp; play:</strong> No code changes needed</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Context System Diagram -->
+        <div class="diagram-container">
+          <h3 class="diagram-title">Graph Context System</h3>
+          <pre class="mermaid">
+graph TB
+    subgraph "Context System"
+        subgraph "Storage"
+            SQLITE[(SQLite DB)]
+            FTS5[FTS5 Index]
+            VEC[(Vectors)]
+        end
+
+        subgraph "Nodes"
+            CONV[Conversations]
+            TASK[Tasks]
+            MISTAKE[Mistakes]
+            PATTERN[Patterns]
+        end
+
+        subgraph "Search"
+            BM25[BM25]
+            EMBED[Embeddings]
+            RRF[RRF Fusion]
+        end
+
+        subgraph "Export"
+            JSONX[JSON]
+            GMLX[GraphML]
+            OBSX["Obsidian Vault<br/>[[wikilinks]] + graph.json"]
+        end
+    end
+
+    CONV & TASK & MISTAKE --> SQLITE
+    SQLITE --> FTS5
+    EMBED --> VEC
+    BM25 & EMBED --> RRF
+    SQLITE --> JSONX & GMLX & OBSX
+          </pre>
+        </div>
+
+        <div class="cta-container" style="margin-top: 2rem; text-align: center;">
+          <a href="AGENTIC_INFRA.md" class="btn btn-primary" target="_blank">
+            <i class="fa-solid fa-book"></i> Full Agentic Infra Documentation
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="section section-dark">
+      <div class="container">
+        <h2 class="section-title">System Architecture</h2>
+
+        <div class="architecture-description">
+          <p>
+            The AI Orchestrator follows a modular, layered architecture with
+            clear separation of concerns. Five independent systems - Orchestrator,
+            Agentic Team, MCP Server, Context Dashboard, and Graphify - each have
+            their own CLI, config, and adapters with zero cross-imports.
+          </p>
+          <p>
+            Runtime controls include offline detection, fallback management,
+            local model endpoint probing, and Graphify codebase knowledge graphs
+            for deep project understanding.
+          </p>
+        </div>
+
+        <div class="diagram-container">
+          <pre class="mermaid">
+flowchart TB
+    subgraph "User<br/>Interfaces"
+        CLI[CLI Shell<br/>Click + Rich]
+        WebUI[Web UI<br/>Vue 3 + Socket.IO]
+        MCP[MCP Server<br/>FastMCP 3.x]
+    end
+
+    subgraph "Core<br/>Orchestrator"
+        Engine[Orchestration<br/>Engine]
+        Workflow[Workflow<br/>Manager]
+        Config[Config<br/>Manager]
+        Session[Session<br/>Manager]
+        Router[Type-based<br/>Adapter Resolver]
+    end
+
+    subgraph "Cross-Cutting<br/>Concerns"
+        Metrics[Prometheus<br/>Metrics]
+        Cache[Response<br/>Cache]
+        Retry[Retry<br/>Logic]
+        Security[Security<br/>Layer]
+    end
+
+    subgraph "AI<br/>Adapters"
+        Claude[Claude<br/>Adapter]
+        Codex[Codex<br/>Adapter]
+        Gemini[Gemini<br/>Adapter]
+        Copilot[Copilot<br/>Adapter]
+        Ollama[Ollama<br/>Adapter]
+        LlamaCpp[LlamaCpp<br/>Adapter]
+    end
+
+    subgraph "Runtime<br/>Controls"
+        Offline[Offline<br/>Detector]
+        Fallback[Fallback<br/>Manager]
+        ModelStatus[Local Model<br/>Status Probe]
+    end
+
+    subgraph "External AI<br/>Tools"
+        ClaudeCLI[Claude Code<br/>CLI]
+        CodexCLI[OpenAI Codex<br/>CLI]
+        GeminiCLI[Google Gemini<br/>CLI]
+        CopilotCLI[GitHub Copilot<br/>CLI]
+        OllamaAPI[Ollama API<br/>/api/generate]
+        OpenAICompat[Local OpenAI-Compatible API<br/>/v1/completions]
+    end
+
+    CLI --> Engine
+    WebUI --> Engine
+    MCP --> Engine
+    Engine --> Workflow
+    Engine --> Config
+    Engine --> Session
+    Engine --> Router
+    Engine --> Offline
+    Engine --> Fallback
+    WebUI --> ModelStatus
+    ModelStatus --> OllamaAPI
+    ModelStatus --> OpenAICompat
+    Workflow --> Metrics
+    Workflow --> Cache
+    Workflow --> Retry
+    Workflow --> Security
+    Workflow --> Claude
+    Workflow --> Codex
+    Workflow --> Gemini
+    Workflow --> Copilot
+    Workflow --> Ollama
+    Workflow --> LlamaCpp
+    Claude --> ClaudeCLI
+    Codex --> CodexCLI
+    Gemini --> GeminiCLI
+    Copilot --> CopilotCLI
+    Ollama --> OllamaAPI
+    LlamaCpp --> OpenAICompat
+
+    style CLI fill:#3b82f6,stroke:#3b82f6,color:#fff
+    style WebUI fill:#3b82f6,stroke:#3b82f6,color:#fff
+    style Engine fill:#60a5fa,stroke:#60a5fa,color:#fff
+    style Workflow fill:#10b981,stroke:#10b981,color:#fff
+    style Offline fill:#f59e0b,stroke:#d97706,color:#fff
+    style Fallback fill:#a78bfa,stroke:#7c3aed,color:#fff
+                </pre>
+        </div>
+
+        <div class="architecture-layers">
+          <div class="layer-card">
+            <h3>1. Interface Layer</h3>
+            <p>User-facing interfaces: CLI and Web UI</p>
+          </div>
+          <div class="layer-card">
+            <h3>2. Orchestration Layer</h3>
+            <p>Core business logic and workflow management</p>
+          </div>
+          <div class="layer-card">
+            <h3>3. Cross-Cutting Layer</h3>
+            <p>Security, caching, metrics, and logging</p>
+          </div>
+          <div class="layer-card">
+            <h3>4. Adapter Layer</h3>
+            <p>AI agent integrations with uniform interface</p>
+          </div>
+          <div class="layer-card">
+            <h3>5. External Services</h3>
+            <p>Third-party AI CLI tools</p>
+          </div>
+        </div>
+
+        <div class="design-patterns">
+          <h3>Design Patterns</h3>
+          <div class="patterns-grid">
+            <div class="pattern-item">
+              <strong>Adapter Pattern</strong>
+              <p>Uniform interface to different AI CLIs</p>
+            </div>
+            <div class="pattern-item">
+              <strong>Strategy Pattern</strong>
+              <p>Configurable workflow strategies</p>
+            </div>
+            <div class="pattern-item">
+              <strong>Observer Pattern</strong>
+              <p>Real-time UI updates via Socket.IO</p>
+            </div>
+            <div class="pattern-item">
+              <strong>Factory Pattern</strong>
+              <p>Agent and workflow creation</p>
+            </div>
+            <div class="pattern-item">
+              <strong>Singleton Pattern</strong>
+              <p>Config and metrics managers</p>
+            </div>
+            <div class="pattern-item">
+              <strong>Decorator Pattern</strong>
+              <p>Retry, cache, and logging decorators</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agentic Team Section -->
+    <section id="agentic-team" class="section section-dark">
+      <div class="container">
+        <h2 class="section-title">Standalone Agentic Team Runtime</h2>
+
+        <div class="architecture-description">
+          <p>
+            Agentic Team is a separate runtime path from orchestrator workflows.
+            It models a true software team where roles route work to each other
+            at runtime, and only the lead role can finalize the user-facing
+            response.
+          </p>
+          <p>
+            This path has its own backend/UI (<code>agentic_team/orchestrator/ui/app.py</code>),
+            its own CLI REPL (<code>./ai-orchestrator agentic-shell</code>),
+            dedicated validation, and live communication graph/timeline
+            streaming.
+          </p>
+        </div>
+
+        <div class="diagram-container">
+          <h3 class="diagram-title">Runtime Separation and Role Routing</h3>
+          <pre class="mermaid">
+flowchart LR
+    subgraph Orchestrator Path
+      OCLI[ai-orchestrator run/shell] --> OCORE[orchestrator.core]
+      OCORE --> OWF[predefined workflow steps]
+    end
+
+    subgraph Agentic Team Path
+      AUI[agentic_team/orchestrator/ui/app.py]
+      ASHELL[ai-orchestrator agentic-shell]
+      AUI --> AENGINE[agentic_team.engine]
+      ASHELL --> AENGINE
+      AENGINE --> PM[project_manager]
+      PM --> SA[software_architect]
+      PM --> SD[software_developer]
+      PM --> QA[qa_engineer]
+      PM --> DO[devops_engineer]
+      SA --> SD
+      SD --> QA
+      SD --> DO
+      QA --> PM
+      DO --> PM
+      PM --> USER[final response to user]
+    end
+
+    style OCLI fill:#3b82f6,stroke:#3b82f6,color:#fff
+    style OCORE fill:#2563eb,stroke:#2563eb,color:#fff
+    style AENGINE fill:#10b981,stroke:#10b981,color:#fff
+    style PM fill:#f59e0b,stroke:#d97706,color:#fff
+    style USER fill:#60a5fa,stroke:#60a5fa,color:#fff
+          </pre>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-brain"></i></div>
+            <h3>True Runtime Routing</h3>
+            <ul class="feature-list">
+              <li>Any role can route to any team role at runtime</li>
+              <li>
+                Decision output supports <code>message</code> and
+                <code>finalize</code>
+              </li>
+              <li>Non-lead finalize attempts are normalized to lead handoff</li>
+              <li>Invalid destinations are rerouted to lead safely</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-tower-broadcast"></i>
+            </div>
+            <h3>Live Communications</h3>
+            <ul class="feature-list">
+              <li>
+                Socket events: <code>team_turn</code>,
+                <code>team_communication</code>, <code>progress_log</code>
+              </li>
+              <li>
+                Directed live graph with edge counts and latest path highlight
+              </li>
+              <li>
+                Readable communication stream panel in dedicated UI section
+              </li>
+              <li>Session snapshots preserve turn and communication history</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3>Config + Validation Gate</h3>
+            <ul class="feature-list">
+              <li>Guided config editor for <code>agentic_team.roles</code></li>
+              <li>Role-to-agent mappings validated before every run</li>
+              <li>Missing/unavailable mappings block execution early</li>
+              <li>Defaults are merged when team config is incomplete</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-sliders"></i>
+            </div>
+            <h3>Production Controls</h3>
+            <ul class="feature-list">
+              <li>Execution IDs, timestamps, duration, and turn stats</li>
+              <li>Fallback manager integration for recoverable failures</li>
+              <li>Repeat-route escalation protection to lead role</li>
+              <li>Runtime settings for message and routing safety limits</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-history"></i>
+            </div>
+            <h3>Context Integration</h3>
+            <ul class="feature-list">
+              <li>Auto-stores tasks in graph context memory</li>
+              <li>Retrieves relevant past context before execution</li>
+              <li>Learns from mistakes across sessions</li>
+              <li>Pattern recognition for recurring issues</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-diagram-project"></i>
+            </div>
+            <h3>Multi-Turn Orchestration</h3>
+            <ul class="feature-list">
+              <li>Complex multi-step task decomposition</li>
+              <li>Role-based specialization per turn</li>
+              <li>Automatic handoff with context preservation</li>
+              <li>Configurable turn limits and timeouts</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="workflow-table" style="margin-top: 2rem">
+          <table>
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Purpose</th>
+                <th>Typical Outgoing Handoffs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>project_manager</strong></td>
+                <td>Lead, planning, gating final response</td>
+                <td>architect, developer, QA, DevOps, or finalize to user</td>
+              </tr>
+              <tr>
+                <td><strong>software_architect</strong></td>
+                <td>Architecture and constraints</td>
+                <td>developer or PM</td>
+              </tr>
+              <tr>
+                <td><strong>software_developer</strong></td>
+                <td>Implementation</td>
+                <td>QA, DevOps, or PM</td>
+              </tr>
+              <tr>
+                <td><strong>qa_engineer</strong></td>
+                <td>Validation and regressions</td>
+                <td>developer or PM</td>
+              </tr>
+              <tr>
+                <td><strong>devops_engineer</strong></td>
+                <td>Runtime and deployability</td>
+                <td>developer or PM</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="diagram-container">
+          <h3 class="diagram-title">Example Communication Sequence</h3>
+          <pre class="mermaid">
+sequenceDiagram
+    participant PM as project_manager (claude)
+    participant DEV as software_developer (codex)
+    participant QA as qa_engineer (gemini)
+    participant USER as user
+
+    PM->>DEV: action=message<br/>"Implement endpoint + tests"
+    DEV->>QA: action=message<br/>"Implementation complete, validate"
+    QA->>PM: action=message<br/>"Validation passed"
+    PM->>USER: action=finalize<br/>"Ready to ship"
+          </pre>
+        </div>
+
+        <div class="example-usage">
+          <h3>Agentic Team Run Commands</h3>
+          <pre><code># Start standalone UI backend
+./start-agentic-ui.sh
+
+# Start standalone REPL
+./ai-orchestrator agentic-shell
+
+# Inspect team mappings in REPL
+/team
+/validate
+
+# Full docs (protocol, examples, failure handling)
+open AGENTIC_TEAM.md</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Graphify Section -->
+    <section id="graphify" class="section">
+      <div class="container">
+        <h2 class="section-title">Graphify - Codebase Knowledge Graphs</h2>
+
+        <div class="architecture-description">
+          <p>
+            The fifth standalone system in the project. Graphify turns any
+            directory into a queryable knowledge graph using deterministic AST
+            analysis - no LLM required for code. It supports 19 programming
+            languages via tree-sitter grammars, provides a full REST API with
+            34+ endpoints, interactive HTML visualization, Obsidian vault
+            export with color-coded graph view, and multi-format export. Built
+            for enterprise-grade production use with thread-safe SQLite + FTS5
+            storage, file watching for incremental rebuilds, and project-scoped
+            isolation.
+          </p>
+        </div>
+
+        <!-- Architecture Diagram -->
+        <div class="diagram-container">
+          <h3 class="diagram-title">Graphify Architecture</h3>
+          <pre class="mermaid">
+graph TB
+    subgraph Input["Input Layer"]
+        CLI["CLI (Click)"]
+        API["REST API (Flask)"]
+        Watch["File Watcher"]
+    end
+
+    subgraph Core["Core Engine"]
+        Scanner["Scanner"]
+        Cache["SHA-256 Cache"]
+        Graph["GraphStore (SQLite + FTS5)"]
+    end
+
+    subgraph Analyzers["Language Analyzers (19 languages)"]
+        PY["Python"]
+        JS["JavaScript"]
+        TS["TypeScript"]
+        GO["Go"]
+        RS["Rust"]
+        JV["Java"]
+        MORE["C, C++, Ruby, C#, Kotlin, Scala, PHP, Swift, Lua, Zig, Elixir, ObjC"]
+    end
+
+    subgraph Output["Output Layer"]
+        HTML["HTML Visualization (vis.js)"]
+        JSON["JSON Export"]
+        GML["GraphML Export"]
+        DOT["DOT / Graphviz"]
+        MD["Markdown Report"]
+        OBS["Obsidian Vault"]
+    end
+
+    CLI --> Scanner
+    API --> Graph
+    Watch --> Scanner
+    Scanner --> Cache
+    Scanner --> Analyzers
+    Analyzers --> Graph
+    Graph --> Output
+          </pre>
+        </div>
+
+        <div class="overview-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-code"></i>
+            </div>
+            <h3>19-Language AST Analysis</h3>
+            <ul class="feature-list">
+              <li>Tree-sitter grammars for deterministic parsing</li>
+              <li>Extracts classes, functions, imports, call graphs</li>
+              <li>Rationale comments (WHY, HACK, NOTE, TODO)</li>
+              <li>Docstrings, decorators, and type annotations</li>
+              <li>Zero LLM cost - fully local analysis</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-database"></i>
+            </div>
+            <h3>Enterprise Graph Store</h3>
+            <ul class="feature-list">
+              <li>SQLite with WAL mode for concurrent reads</li>
+              <li>FTS5 full-text search on all node content</li>
+              <li>Thread-local connections for safety</li>
+              <li>SHA-256 file caching - only re-analyze changed files</li>
+              <li>Project-scoped isolation with deterministic IDs</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-globe"></i>
+            </div>
+            <h3>REST API (34+ Endpoints)</h3>
+            <ul class="feature-list">
+              <li>Full CRUD for nodes, edges, and projects</li>
+              <li>Search, query, and graph traversal endpoints</li>
+              <li>Analytics: god nodes, hotspots, communities</li>
+              <li>Snapshot management and health checks</li>
+              <li>CORS support with configurable origins</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-chart-network" style="font-size: inherit"></i>
+              <i class="fa-solid fa-eye"></i>
+            </div>
+            <h3>Visualization &amp; Export</h3>
+            <ul class="feature-list">
+              <li>Interactive HTML graph with vis.js - click, search, filter</li>
+              <li><strong>Obsidian vault export</strong> with [[wikilinks]], typed folders, and graph-view color groups</li>
+              <li>JSON export for downstream tooling</li>
+              <li>GraphML for Gephi / yEd</li>
+              <li>DOT format for Graphviz rendering</li>
+              <li>Markdown report with god nodes and statistics</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-rotate"></i>
+            </div>
+            <h3>Incremental &amp; Watch Mode</h3>
+            <ul class="feature-list">
+              <li>File watcher detects changes and triggers rebuilds</li>
+              <li>SHA-256 cache skips unchanged files on re-scans</li>
+              <li>Configurable ignore patterns (.graphifyignore)</li>
+              <li>Debounced batch processing for rapid edits</li>
+              <li>Background-safe with proper signal handling</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-magnifying-glass-chart"></i>
+            </div>
+            <h3>Graph Intelligence</h3>
+            <ul class="feature-list">
+              <li>God-node detection - highest-degree concepts</li>
+              <li>Hotspot analysis - files with most connections</li>
+              <li>Shortest-path queries between any two nodes</li>
+              <li>Subgraph extraction for focused analysis</li>
+              <li>Comprehensive project statistics and reports</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-gem"></i>
+            </div>
+            <h3>Obsidian Vault Export</h3>
+            <ul class="feature-list">
+              <li>Export code graphs as <a href="https://obsidian.md" target="_blank">Obsidian</a> vaults</li>
+              <li>[[Wikilinks]] between nodes - classes, functions, files, tests</li>
+              <li>YAML frontmatter with type, language, tags, line ranges</li>
+              <li>Pre-configured <code>.obsidian/graph.json</code> with color-coded node types</li>
+              <li>_Index.md Map of Content with stats and category links</li>
+              <li>Dark theme &amp; core plugins auto-enabled out of the box</li>
+              <li>Also available on Orchestrator &amp; Agentic Team context graphs</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-shield-check"></i>
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3>Production Hardening</h3>
+            <ul class="feature-list">
+              <li>Schema migrations (v1→v2→v3) - automatic upgrades on open</li>
+              <li>Thread-local SQLite connections for concurrency safety</li>
+              <li>Input validation with bounded parameters (max 10,000 nodes)</li>
+              <li>Path traversal protection on all file operations</li>
+              <li>Structured exception hierarchy - 12 typed error classes</li>
+              <li>WAL mode for non-blocking reads during writes</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <h3>Analytics &amp; Reporting</h3>
+            <ul class="feature-list">
+              <li>Scan metrics - duration, cache rates, per-analyzer timing</li>
+              <li>Graph snapshots &amp; diffing - track evolution over time</li>
+              <li>Community detection for module clustering</li>
+              <li>Complexity hotspot scoring across files</li>
+              <li>Comprehensive project statistics dashboard</li>
+              <li>Historical trend tracking for graph growth</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="example-usage">
+          <h3>Graphify Usage</h3>
+          <pre><code># Scan a project directory
+graphify scan /path/to/project
+
+# Search the knowledge graph
+graphify search "authentication" --limit 20
+
+# Query connections between concepts
+graphify query "What connects UserAuth to Database?"
+
+# Find shortest path between nodes
+graphify find-path "AuthController" "DatabasePool"
+
+# Generate a full report
+graphify report /path/to/project
+
+# Export to multiple formats
+graphify export --format json --output graph.json
+graphify export --format html --output graph.html
+graphify export --format graphml --output graph.graphml
+
+# Export as Obsidian vault for interactive graph exploration
+graphify export obsidian /path/to/project --output ./code-vault
+# → Open ./code-vault in Obsidian, press Ctrl/Cmd+G for graph view
+
+# Start the REST API server
+graphify serve --port 5000
+
+# Watch for file changes and rebuild incrementally
+graphify watch /path/to/project
+
+# Detect god nodes (highest connectivity)
+graphify god-nodes --limit 10
+
+# Analyze hotspots (most-connected files)
+graphify hotspots --limit 10</code></pre>
+        </div>
+      </div>
+    </section>
+
+     <!-- Screenshots Section -->
+    <section id="screenshots" class="section">
+      <div class="container">
+        <h2 class="section-title">Screenshots</h2>
+        <p class="showcase-lead">
+          Selected product views from the repository screenshot set to give a
+          quick visual tour before diving into architecture and implementation
+          details.
+        </p>
+        <div class="overview-grid showcase-grid">
+          <a
+            class="overview-card showcase-card"
+            href="docs/images/ui.png"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="docs/images/ui.png"
+              alt="Main orchestrator web UI screenshot"
+              loading="lazy"
+              onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src=this.src.replace('/images/','/img/');}"
+            />
+            <h3>
+              <i class="fa-solid fa-window-maximize" aria-hidden="true"></i>
+              Web UI Dashboard
+            </h3>
+            <p>
+              Workflow controls, live updates, file management, and editor
+              integration in one interface.
+            </p>
+          </a>
+          <a
+            class="overview-card showcase-card"
+            href="docs/images/agentic-team.png"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="docs/images/agentic-team.png"
+              alt="Agentic team runtime communication UI screenshot"
+              loading="lazy"
+              onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src=this.src.replace('/images/','/img/');}"
+            />
+            <h3>
+              <i class="fa-solid fa-users-gear" aria-hidden="true"></i>
+              Agentic Team Runtime
+            </h3>
+            <p>
+              Role routing, communication graph, and turn timeline for
+              multi-role execution.
+            </p>
+          </a>
+          <a
+            class="overview-card showcase-card"
+            href="docs/images/interactive.png"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="docs/images/interactive.png"
+              alt="Interactive shell screenshot"
+              loading="lazy"
+              onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src=this.src.replace('/images/','/img/');}"
+            />
+            <h3>
+              <i class="fa-solid fa-terminal" aria-hidden="true"></i>
+              Interactive Shell
+            </h3>
+            <p>
+              Conversation-first command flow for incremental implementation and
+              follow-up tasks.
+            </p>
+          </a>
+          <a
+            class="overview-card showcase-card"
+            href="docs/images/cli-3.png"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="docs/images/cli-3.png"
+              alt="CLI execution output screenshot"
+              loading="lazy"
+              onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src=this.src.replace('/images/','/img/');}"
+            />
+            <h3>
+              <i class="fa-solid fa-server" aria-hidden="true"></i>
+              CLI Execution Pipeline
+            </h3>
+            <p>
+              Structured orchestration output showing workflow progress and
+              generated artifacts.
+            </p>
+          </a>
+          <a
+            class="overview-card showcase-card"
+            href="docs/images/graph.png"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="docs/images/graph.png"
+              alt="Context graph visualization dashboard screenshot"
+              loading="lazy"
+              onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src=this.src.replace('/images/','/img/');}"
+            />
+            <h3>
+              <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+              Context Graph Dashboard
+            </h3>
+            <p>
+              Interactive knowledge graph visualization with node inspection,
+              analytics charts, and hybrid search across both systems.
+            </p>
+          </a>
+
+          <a
+            class="overview-card showcase-card"
+            href="docs/images/mcp.png"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="docs/images/mcp.png"
+              alt="MCP Tools interactive REPL screenshot"
+              loading="lazy"
+              onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src=this.src.replace('/images/','/img/');}"
+            />
+            <h3>
+              <i class="fa-solid fa-plug" aria-hidden="true"></i>
+              MCP Tools REPL
+            </h3>
+            <p>
+              Interactive MCP console for exploring and testing 34+ tools
+              across both orchestrator and agentic team engines.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section id="quick-start" class="section section-dark">
+      <div class="container">
+        <h2 class="section-title">Quick Start</h2>
+
+        <div class="quick-start-steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Clone Repository</h3>
+              <pre><code>git clone &lt;repository-url&gt;
+cd AI-Coding-Tools-Collaborative</code></pre>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Install Dependencies</h3>
+              <pre><code>pip install -r requirements.txt
+chmod +x ai-orchestrator</code></pre>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Verify Installation</h3>
+              <pre><code>./ai-orchestrator --help
+./ai-orchestrator agents</code></pre>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h3>Start Interactive Shell</h3>
+              <pre><code>./ai-orchestrator shell</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="example-usage">
+          <h3>Local/Offline Quick Start</h3>
+          <pre><code># Start local backend (example: Ollama)
+ollama serve
+ollama pull codellama:13b
+
+# Check local backend and model status
+./ai-orchestrator models status
+
+# Run local-only workflow
+./ai-orchestrator run "Build a Python CLI todo app" --workflow offline-default --offline</code></pre>
+        </div>
+
+        <div class="prerequisites">
+          <h3>Prerequisites</h3>
+          <ul>
+            <li><strong>Python 3.8+</strong> - Core runtime</li>
+            <li><strong>Node.js 20+</strong> - For Web UI (optional)</li>
+            <li>
+              <strong>At least one AI CLI</strong> - Claude, Codex, Gemini, or
+              Copilot
+            </li>
+            <li>
+              <strong>Optional local backend</strong> - Ollama or any
+              OpenAI-compatible local server for offline/hybrid runs
+            </li>
+            <li>
+              <strong>Docker</strong> - For containerized deployment (optional)
+            </li>
+          </ul>
+        </div>
+
+        <div class="example-usage">
+          <h3>Example Usage</h3>
+          <pre><code># Start interactive shell
+./ai-orchestrator shell
+
+orchestrator (default) &gt; create a REST API for user management
+[OK] Task completed successfully!
+[FILES] Generated Files:
+  - api/routes.py
+  - api/models.py
+
+orchestrator (default) &gt; add JWT authentication
+[TIP] Detected as follow-up to previous task
+✓ Authentication added!
+
+orchestrator (default) &gt; /save user-api-project
+✓ Session saved!</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workflows Section -->
+    <section id="workflows" class="section">
+      <div class="container">
+        <h2 class="section-title">Available Workflows</h2>
+
+        <div class="workflow-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Workflow</th>
+                <th>Agents</th>
+                <th>Iterations</th>
+                <th>Use Case</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>default</strong></td>
+                <td>Codex → Gemini → Claude</td>
+                <td>3</td>
+                <td>Production-quality code with review</td>
+              </tr>
+              <tr>
+                <td><strong>quick</strong></td>
+                <td>Codex only</td>
+                <td>1</td>
+                <td>Fast prototyping and iteration</td>
+              </tr>
+              <tr>
+                <td><strong>thorough</strong></td>
+                <td>Codex → Copilot → Gemini → Claude → Gemini</td>
+                <td>5</td>
+                <td>Mission-critical or security-sensitive</td>
+              </tr>
+              <tr>
+                <td><strong>review-only</strong></td>
+                <td>Gemini → Claude</td>
+                <td>2</td>
+                <td>Analyzing existing code</td>
+              </tr>
+              <tr>
+                <td><strong>document</strong></td>
+                <td>Claude → Gemini</td>
+                <td>2</td>
+                <td>Generating documentation</td>
+              </tr>
+              <tr>
+                <td><strong>offline-default</strong></td>
+                <td>local-code → local-instruct</td>
+                <td>2</td>
+                <td>Local-only execution in offline/air-gapped setups</td>
+              </tr>
+              <tr>
+                <td><strong>hybrid</strong></td>
+                <td>local-code → claude (fallback local-instruct)</td>
+                <td>2</td>
+                <td>Local draft with cloud review and local failover</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="workflow-diagram">
+          <h3>Workflow Execution Flow</h3>
+          <pre class="mermaid">
+graph TD
+    START([Start]) --> LOAD[Load Workflow Config]
+    LOAD --> NORM[Normalize legacy and steps formats]
+    NORM --> VALIDATE[Validate workflow and agent availability]
+    VALIDATE --> INIT[Initialize adapters by type]
+    INIT --> ITER{Iteration &lt; Max?}
+
+    ITER -->|Yes| STEP[Execute step with primary agent]
+    STEP --> OK{Success?}
+    OK -->|Yes| CTX[Update context]
+    OK -->|No recoverable| FB[Run configured fallback]
+    FB --> CTX
+    OK -->|No non-recoverable| FAIL[Record step failure]
+    FAIL --> CTX
+    CTX --> CHECK{Stop criteria met?}
+
+    CHECK -->|No| ITER
+    CHECK -->|Yes| AGG[Aggregate iteration outputs]
+    ITER -->|No| AGG
+
+    AGG --> REPORT[Generate final result]
+    REPORT --> END([End])
+
+    style START fill:#3b82f6,stroke:#3b82f6,color:#fff
+    style END fill:#10b981,stroke:#10b981,color:#fff
+    style FB fill:#a78bfa,stroke:#7c3aed,color:#fff
+                </pre
+          >
+        </div>
+
+        <div class="custom-workflow">
+          <h3>Custom Workflows</h3>
+          <p>
+            Define your own workflows in
+            <code style="color: #60a5fa">orchestrator/config/agents.yaml</code>:
+          </p>
+          <pre><code>agents:
+  my-custom-llama:
+    type: llamacpp
+    endpoint: http://localhost:9000
+    offline: true
+    enabled: true
+
+workflows:
+  custom:
+    steps:
+      - agent: "my-custom-llama"
+        role: "implementer"
+      - agent: "gemini"
+        role: "reviewer"
+        fallback: "my-custom-llama"</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="documentation" class="section section-dark">
+      <div class="container">
+        <h2 class="section-title">Documentation</h2>
+
+        <div class="docs-grid">
+          <a href="README.md" class="doc-card">
+            <div class="doc-icon">
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+            <h3>README</h3>
+            <p>Project overview and getting started guide</p>
+          </a>
+
+          <a href="ARCHITECTURE.md" class="doc-card">
+            <div class="doc-icon"><i class="fa-solid fa-sitemap"></i></div>
+            <h3>Architecture</h3>
+            <p>System design, patterns, and components</p>
+          </a>
+
+          <a href="FEATURES.md" class="doc-card">
+            <div class="doc-icon">
+              <i class="fa-solid fa-list-check"></i>
+            </div>
+            <h3>Features</h3>
+            <p>Comprehensive feature documentation</p>
+          </a>
+
+          <a href="AGENTIC_TEAM.md" class="doc-card">
+            <div class="doc-icon">
+              <i class="fa-solid fa-puzzle-piece"></i>
+            </div>
+            <h3>Agentic Team</h3>
+            <p>Standalone runtime, communication protocol, and examples</p>
+          </a>
+
+          <a href="SETUP.md" class="doc-card">
+            <div class="doc-icon"><i class="fa-solid fa-rocket"></i></div>
+            <h3>Setup Guide</h3>
+            <p>Detailed installation and configuration</p>
+          </a>
+
+          <a href="ADD_AGENTS.md" class="doc-card">
+            <div class="doc-icon"><i class="fa-solid fa-plug"></i></div>
+            <h3>Add Agents</h3>
+            <p>Guide for integrating new AI agents</p>
+          </a>
+
+          <a href="DEPLOYMENT.md" class="doc-card">
+            <div class="doc-icon">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <h3>Deployment</h3>
+            <p>Production deployment strategies</p>
+          </a>
+
+          <a href="ORCHESTRATOR.md" class="doc-card">
+            <div class="doc-icon"><i class="fa-solid fa-bullseye"></i></div>
+            <h3>Orchestrator</h3>
+            <p>Workflow-based multi-agent orchestration</p>
+          </a>
+
+          <a href="AGENTIC_INFRA.md" class="doc-card">
+            <div class="doc-icon"><i class="fa-solid fa-brain"></i></div>
+            <h3>Agentic Infrastructure</h3>
+            <p>Specialized agents, skills, MCP tools, context system</p>
+          </a>
+
+          <a href="GRAPHIFY.md" class="doc-card">
+            <div class="doc-icon">
+              <i class="fa-solid fa-share-nodes"></i>
+            </div>
+            <h3>Graphify</h3>
+            <p>Codebase knowledge graph system - architecture, API, and CLI</p>
+          </a>
+
+          <a href="mcp_server/server.py" class="doc-card">
+            <div class="doc-icon"><i class="fa-solid fa-server"></i></div>
+            <h3>MCP Server</h3>
+            <p>FastMCP server - 34+ tools for both engines</p>
+          </a>
+
+          <a href="docs/context-system.md" class="doc-card">
+            <div class="doc-icon"><i class="fa-solid fa-database"></i></div>
+            <h3>Context System</h3>
+            <p>Graph-based memory with hybrid search</p>
+          </a>
+
+          <a href="docs/specialized-agents.md" class="doc-card">
+            <div class="doc-icon"><i class="fa-solid fa-user-tie"></i></div>
+            <h3>Specialized Agents</h3>
+            <p>9 domain-specific agent definitions</p>
+          </a>
+
+          <a href="docs/skills-library.md" class="doc-card">
+            <div class="doc-icon"><i class="fa-solid fa-book"></i></div>
+            <h3>Skills Library</h3>
+            <p>22 reusable skill templates</p>
+          </a>
+        </div>
+
+        <div class="tech-stack">
+          <h3>Technology Stack</h3>
+          <div class="tech-categories">
+            <div class="tech-category">
+              <h4>Core</h4>
+              <ul>
+                <li>Python 3.8+</li>
+                <li>Click (CLI)</li>
+                <li>Rich (Terminal)</li>
+                <li>Pydantic (Validation)</li>
+              </ul>
+            </div>
+            <div class="tech-category">
+              <h4>Web UI</h4>
+              <ul>
+                <li>Vue 3 & Pinia</li>
+                <li>Vite</li>
+                <li>TailwindCSS</li>
+                <li>Monaco Editor</li>
+              </ul>
+            </div>
+            <div class="tech-category">
+              <h4>Backend</h4>
+              <ul>
+                <li>Flask</li>
+                <li>Flask-SocketIO</li>
+                <li>Socket.IO</li>
+                <li>Gunicorn</li>
+              </ul>
+            </div>
+            <div class="tech-category">
+              <h4>Monitoring & Reports</h4>
+              <ul>
+                <li>Prometheus</li>
+                <li>Structlog</li>
+                <li>Grafana</li>
+                <li>Health Checks</li>
+                <li>Report Generator</li>
+                <li>Chart.js Dashboard</li>
+              </ul>
+            </div>
+            <div class="tech-category">
+              <h4>Testing</h4>
+              <ul>
+                <li>Pytest</li>
+                <li>Coverage</li>
+                <li>MyPy</li>
+                <li>Black</li>
+              </ul>
+            </div>
+            <div class="tech-category">
+              <h4>MCP</h4>
+              <ul>
+                <li>FastMCP 3.x</li>
+                <li>stdio + HTTP transports</li>
+                <li>Claude Desktop ready</li>
+                <li>10 tools, 2 resources</li>
+              </ul>
+            </div>
+            <div class="tech-category">
+              <h4>Resilience</h4>
+              <ul>
+                <li>Circuit Breaker</li>
+                <li>Fallback Routing</li>
+                <li>Offline Detection</li>
+                <li>Exponential Backoff</li>
+              </ul>
+            </div>
+            <div class="tech-category">
+              <h4>Deployment</h4>
+              <ul>
+                <li>Docker</li>
+                <li>Kubernetes</li>
+                <li>GitHub Actions</li>
+                <li>Systemd</li>
+              </ul>
+            </div>
+            <div class="tech-category">
+              <h4>Context &amp; Search</h4>
+              <ul>
+                <li>SQLite + FTS5</li>
+                <li>Sentence Transformers</li>
+                <li>BM25 Index</li>
+                <li>RRF Fusion</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community" class="section">
+      <div class="container">
+        <h2 class="section-title">Community & Support</h2>
+
+        <div class="community-grid">
+          <div class="community-card">
+            <div class="community-icon">
+              <i class="fa-solid fa-comments"></i>
+            </div>
+            <h3>GitHub Discussions</h3>
+            <p>Ask questions, share ideas, and connect with other users</p>
+            <a
+              href="https://github.com/hoangsonww/AI-Agents-Orchestrator/discussions"
+              class="community-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Join Discussions →</a
+            >
+          </div>
+
+          <div class="community-card">
+            <div class="community-icon"><i class="fa-solid fa-bug"></i></div>
+            <h3>Issue Tracker</h3>
+            <p>Report bugs, request features, and track development</p>
+            <a
+              href="https://github.com/hoangsonww/AI-Agents-Orchestrator/issues"
+              class="community-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              >View Issues →</a
+            >
+          </div>
+
+          <div class="community-card">
+            <div class="community-icon">
+              <i class="fa-solid fa-handshake"></i>
+            </div>
+            <h3>Contributing</h3>
+            <p>Help improve the project with code, docs, or ideas</p>
+            <a
+              href="https://github.com/hoangsonww/AI-Agents-Orchestrator/blob/main/README.md#contributing"
+              class="community-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Contribution Guide →</a
+            >
+          </div>
+
+          <div class="community-card">
+            <div class="community-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3>Security</h3>
+            <p>Report security vulnerabilities responsibly</p>
+            <a
+              href="docs/security.md"
+              class="community-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Security Policy →</a
+            >
+          </div>
+        </div>
+
+        <div class="contribution-steps">
+          <h3>Quick Contribution Guide</h3>
+          <ol>
+            <li>Fork the repository</li>
+            <li>
+              Create a feature branch:
+              <code>git checkout -b feature/your-feature</code>
+            </li>
+            <li>Make your changes with tests</li>
+            <li>Run checks: <code>make all</code></li>
+            <li>
+              Commit: <code>git commit -m "feat: add amazing feature"</code>
+            </li>
+            <li>Push and create a Pull Request</li>
+          </ol>
+        </div>
+
+        <div class="acknowledgments">
+          <h3>Built With</h3>
+          <div class="marquee-container">
+            <div class="marquee-track">
+              <span>Python</span>
+              <span>Click</span>
+              <span>Rich</span>
+              <span>Pydantic</span>
+              <span>Vue 3</span>
+              <span>Nuxt 3</span>
+              <span>Flask</span>
+              <span>FastMCP</span>
+              <span>Monaco Editor</span>
+              <span>Pinia</span>
+              <span>Prometheus</span>
+              <span>Grafana</span>
+              <span>Docker</span>
+              <span>Kubernetes</span>
+              <span>Terraform</span>
+              <span>structlog</span>
+              <span>Socket.IO</span>
+              <span>TailwindCSS</span>
+              <span>Vite</span>
+              <span>Chart.js</span>
+              <span>HTTPX</span>
+              <span>Tenacity</span>
+              <span>PyYAML</span>
+              <span>Pytest</span>
+              <span>MyPy</span>
+              <span>Black</span>
+              <span>Bandit</span>
+              <span>isort</span>
+              <span>GitHub Actions</span>
+              <span>Mermaid</span>
+              <!-- duplicate set for seamless loop -->
+              <span>Python</span>
+              <span>Click</span>
+              <span>Rich</span>
+              <span>Pydantic</span>
+              <span>Vue 3</span>
+              <span>Nuxt 3</span>
+              <span>Flask</span>
+              <span>FastMCP</span>
+              <span>Monaco Editor</span>
+              <span>Pinia</span>
+              <span>Prometheus</span>
+              <span>Grafana</span>
+              <span>Docker</span>
+              <span>Kubernetes</span>
+              <span>Terraform</span>
+              <span>structlog</span>
+              <span>Socket.IO</span>
+              <span>TailwindCSS</span>
+              <span>Vite</span>
+              <span>Chart.js</span>
+              <span>HTTPX</span>
+              <span>Tenacity</span>
+              <span>PyYAML</span>
+              <span>Pytest</span>
+              <span>MyPy</span>
+              <span>Black</span>
+              <span>Bandit</span>
+              <span>isort</span>
+              <span>GitHub Actions</span>
+              <span>Mermaid</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="section section-dark">
+      <div class="container">
+        <h2 class="section-title">See It In Action</h2>
+
+        <div class="demo-container">
+          <div class="demo-tabs">
+            <button class="demo-tab active" data-tab="cli">CLI Demo</button>
+            <button class="demo-tab" data-tab="ui">Web UI Demo</button>
+            <button class="demo-tab" data-tab="workflow">Workflow Demo</button>
+          </div>
+
+          <div class="demo-content">
+            <div class="demo-panel active" id="cli">
+              <h3>Interactive CLI Shell</h3>
+              <pre><code>$ ./ai-orchestrator shell
+
+Welcome to AI Orchestrator v1.0.0
+Type /help for available commands
+
+orchestrator (default) &gt; create a Python REST API with FastAPI
+
+[AGENT] Executing workflow: default
+[STEP] Step 1/3: Codex (Implementation)
+⏳ Processing...
+
+✓ Implementation complete!
+
+[STEP] Step 2/3: Gemini (Review)
+⏳ Analyzing code...
+
+✓ Review complete! Found 3 suggestions:
+  • Add input validation
+  • Include error handling
+  • Add API documentation
+
+[STEP] Step 3/3: Claude (Refinement)
+⏳ Implementing improvements...
+
+✓ Task completed successfully!
+
+[FILES] Generated Files:
+  - app/main.py (FastAPI app)
+  - app/models.py (Pydantic models)
+  - app/routes.py (API routes)
+  - app/schemas.py (Request/response schemas)
+  - tests/test_api.py (Unit tests)
+  - requirements.txt (Dependencies)
+
+Workspace: ./workspace/session-abc123
+
+orchestrator (default) &gt; add authentication
+[TIP] Detected as follow-up to previous task</code></pre>
+            </div>
+
+            <div class="demo-panel" id="ui">
+              <h3>Modern Web Interface</h3>
+              <p>The Web UI provides a visual interface with:</p>
+              <ul>
+                <li>Real-time progress tracking with live updates</li>
+                <li>Monaco code editor (same as VS Code)</li>
+                <li>Pinia state management</li>
+                <li>File browser and management</li>
+                <li>Conversation mode for iterative development</li>
+                <li>Workflow and iteration visualization</li>
+              </ul>
+              <div class="ui-features">
+                <div class="ui-feature">
+                  <strong>Task Input</strong>
+                  <p>Multi-line textarea with syntax highlighting</p>
+                </div>
+                <div class="ui-feature">
+                  <strong>Live Updates</strong>
+                  <p>Socket.IO for real-time progress</p>
+                </div>
+                <div class="ui-feature">
+                  <strong>Code Editor</strong>
+                  <p>Full Monaco editor with IntelliSense</p>
+                </div>
+                <div class="ui-feature">
+                  <strong>File Management</strong>
+                  <p>View, download, and manage generated files</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="demo-panel" id="workflow">
+              <h3>Workflow Execution</h3>
+              <pre><code># Run with specific workflow
+./ai-orchestrator run "Build authentication system" --workflow thorough
+
+# Custom iterations
+./ai-orchestrator run "Optimize database queries" --max-iterations 5
+
+# With verbose output
+./ai-orchestrator run "Add caching layer" --workflow default --verbose
+
+# Dry run to preview
+./ai-orchestrator run "Refactor code" --dry-run
+
+# Load previous session
+./ai-orchestrator shell --load my-project</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container">
+        <h2>Ready to Get Started?</h2>
+        <p>
+          Join developers using AI Orchestrator to build better software faster
+        </p>
+        <div class="cta-buttons">
+          <a href="#quick-start" class="btn btn-primary btn-large"
+            >Get Started Now</a
+          >
+          <a
+            href="https://github.com/hoangsonww/AI-Agents-Orchestrator"
+            class="btn btn-secondary btn-large"
+            target="_blank"
+            >View on GitHub</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-section">
+            <h4>AI Orchestrator</h4>
+            <p>
+              Production-ready orchestration for collaborative AI coding
+              assistants
+            </p>
+            <p class="footer-version">Version 1.0.0</p>
+          </div>
+
+          <div class="footer-section">
+            <h4>Documentation</h4>
+            <ul>
+              <li><a href="README.md">README</a></li>
+              <li><a href="ARCHITECTURE.md">Architecture</a></li>
+              <li><a href="FEATURES.md">Features</a></li>
+              <li><a href="GRAPHIFY.md">Graphify</a></li>
+              <li><a href="SETUP.md">Setup Guide</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="#quick-start">Quick Start</a></li>
+              <li><a href="#documentation">Documentation</a></li>
+              <li><a href="#demo">Demo</a></li>
+              <li><a href="ADD_AGENTS.md">Add Agents</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h4>Community</h4>
+            <ul>
+            <li>
+              <a
+                href="https://github.com/hoangsonww/AI-Agents-Orchestrator"
+                target="_blank"
+                rel="noopener noreferrer"
+                >GitHub</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/hoangsonww/AI-Agents-Orchestrator/discussions"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Discussions</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/hoangsonww/AI-Agents-Orchestrator/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Issues</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/hoangsonww/AI-Agents-Orchestrator/blob/main/README.md#contributing"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Contributing</a
+              >
+            </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>
+            &copy; <span id="currentYear">2024</span> AI Orchestrator. Licensed
+            under the MIT License.
+          </p>
+          <p>
+            Made with
+            <i class="fa-solid fa-heart footer-heart" aria-hidden="true"></i> by
+            <a
+              href="https://sonnguyenhoang.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Son Nguyen</a
+            >
+            for the AI development community
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="packages/script.js"></script>
+  </body>
+</html>

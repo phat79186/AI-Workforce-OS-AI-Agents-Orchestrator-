@@ -1,0 +1,123 @@
+{
+  "report_type": "config_audit",
+  "report_id": "config_20260404_031141",
+  "generated_at": "2026-04-04T03:11:41.882429+00:00",
+  "agents": {
+    "codex": {
+      "type": "cli",
+      "enabled": true,
+      "role": "implementation",
+      "command": "codex",
+      "endpoint": null,
+      "offline": false,
+      "timeout": 3600,
+      "available": true
+    },
+    "gemini": {
+      "type": "cli",
+      "enabled": true,
+      "role": "review",
+      "command": "gemini",
+      "endpoint": null,
+      "offline": false,
+      "timeout": 3600,
+      "available": true
+    },
+    "claude": {
+      "type": "cli",
+      "enabled": true,
+      "role": "refinement",
+      "command": "claude",
+      "endpoint": null,
+      "offline": false,
+      "timeout": 3600,
+      "available": true
+    },
+    "copilot": {
+      "type": "cli",
+      "enabled": false,
+      "role": "suggestions",
+      "command": "copilot",
+      "endpoint": null,
+      "offline": false,
+      "timeout": 3600,
+      "available": true
+    },
+    "local-code": {
+      "type": "ollama",
+      "enabled": false,
+      "role": null,
+      "command": null,
+      "endpoint": "http://localhost:11434",
+      "offline": true,
+      "timeout": 3600,
+      "available": null
+    },
+    "local-instruct": {
+      "type": "ollama",
+      "enabled": false,
+      "role": null,
+      "command": null,
+      "endpoint": "http://localhost:11434",
+      "offline": true,
+      "timeout": 3600,
+      "available": null
+    },
+    "local-large": {
+      "type": "llamacpp",
+      "enabled": false,
+      "role": null,
+      "command": null,
+      "endpoint": "http://localhost:8080",
+      "offline": true,
+      "timeout": 3600,
+      "available": null
+    }
+  },
+  "workflows": {
+    "default": {
+      "step_count": 3,
+      "agents_used": ["codex", "gemini", "claude"],
+      "task_types": ["implement", "review", "refine"]
+    },
+    "quick": {
+      "step_count": 1,
+      "agents_used": ["codex"],
+      "task_types": ["implement"]
+    },
+    "thorough": {
+      "step_count": 5,
+      "agents_used": ["codex", "copilot", "gemini", "claude", "gemini"],
+      "task_types": ["implement", "suggestions", "review", "refine", "review"]
+    },
+    "review-only": {
+      "step_count": 2,
+      "agents_used": ["gemini", "claude"],
+      "task_types": ["review", "refine"]
+    },
+    "document": {
+      "step_count": 2,
+      "agents_used": ["claude", "gemini"],
+      "task_types": ["document", "review"]
+    },
+    "offline-default": {
+      "step_count": 2,
+      "agents_used": ["local-code", "local-instruct"],
+      "task_types": ["implementer", "reviewer"]
+    },
+    "hybrid": {
+      "step_count": 2,
+      "agents_used": ["local-code", "claude"],
+      "task_types": ["implementer", "reviewer"]
+    }
+  },
+  "settings": {
+    "max_iterations": 3,
+    "output_dir": "./output",
+    "reports_dir": "./reports",
+    "offline_enabled": false,
+    "fallback_enabled": true
+  },
+  "enabled_agent_count": 3,
+  "workflow_count": 7
+}

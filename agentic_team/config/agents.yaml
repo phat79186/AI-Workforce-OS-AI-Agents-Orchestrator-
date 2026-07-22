@@ -1,0 +1,197 @@
+# AI Agent Configuration
+# Configure which AI coding assistants to use and how they should collaborate.
+
+agents:
+  # Cloud agents (CLI-backed)
+  codex:
+    type: cli
+    enabled: true
+    command: "codex"
+    role: "implementation"
+    timeout: 3600
+    description: "Primary implementation agent for writing initial code"
+
+  gemini:
+    type: cli
+    enabled: true
+    command: "gemini"
+    role: "review"
+    timeout: 3600
+    description: "Reviews code for SOLID principles and best practices"
+
+  claude:
+    type: cli
+    enabled: true
+    command: "claude"
+    role: "refinement"
+    timeout: 3600
+    description: "Implements feedback and refines code quality"
+
+  copilot:
+    type: cli
+    enabled: false
+    command: "copilot"
+    role: "suggestions"
+    timeout: 3600
+    description: "Provides alternative implementation suggestions"
+
+  # Local/offline agents (name is user-defined; type selects adapter)
+  local-code:
+    type: ollama
+    enabled: false
+    model: "codellama:13b"
+    endpoint: "http://localhost:11434"
+    offline: true
+    timeout: 3600
+    capabilities: [code, review]
+    description: "Local coding model via Ollama"
+
+  local-instruct:
+    type: ollama
+    enabled: false
+    model: "mistral:7b-instruct"
+    endpoint: "http://localhost:11434"
+    offline: true
+    timeout: 3600
+    capabilities: [general, docs]
+    description: "Local instruction/reasoning model via Ollama"
+
+  local-large:
+    type: llamacpp
+    enabled: false
+    endpoint: "http://localhost:8080"
+    offline: true
+    timeout: 3600
+    capabilities: [code, review, docs]
+    description: "Local llama.cpp/OpenAI-compatible model endpoint"
+
+# Workflow Definitions
+workflows:
+  default:
+    - agent: "codex"
+      task: "implement"
+      description: "Create initial implementation"
+    - agent: "gemini"
+      task: "review"
+      description: "Review for SOLID principles and best practices"
+    - agent: "claude"
+      task: "refine"
+      description: "Implement feedback and improvements"
+
+  quick:
+    - agent: "codex"
+      task: "implement"
+      description: "Quick implementation without review"
+
+  thorough:
+    - agent: "codex"
+      task: "implement"
+      description: "Create initial implementation"
+    - agent: "copilot"
+      task: "suggestions"
+      description: "Get alternative approaches"
+    - agent: "gemini"
+      task: "review"
+      description: "Comprehensive code review"
+    - agent: "claude"
+      task: "refine"
+      description: "Implement all feedback"
+    - agent: "gemini"
+      task: "review"
+      description: "Verify improvements"
+
+  review-only:
+    - agent: "gemini"
+      task: "review"
+      description: "Review existing code"
+    - agent: "claude"
+      task: "refine"
+      description: "Implement improvements"
+
+  document:
+    - agent: "claude"
+      task: "document"
+      description: "Generate comprehensive documentation"
+    - agent: "gemini"
+      task: "review"
+      description: "Review documentation quality"
+
+  offline-default:
+    description: "Local-only workflow for offline development"
+    offline: true
+    steps:
+      - agent: "local-code"
+        role: "implementer"
+      - agent: "local-instruct"
+        role: "reviewer"
+
+  hybrid:
+    description: "Use local for drafts, cloud for final review"
+    steps:
+      - agent: "local-code"
+        role: "implementer"
+      - agent: "claude"
+        role: "reviewer"
+        fallback: "local-instruct"
+
+settings:
+  max_iterations: 3
+  output_dir: "./output"
+  workspace_dir: "./workspace"
+  log_level: "INFO"
+  log_file: "ai-orchestrator.log"
+  create_reports: true
+  reports_dir: "./reports"
+  min_suggestions_threshold: 3
+  colored_output: true
+
+  # Project context — path to the user's project for full codebase awareness.
+  # Set to "" or omit to work in task-only mode (no project scanning).
+  # Override at runtime via PROJECT_PATH environment variable or --project CLI flag.
+  project_path: ""
+
+  # Offline behavior
+  offline:
+    enabled: false
+    auto_detect: true
+
+  # Fallback routing (cloud -> local) on transient network/API errors
+  fallback:
+    enabled: true
+    map:
+      codex: local-code
+      claude: local-instruct
+      gemini: local-instruct
+
+agentic_team:
+  # Team lead role key. Must exist under agentic_team.roles.
+  lead_role: "project_manager"
+  # Maximum free-communication turns before forced stop.
+  max_turns: 12
+  roles:
+    # Role keys should stay snake_case for consistency with the UI/editor.
+    project_manager:
+      title: "Project Manager (Team Lead)"
+      # Pick an enabled + available agent id from top-level `agents`.
+      agent: "claude"
+      responsibilities: "Initiate work, route subtasks dynamically, and decide final readiness."
+    software_architect:
+      title: "Software Architect"
+      agent: "gemini"
+      responsibilities: "Define architecture, interfaces, and technical constraints."
+    software_developer:
+      title: "Software Developer"
+      agent: "codex"
+      responsibilities: "Implement required code changes."
+    qa_engineer:
+      title: "QA Engineer"
+      agent: "gemini"
+      responsibilities: "Validate quality, edge cases, and regressions."
+    devops_engineer:
+      title: "DevOps Engineer"
+      agent: "claude"
+      responsibilities: "Handle deployment/runtime concerns and operational readiness."
+
+# Notes:
+# - If a role agent is set to a disabled/unavailable agent, execution is blocked.
+# - Use the UI Config Studio dropdowns to avoid invalid mappings.

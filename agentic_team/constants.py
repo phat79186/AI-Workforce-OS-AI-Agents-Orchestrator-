@@ -1,0 +1,22 @@
+"""Constants used by the standalone Agentic Team runtime."""
+
+from __future__ import annotations
+
+DEFAULT_TEAM_MAX_TURNS = 12
+DEFAULT_MAX_MESSAGE_CHARS = 5000
+DEFAULT_REPEAT_ROUTE_LIMIT = 3
+MAX_TASK_LENGTH = 50000
+
+ROLE_PROJECT_MANAGER = "project_manager"
+ROLE_SOFTWARE_ARCHITECT = "software_architect"
+ROLE_SOFTWARE_DEVELOPER = "software_developer"
+ROLE_QA_ENGINEER = "qa_engineer"
+ROLE_DEVOPS_ENGINEER = "devops_engineer"
+
+DEFAULT_TEAM_ROLE_ORDER = (
+    ROLE_PROJECT_MANAGER,
+    ROLE_SOFTWARE_ARCHITECT,
+    ROLE_SOFTWARE_DEVELOPER,
+    ROLE_QA_ENGINEER,
+    ROLE_DEVOPS_ENGINEER,
+)

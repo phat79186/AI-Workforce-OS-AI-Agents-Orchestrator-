@@ -1,0 +1,637 @@
+version: 2.1
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Orbs — pre-packaged integrations
+# ─────────────────────────────────────────────────────────────────────────────
+orbs:
+  docker: circleci/docker@2.2.0
+  kubernetes: circleci/kubernetes@1.3.1
+  python: circleci/python@2.1.1
+  node: circleci/node@5.2.0
+  slack: circleci/slack@4.12.1
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Executors
+# ─────────────────────────────────────────────────────────────────────────────
+executors:
+  python-executor:
+    docker:
+      - image: cimg/python:3.11
+    resource_class: medium
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_NO_CACHE_DIR: "1"
+
+  python-310:
+    docker:
+      - image: cimg/python:3.10
+    resource_class: medium
+
+  python-312:
+    docker:
+      - image: cimg/python:3.12
+    resource_class: medium
+
+  node-executor:
+    docker:
+      - image: cimg/node:20.11
+    resource_class: medium
+
+  docker-executor:
+    docker:
+      - image: cimg/base:stable
+    resource_class: medium
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Reusable Commands
+# ─────────────────────────────────────────────────────────────────────────────
+commands:
+  install-python-deps:
+    description: "Install Python dependencies with caching"
+    steps:
+      - restore_cache:
+          keys:
+            - v2-deps-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+            - v2-deps-{{ checksum "requirements.txt" }}-
+            - v2-deps-
+      - run:
+          name: Install Python dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip setuptools wheel
+            pip install -r requirements.txt
+            pip install pytest pytest-cov pytest-timeout black flake8 mypy bandit isort pyupgrade
+            pip install types-PyYAML types-click types-requests
+      - save_cache:
+          key: v2-deps-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+          paths:
+            - venv
+
+  activate-venv:
+    description: "Source the virtual environment"
+    steps:
+      - run:
+          name: Activate venv
+          command: echo 'source venv/bin/activate' >> "$BASH_ENV"
+
+  persist-workspace:
+    description: "Persist workspace for downstream jobs"
+    steps:
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  attach-workspace:
+    description: "Attach workspace from upstream jobs"
+    steps:
+      - attach_workspace:
+          at: .
+      - activate-venv
+
+  notify-slack-success:
+    steps:
+      - slack/notify:
+          event: pass
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "✅ Pipeline Passed",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project*: AI Coding Tools" },
+                    { "type": "mrkdwn", "text": "*Branch*: ${CIRCLE_BRANCH}" },
+                    { "type": "mrkdwn", "text": "*Build*: #${CIRCLE_BUILD_NUM}" },
+                    { "type": "mrkdwn", "text": "*Commit*: ${CIRCLE_SHA1:0:7}" }
+                  ]
+                }
+              ]
+            }
+
+  notify-slack-failure:
+    steps:
+      - slack/notify:
+          event: fail
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "❌ Pipeline Failed",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project*: AI Coding Tools" },
+                    { "type": "mrkdwn", "text": "*Branch*: ${CIRCLE_BRANCH}" },
+                    { "type": "mrkdwn", "text": "*Build*: #${CIRCLE_BUILD_NUM}" },
+                    { "type": "mrkdwn", "text": "*Commit*: ${CIRCLE_SHA1:0:7}" }
+                  ]
+                }
+              ]
+            }
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Jobs
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+  # ── Lint & Format ──────────────────────────────────────────────────────────
+  lint-and-format:
+    executor: python-executor
+    steps:
+      - checkout
+      - install-python-deps
+      - activate-venv
+      - run:
+          name: "Black — format check"
+          command: black --check orchestrator/ agentic_team/ mcp_server/ context_dashboard/ scripts/ tests/
+      - run:
+          name: "isort — import order check"
+          command: isort --check-only orchestrator/ agentic_team/ mcp_server/ context_dashboard/ scripts/ tests/
+      - run:
+          name: "Flake8 — lint"
+          command: flake8 orchestrator/ agentic_team/ mcp_server/ context_dashboard/ scripts/ tests/
+      - persist-workspace
+
+  # ── Type Check ─────────────────────────────────────────────────────────────
+  type-check:
+    executor: python-executor
+    steps:
+      - checkout
+      - install-python-deps
+      - activate-venv
+      - run:
+          name: "MyPy — type check"
+          command: mypy orchestrator/ agentic_team/ mcp_server/ context_dashboard/ --ignore-missing-imports
+
+  # ── Security Scan ──────────────────────────────────────────────────────────
+  security-scan:
+    executor: python-executor
+    steps:
+      - checkout
+      - install-python-deps
+      - activate-venv
+      - run:
+          name: "Bandit — security lint"
+          command: |
+            bandit -r orchestrator/ agentic_team/ mcp_server/ context_dashboard/ \
+              -c pyproject.toml \
+              -f json -o bandit-report.json || true
+      - run:
+          name: "pip-audit — dependency vulnerability scan"
+          command: |
+            pip install pip-audit
+            pip-audit --format=json --output=pip-audit-report.json || true
+      - store_artifacts:
+          path: bandit-report.json
+      - store_artifacts:
+          path: pip-audit-report.json
+
+  # ── Unit Tests (Python 3.11 — primary) ─────────────────────────────────────
+  test:
+    executor: python-executor
+    steps:
+      - checkout
+      - install-python-deps
+      - activate-venv
+      - run:
+          name: "Seed context graphs"
+          command: python scripts/seed_context_graphs.py || true
+      - run:
+          name: "pytest — unit tests"
+          command: |
+            pytest tests/ \
+              --override-ini="addopts=" \
+              -q --timeout=30 \
+              -m "not integration and not slow" \
+              --cov=orchestrator \
+              --cov=agentic_team \
+              --cov=mcp_server \
+              --cov=context_dashboard \
+              --cov-report=xml:coverage.xml \
+              --cov-report=html:htmlcov \
+              --junitxml=test-results/junit.xml
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: htmlcov
+          destination: coverage-html
+      - store_artifacts:
+          path: coverage.xml
+
+  # ── Test Matrix — Python 3.10 ──────────────────────────────────────────────
+  test-py310:
+    executor: python-310
+    steps:
+      - checkout
+      - install-python-deps
+      - activate-venv
+      - run:
+          name: "pytest — Python 3.10"
+          command: |
+            pytest tests/ \
+              --override-ini="addopts=" \
+              -q --timeout=30 \
+              -m "not integration and not slow"
+
+  # ── Test Matrix — Python 3.12 ──────────────────────────────────────────────
+  test-py312:
+    executor: python-312
+    steps:
+      - checkout
+      - install-python-deps
+      - activate-venv
+      - run:
+          name: "pytest — Python 3.12"
+          command: |
+            pytest tests/ \
+              --override-ini="addopts=" \
+              -q --timeout=30 \
+              -m "not integration and not slow"
+
+  # ── Frontend Build — Orchestrator UI ───────────────────────────────────────
+  build-frontend-orchestrator:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages:
+          app-dir: orchestrator/ui/frontend
+          pkg-manager: npm
+      - run:
+          name: "Build Orchestrator UI"
+          working_directory: orchestrator/ui/frontend
+          command: npm run build 2>/dev/null || echo "Build script not configured — skipping"
+      - store_artifacts:
+          path: orchestrator/ui/frontend/dist
+          destination: orchestrator-ui
+
+  # ── Frontend Build — Agentic Team UI ───────────────────────────────────────
+  build-frontend-agentic:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages:
+          app-dir: agentic_team/ui/frontend
+          pkg-manager: npm
+      - run:
+          name: "Build Agentic Team UI"
+          working_directory: agentic_team/ui/frontend
+          command: npm run build 2>/dev/null || echo "Build script not configured — skipping"
+      - store_artifacts:
+          path: agentic_team/ui/frontend/dist
+          destination: agentic-team-ui
+
+  # ── MCP Server Validation ──────────────────────────────────────────────────
+  validate-mcp:
+    executor: python-executor
+    steps:
+      - checkout
+      - install-python-deps
+      - activate-venv
+      - run:
+          name: "Validate MCP server imports"
+          command: python -c "from mcp_server.server import mcp; print(f'MCP server OK — {len(dir(mcp))} attributes')"
+      - run:
+          name: "Validate MCP REPL imports"
+          command: python -c "from mcp_server.repl import MCPRepl; print('MCP REPL OK')"
+      - run:
+          name: "Validate context dashboard"
+          command: python -c "from context_dashboard.app import app; print(f'Dashboard OK — {len(app.url_map._rules)} routes')"
+      - run:
+          name: "Validate context systems"
+          command: |
+            python -c "
+            from orchestrator.context import MemoryManager as OM
+            from agentic_team.context import MemoryManager as AM
+            om, am = OM(), AM()
+            print(f'Orchestrator context: {om.graph_store.get_stats()}')
+            print(f'Agentic Team context: {am.graph_store.get_stats()}')
+            "
+
+  # ── Docker Build ───────────────────────────────────────────────────────────
+  build-docker:
+    executor: docker-executor
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: default
+          docker_layer_caching: true
+      - run:
+          name: "Build Docker image"
+          command: |
+            docker build \
+              --build-arg VERSION=${CIRCLE_SHA1:0:8} \
+              --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+              --build-arg VCS_REF=$CIRCLE_SHA1 \
+              -t ai-coding-tools:${CIRCLE_SHA1:0:8} \
+              -t ai-coding-tools:latest \
+              .
+      - run:
+          name: "Verify Docker image"
+          command: |
+            docker run --rm ai-coding-tools:latest python -c "
+            import orchestrator; import agentic_team; import mcp_server; import context_dashboard
+            print('All modules importable ✓')
+            "
+      - run:
+          name: "Push Docker image"
+          command: |
+            if [ -n "$DOCKER_PASSWORD" ]; then
+              echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+              docker tag ai-coding-tools:${CIRCLE_SHA1:0:8} ${DOCKER_USERNAME}/ai-coding-tools:${CIRCLE_SHA1:0:8}
+              docker tag ai-coding-tools:latest ${DOCKER_USERNAME}/ai-coding-tools:latest
+              docker push ${DOCKER_USERNAME}/ai-coding-tools:${CIRCLE_SHA1:0:8}
+              docker push ${DOCKER_USERNAME}/ai-coding-tools:latest
+            else
+              echo "Docker credentials not configured — skipping push"
+            fi
+
+  # ── Container Security Scan ────────────────────────────────────────────────
+  container-security-scan:
+    executor: docker-executor
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: "Trivy — container vulnerability scan"
+          command: |
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:latest image \
+              --severity HIGH,CRITICAL \
+              --exit-code 0 \
+              --format table \
+              ai-coding-tools:${CIRCLE_SHA1:0:8}
+
+  # ── Deploy to Staging ──────────────────────────────────────────────────────
+  deploy-staging:
+    executor: python-executor
+    steps:
+      - checkout
+      - kubernetes/install-kubectl
+      - run:
+          name: "Deploy all services to staging"
+          command: |
+            echo "$KUBE_CONFIG_STAGING" | base64 -d > kubeconfig
+            export KUBECONFIG=kubeconfig
+            kubectl config use-context staging
+
+            IMAGE="${DOCKER_USERNAME}/ai-coding-tools:${CIRCLE_SHA1:0:8}"
+
+            # Deploy Orchestrator
+            kubectl set image deployment/ai-orchestrator-blue \
+              ai-orchestrator="$IMAGE" -n ai-coding-tools
+            kubectl rollout status deployment/ai-orchestrator-blue \
+              -n ai-coding-tools --timeout=5m
+
+            # Deploy Agentic Team
+            kubectl set image deployment/agentic-team-blue \
+              agentic-team="$IMAGE" -n ai-coding-tools
+            kubectl rollout status deployment/agentic-team-blue \
+              -n ai-coding-tools --timeout=5m
+
+            # Deploy MCP Server
+            kubectl set image deployment/mcp-server \
+              mcp-server="$IMAGE" -n ai-coding-tools
+            kubectl rollout status deployment/mcp-server \
+              -n ai-coding-tools --timeout=3m
+
+            # Deploy Context Dashboard
+            kubectl set image deployment/context-dashboard \
+              context-dashboard="$IMAGE" -n ai-coding-tools
+            kubectl rollout status deployment/context-dashboard \
+              -n ai-coding-tools --timeout=3m
+      - run:
+          name: "Staging health checks"
+          command: |
+            export KUBECONFIG=kubeconfig
+            kubectl config use-context staging
+
+            # Port-forward and health check each service
+            for svc in ai-orchestrator:5001 agentic-team:5002 context-dashboard:5003; do
+              NAME=$(echo $svc | cut -d: -f1)
+              PORT=$(echo $svc | cut -d: -f2)
+              echo "Checking $NAME on :$PORT ..."
+              kubectl exec -n ai-coding-tools deploy/$NAME-blue -- \
+                python -c "import urllib.request; r=urllib.request.urlopen('http://localhost:$PORT/health'); print(r.read().decode())" \
+                2>/dev/null || echo "  ⚠ Health check unavailable (non-blocking)"
+            done
+      - notify-slack-success
+
+  # ── Deploy to Production (blue-green) ──────────────────────────────────────
+  deploy-production-green:
+    executor: python-executor
+    steps:
+      - checkout
+      - kubernetes/install-kubectl
+      - run:
+          name: "Deploy green replicas to production"
+          command: |
+            echo "$KUBE_CONFIG_PROD" | base64 -d > kubeconfig
+            export KUBECONFIG=kubeconfig
+            kubectl config use-context production
+
+            IMAGE="${DOCKER_USERNAME}/ai-coding-tools:${CIRCLE_SHA1:0:8}"
+
+            # Deploy Orchestrator green
+            kubectl set image deployment/ai-orchestrator-green \
+              ai-orchestrator="$IMAGE" -n ai-coding-tools
+            kubectl scale deployment/ai-orchestrator-green --replicas=3 -n ai-coding-tools
+            kubectl rollout status deployment/ai-orchestrator-green \
+              -n ai-coding-tools --timeout=5m
+
+            # Deploy Agentic Team green
+            kubectl set image deployment/agentic-team-green \
+              agentic-team="$IMAGE" -n ai-coding-tools
+            kubectl scale deployment/agentic-team-green --replicas=3 -n ai-coding-tools
+            kubectl rollout status deployment/agentic-team-green \
+              -n ai-coding-tools --timeout=5m
+
+            # Deploy MCP Server green
+            kubectl set image deployment/mcp-server-green \
+              mcp-server="$IMAGE" -n ai-coding-tools
+            kubectl scale deployment/mcp-server-green --replicas=2 -n ai-coding-tools
+            kubectl rollout status deployment/mcp-server-green \
+              -n ai-coding-tools --timeout=3m
+
+            # Deploy Context Dashboard green
+            kubectl set image deployment/context-dashboard-green \
+              context-dashboard="$IMAGE" -n ai-coding-tools
+            kubectl scale deployment/context-dashboard-green --replicas=2 -n ai-coding-tools
+            kubectl rollout status deployment/context-dashboard-green \
+              -n ai-coding-tools --timeout=3m
+
+  # ── Switch Production Traffic ──────────────────────────────────────────────
+  switch-production-traffic:
+    executor: python-executor
+    steps:
+      - checkout
+      - kubernetes/install-kubectl
+      - run:
+          name: "Switch traffic to green"
+          command: |
+            echo "$KUBE_CONFIG_PROD" | base64 -d > kubeconfig
+            export KUBECONFIG=kubeconfig
+            kubectl config use-context production
+
+            # Switch all services to green
+            for SVC in ai-orchestrator-service agentic-team-service mcp-server-service context-dashboard-service; do
+              kubectl patch service "$SVC" \
+                -n ai-coding-tools \
+                -p '{"spec":{"selector":{"version":"green"}}}'
+              echo "  ✓ $SVC → green"
+            done
+
+            echo "Waiting 30s for traffic drain..."
+            sleep 30
+
+            # Scale down blue
+            for DEPLOY in ai-orchestrator-blue agentic-team-blue mcp-server-blue context-dashboard-blue; do
+              kubectl scale deployment/"$DEPLOY" --replicas=0 -n ai-coding-tools 2>/dev/null || true
+              echo "  ✓ $DEPLOY scaled to 0"
+            done
+      - notify-slack-success
+
+  # ── Post-Deploy Smoke Tests ────────────────────────────────────────────────
+  smoke-tests:
+    executor: python-executor
+    steps:
+      - checkout
+      - install-python-deps
+      - activate-venv
+      - run:
+          name: "Run smoke tests"
+          command: |
+            if [ -f scripts/smoke_tests.py ]; then
+              python scripts/smoke_tests.py --environment production
+            else
+              echo "Smoke test script not found — running import validation"
+              python -c "
+              import orchestrator.core.engine
+              import agentic_team.engine
+              import mcp_server.server
+              import context_dashboard.app
+              from orchestrator.context import MemoryManager as OM
+              from agentic_team.context import MemoryManager as AM
+              print('All modules importable ✓')
+              print(f'Orchestrator context: {OM().graph_store.get_stats()[\"total_nodes\"]} nodes')
+              print(f'Agentic Team context: {AM().graph_store.get_stats()[\"total_nodes\"]} nodes')
+              "
+            fi
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Workflows
+# ─────────────────────────────────────────────────────────────────────────────
+workflows:
+  version: 2
+
+  # ── CI: Every push and PR ──────────────────────────────────────────────────
+  build-test-deploy:
+    jobs:
+      # Gate 1 — Code Quality (parallel)
+      - lint-and-format
+      - type-check
+      - security-scan
+
+      # Gate 2 — Tests (after lint passes)
+      - test:
+          requires:
+            - lint-and-format
+      - test-py310:
+          requires:
+            - lint-and-format
+      - test-py312:
+          requires:
+            - lint-and-format
+
+      # Gate 3 — Frontend & MCP validation (parallel with tests)
+      - build-frontend-orchestrator:
+          requires:
+            - lint-and-format
+      - build-frontend-agentic:
+          requires:
+            - lint-and-format
+      - validate-mcp:
+          requires:
+            - lint-and-format
+
+      # Gate 4 — Docker build (after all tests pass)
+      - build-docker:
+          requires:
+            - test
+            - test-py310
+            - test-py312
+            - build-frontend-orchestrator
+            - build-frontend-agentic
+            - validate-mcp
+            - security-scan
+            - type-check
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+
+      # Gate 5 — Container security
+      - container-security-scan:
+          requires:
+            - build-docker
+
+      # Gate 6 — Staging (auto on develop)
+      - deploy-staging:
+          requires:
+            - container-security-scan
+          filters:
+            branches:
+              only: develop
+
+      # Gate 7 — Production (manual approval on main)
+      - hold-for-approval:
+          type: approval
+          requires:
+            - container-security-scan
+          filters:
+            branches:
+              only: main
+
+      - deploy-production-green:
+          requires:
+            - hold-for-approval
+          filters:
+            branches:
+              only: main
+
+      - hold-for-traffic-switch:
+          type: approval
+          requires:
+            - deploy-production-green
+          filters:
+            branches:
+              only: main
+
+      - switch-production-traffic:
+          requires:
+            - hold-for-traffic-switch
+          filters:
+            branches:
+              only: main
+
+      - smoke-tests:
+          requires:
+            - switch-production-traffic
+          filters:
+            branches:
+              only: main

@@ -1,0 +1,45 @@
+{
+  "report_type": "execution_summary",
+  "report_id": "exec_20260404_031147",
+  "generated_at": "2026-04-04T03:11:47.411283+00:00",
+  "task": "Add WebSocket support for real-time notifications",
+  "workflow": "default",
+  "success": false,
+  "iterations": 1,
+  "duration_seconds": 42.0,
+  "available_agents": ["codex", "gemini", "claude"],
+  "total_suggestions": 2,
+  "fallback_count": 0,
+  "steps": [
+    {
+      "agent": "codex",
+      "task_type": "implement",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": ["websocket.py", "connection_manager.py"],
+      "suggestion_count": 1,
+      "fallback_from": null
+    },
+    {
+      "agent": "gemini",
+      "task_type": "review",
+      "success": false,
+      "has_output": false,
+      "error": "TimeoutError: Agent did not respond within 60s",
+      "files_modified": [],
+      "suggestion_count": 0,
+      "fallback_from": null
+    },
+    {
+      "agent": "claude",
+      "task_type": "refine",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": ["websocket.py"],
+      "suggestion_count": 1,
+      "fallback_from": null
+    }
+  ]
+}

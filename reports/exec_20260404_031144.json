@@ -1,0 +1,49 @@
+{
+  "report_type": "execution_summary",
+  "report_id": "exec_20260404_031144",
+  "generated_at": "2026-04-04T03:11:44.092432+00:00",
+  "task": "Build REST API for task management with CRUD operations",
+  "workflow": "default",
+  "success": true,
+  "iterations": 1,
+  "duration_seconds": 25.5,
+  "available_agents": ["codex", "gemini", "claude"],
+  "total_suggestions": 3,
+  "fallback_count": 0,
+  "steps": [
+    {
+      "agent": "codex",
+      "task_type": "implement",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [
+        "routes/tasks.py",
+        "models/task.py",
+        "schemas/task.py"
+      ],
+      "suggestion_count": 2,
+      "fallback_from": null
+    },
+    {
+      "agent": "gemini",
+      "task_type": "review",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [],
+      "suggestion_count": 1,
+      "fallback_from": null
+    },
+    {
+      "agent": "claude",
+      "task_type": "refine",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": ["routes/tasks.py"],
+      "suggestion_count": 0,
+      "fallback_from": null
+    }
+  ]
+}

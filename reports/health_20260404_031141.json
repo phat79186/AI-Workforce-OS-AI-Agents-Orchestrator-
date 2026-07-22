@@ -1,0 +1,65 @@
+{
+  "report_type": "system_health",
+  "report_id": "health_20260404_031141",
+  "generated_at": "2026-04-04T03:11:41.847385+00:00",
+  "overall_status": "unhealthy",
+  "checks": [
+    {
+      "name": "python_version",
+      "status": "healthy",
+      "message": "Python 3.11.7",
+      "details": null,
+      "duration_ms": 0.0019073486328125
+    },
+    {
+      "name": "disk_space",
+      "status": "healthy",
+      "message": "139.60 GB free",
+      "details": {
+        "free_gb": 139.6
+      },
+      "duration_ms": 0.018835067749023438
+    },
+    {
+      "name": "memory",
+      "status": "healthy",
+      "message": "4.10 GB available (74.4% used)",
+      "details": {
+        "available_gb": 4.1,
+        "percent_used": 74.4
+      },
+      "duration_ms": 7.256984710693359
+    },
+    {
+      "name": "config_file",
+      "status": "unhealthy",
+      "message": "Configuration file not found",
+      "details": null,
+      "duration_ms": 0.03266334533691406
+    },
+    {
+      "name": "directories",
+      "status": "healthy",
+      "message": "All required directories exist",
+      "details": {
+        "missing": []
+      },
+      "duration_ms": 0.049114227294921875
+    },
+    {
+      "name": "dependencies",
+      "status": "unhealthy",
+      "message": "Missing dependencies: pyyaml",
+      "details": {
+        "missing": ["pyyaml"]
+      },
+      "duration_ms": 21.95906639099121
+    }
+  ],
+  "system": {
+    "python_version": "3.11.7",
+    "platform": "darwin",
+    "disk_free_gb": 139.6,
+    "disk_total_gb": 460.43
+  }
+}

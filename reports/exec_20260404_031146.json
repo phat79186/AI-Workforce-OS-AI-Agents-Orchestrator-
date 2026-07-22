@@ -1,0 +1,86 @@
+{
+  "report_type": "execution_summary",
+  "report_id": "exec_20260404_031146",
+  "generated_at": "2026-04-04T03:11:46.306144+00:00",
+  "task": "Refactor database layer to support async operations",
+  "workflow": "thorough",
+  "success": true,
+  "iterations": 2,
+  "duration_seconds": 36.5,
+  "available_agents": ["codex", "gemini", "claude"],
+  "total_suggestions": 4,
+  "fallback_count": 0,
+  "steps": [
+    {
+      "agent": "codex",
+      "task_type": "implement",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [
+        "database.py",
+        "models/base.py",
+        "routes/tasks.py",
+        "routes/users.py"
+      ],
+      "suggestion_count": 2,
+      "fallback_from": null
+    },
+    {
+      "agent": "gemini",
+      "task_type": "review",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [],
+      "suggestion_count": 2,
+      "fallback_from": null
+    },
+    {
+      "agent": "claude",
+      "task_type": "refine",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": ["database.py", "config.py", "routes/health.py"],
+      "suggestion_count": 0,
+      "fallback_from": null
+    },
+    {
+      "agent": "codex",
+      "task_type": "implement",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [
+        "services/task_service.py",
+        "services/user_service.py"
+      ],
+      "suggestion_count": 0,
+      "fallback_from": null
+    },
+    {
+      "agent": "gemini",
+      "task_type": "review",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [],
+      "suggestion_count": 0,
+      "fallback_from": null
+    },
+    {
+      "agent": "claude",
+      "task_type": "refine",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [
+        "services/task_service.py",
+        "services/user_service.py"
+      ],
+      "suggestion_count": 0,
+      "fallback_from": null
+    }
+  ]
+}

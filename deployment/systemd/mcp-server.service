@@ -1,0 +1,24 @@
+[Unit]
+Description=AI Coding Tools MCP Server
+Documentation=https://github.com/hoangsonww/AI-Coding-Tools-Collaborative
+After=network.target
+Wants=ai-orchestrator.service agentic-team.service
+
+[Service]
+Type=simple
+User=appuser
+Group=appuser
+WorkingDirectory=/opt/ai-coding-tools
+ExecStart=/opt/ai-coding-tools/venv/bin/python -m mcp_server.server --transport http --port 8000
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+Environment=PYTHONUNBUFFERED=1
+Environment=LOG_LEVEL=INFO
+Environment=PORT=8000
+EnvironmentFile=-/opt/ai-coding-tools/.env
+
+[Install]
+WantedBy=multi-user.target

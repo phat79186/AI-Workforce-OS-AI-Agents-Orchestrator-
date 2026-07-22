@@ -1,0 +1,35 @@
+{
+  "report_type": "execution_summary",
+  "report_id": "exec_20260404_031148",
+  "generated_at": "2026-04-04T03:11:48.517839+00:00",
+  "task": "Generate API documentation with OpenAPI spec",
+  "workflow": "document",
+  "success": true,
+  "iterations": 1,
+  "duration_seconds": 47.5,
+  "available_agents": ["codex", "gemini", "claude"],
+  "total_suggestions": 1,
+  "fallback_count": 0,
+  "steps": [
+    {
+      "agent": "claude",
+      "task_type": "document",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": ["docs/openapi.yaml", "docs/README.md"],
+      "suggestion_count": 1,
+      "fallback_from": null
+    },
+    {
+      "agent": "gemini",
+      "task_type": "review",
+      "success": true,
+      "has_output": true,
+      "error": null,
+      "files_modified": [],
+      "suggestion_count": 0,
+      "fallback_from": null
+    }
+  ]
+}

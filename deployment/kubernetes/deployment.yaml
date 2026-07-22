@@ -1,0 +1,395 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Kubernetes Deployments — AI Coding Tools
+#
+# Two independent Deployments:
+#   ai-orchestrator   → runs orchestrator/ui/app.py   on port 5001
+#   agentic-team      → runs agentic_team/ui/app.py   on port 5002
+#
+# Both use HTTP probes against /health and /ready.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── Orchestrator Deployment ────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-orchestrator
+  labels:
+    app: ai-orchestrator
+    component: orchestrator-ui
+    version: v2.0.0
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-orchestrator
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: ai-orchestrator
+        component: orchestrator-ui
+        version: v2.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: orchestrator-ui
+          image: ghcr.io/your-org/ai-coding-tools:latest
+          imagePullPolicy: Always
+          # Runs orchestrator/ui/app.py (the Dockerfile default CMD)
+          command: ["python", "orchestrator/ui/app.py"]
+
+          ports:
+            - name: http
+              containerPort: 5001
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: PORT
+              value: "5001"
+            - name: ENABLE_METRICS
+              value: "true"
+            - name: METRICS_PORT
+              value: "9090"
+
+          envFrom:
+            - configMapRef:
+                name: ai-orchestrator-config
+            - secretRef:
+                name: ai-orchestrator-secrets
+
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          volumeMounts:
+            - name: orchestrator-config
+              mountPath: /app/orchestrator/config
+              readOnly: true
+            - name: output
+              mountPath: /app/output
+            - name: workspace
+              mountPath: /app/workspace
+            - name: logs
+              mountPath: /app/logs
+            - name: orchestrator-context
+              mountPath: /home/appuser/.ai-orchestrator
+
+      volumes:
+        - name: orchestrator-config
+          configMap:
+            name: ai-orchestrator-config-file
+        - name: output
+          persistentVolumeClaim:
+            claimName: ai-orchestrator-output
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: ai-orchestrator-workspace
+        - name: logs
+          persistentVolumeClaim:
+            claimName: ai-orchestrator-logs
+        - name: orchestrator-context
+          persistentVolumeClaim:
+            claimName: orchestrator-context-data
+
+      restartPolicy: Always
+
+---
+# ── Agentic Team Deployment ────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agentic-team
+  labels:
+    app: agentic-team
+    component: agentic-team-ui
+    version: v2.0.0
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: agentic-team
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: agentic-team
+        component: agentic-team-ui
+        version: v2.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: agentic-team-ui
+          image: ghcr.io/your-org/ai-coding-tools:latest
+          imagePullPolicy: Always
+          command: ["python", "agentic_team/ui/app.py"]
+
+          ports:
+            - name: http
+              containerPort: 5002
+              protocol: TCP
+            - name: metrics
+              containerPort: 9091
+              protocol: TCP
+
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: PORT
+              value: "5002"
+            - name: AGENTIC_UI_BACKEND_PORT
+              value: "5002"
+            - name: ENABLE_METRICS
+              value: "true"
+            - name: METRICS_PORT
+              value: "9091"
+
+          envFrom:
+            - configMapRef:
+                name: agentic-team-config
+            - secretRef:
+                name: agentic-team-secrets
+
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5002
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5002
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          volumeMounts:
+            - name: agentic-team-config
+              mountPath: /app/agentic_team/config
+              readOnly: true
+            - name: output
+              mountPath: /app/output
+            - name: workspace
+              mountPath: /app/workspace
+            - name: logs
+              mountPath: /app/logs
+            - name: agentic-team-context
+              mountPath: /home/appuser/.agentic-team
+
+      volumes:
+        - name: agentic-team-config
+          configMap:
+            name: agentic-team-config-file
+        - name: output
+          persistentVolumeClaim:
+            claimName: agentic-team-output
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: agentic-team-workspace
+        - name: logs
+          persistentVolumeClaim:
+            claimName: agentic-team-logs
+        - name: agentic-team-context
+          persistentVolumeClaim:
+            claimName: agentic-team-context-data
+
+      restartPolicy: Always
+
+---
+# ── MCP Server Deployment ─────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-server
+  labels:
+    app: ai-coding-tools
+    component: mcp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-coding-tools
+      component: mcp-server
+  template:
+    metadata:
+      labels:
+        app: ai-coding-tools
+        component: mcp-server
+    spec:
+      containers:
+      - name: mcp-server
+        image: ai-coding-tools:latest
+        command: ["python", "-m", "mcp_server.server", "--transport", "http", "--port", "8000"]
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        env:
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+      restartPolicy: Always
+
+---
+# ── Context Dashboard Deployment ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: context-dashboard
+  labels:
+    app: ai-coding-tools
+    component: context-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-coding-tools
+      component: context-dashboard
+  template:
+    metadata:
+      labels:
+        app: ai-coding-tools
+        component: context-dashboard
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: context-dashboard
+          image: ghcr.io/your-org/ai-coding-tools:latest
+          imagePullPolicy: Always
+          command: ["python", "-m", "context_dashboard"]
+          ports:
+            - name: http
+              containerPort: 5003
+              protocol: TCP
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: LOG_LEVEL
+              value: "INFO"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5003
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5003
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: orchestrator-context
+              mountPath: /home/appuser/.ai-orchestrator
+            - name: agentic-team-context
+              mountPath: /home/appuser/.agentic-team
+      volumes:
+        - name: orchestrator-context
+          persistentVolumeClaim:
+            claimName: orchestrator-context-data
+        - name: agentic-team-context
+          persistentVolumeClaim:
+            claimName: agentic-team-context-data
+      restartPolicy: Always

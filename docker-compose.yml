@@ -1,0 +1,196 @@
+version: '3.8'
+
+# ──────────────────────────────────────────────────────────────────────────────
+# AI Coding Tools — Docker Compose
+#
+# Core services (always started):
+#   orchestrator-ui    → http://localhost:5001  (orchestrator/ui/app.py)
+#   agentic-team-ui    → http://localhost:5002  (agentic_team/ui/app.py)
+#   context-dashboard  → http://localhost:5003  (context_dashboard)
+#
+# Optional monitoring profile (docker compose --profile monitoring up):
+#   prometheus         → http://localhost:9091
+#   grafana            → http://localhost:3000
+# ──────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Orchestrator UI (port 5001) ─────────────────────────────────────────────
+  orchestrator-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-coding-tools:latest
+    container_name: orchestrator-ui
+    restart: unless-stopped
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - PORT=5001
+      - UI_BACKEND_HOST=0.0.0.0
+      - ENABLE_METRICS=${ENABLE_METRICS:-true}
+      - METRICS_PORT=9090
+    volumes:
+      # Each subsystem's config is embedded inside its own directory; mount as
+      # read-only overlays only when operators need to inject runtime overrides.
+      - ./orchestrator/config:/app/orchestrator/config:ro
+      - ./output:/app/output
+      - ./workspace:/app/workspace
+      - ./reports:/app/reports
+      - ./sessions:/app/sessions
+      - ./logs:/app/logs
+      - orchestrator-context:/home/appuser/.ai-orchestrator
+    ports:
+      - "5001:5001"   # Orchestrator UI backend
+      - "9090:9090"   # Prometheus metrics
+    networks:
+      - ai-tools-network
+    command: ["orchestrator/ui/app.py"]
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5001/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ── Agentic Team UI (port 5002) ─────────────────────────────────────────────
+  agentic-team-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-coding-tools:latest
+    container_name: agentic-team-ui
+    restart: unless-stopped
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - PORT=5002
+      - AGENTIC_UI_BACKEND_PORT=5002
+      - AGENTIC_UI_BACKEND_HOST=0.0.0.0
+      - ENABLE_METRICS=${ENABLE_METRICS:-true}
+      - METRICS_PORT=9091
+    volumes:
+      - ./agentic_team/config:/app/agentic_team/config:ro
+      - ./output:/app/output
+      - ./workspace:/app/workspace
+      - ./reports:/app/reports
+      - ./sessions:/app/sessions
+      - ./logs:/app/logs
+      - agentic-team-context:/home/appuser/.agentic-team
+    ports:
+      - "5002:5002"   # Agentic Team UI backend
+    networks:
+      - ai-tools-network
+    command: ["agentic_team/ui/app.py"]
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5002/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ── MCP Server (port 8000) ──────────────────────────────────────────────────
+  mcp-server:
+    build: .
+    container_name: ai-tools-mcp-server
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    volumes:
+      - orchestrator-context:/home/appuser/.ai-orchestrator
+      - agentic-team-context:/home/appuser/.agentic-team
+    ports:
+      - "8000:8000"
+    networks:
+      - ai-tools-network
+    stdin_open: true
+    tty: true
+    command: ["python", "-m", "mcp_server.server", "--transport", "http", "--port", "8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.settimeout(5); s.connect(('127.0.0.1', 8000)); s.close()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ── Context Dashboard (port 5003) ────────────────────────────────────────────
+  context-dashboard:
+    build: .
+    container_name: ai-tools-context-dashboard
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+      - DASHBOARD_HOST=0.0.0.0
+      - DASHBOARD_PORT=5003
+    volumes:
+      - orchestrator-context:/home/appuser/.ai-orchestrator
+      - agentic-team-context:/home/appuser/.agentic-team
+    ports:
+      - "5003:5003"
+    networks:
+      - ai-tools-network
+    command: ["python", "-m", "context_dashboard"]
+    depends_on:
+      - orchestrator-ui
+      - agentic-team-ui
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5003/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ── Prometheus (monitoring profile) ─────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ai-tools-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9091:9090"
+    networks:
+      - ai-tools-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    profiles:
+      - monitoring
+
+  # ── Grafana (monitoring profile) ─────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ai-tools-grafana
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - ai-tools-network
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    profiles:
+      - monitoring
+
+networks:
+  ai-tools-network:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  orchestrator-context:
+  agentic-team-context:

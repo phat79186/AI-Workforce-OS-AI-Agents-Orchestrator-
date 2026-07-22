@@ -1,0 +1,142 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Kubernetes Services — AI Coding Tools
+#
+# Four Services:
+#   ai-orchestrator          ClusterIP  5001  (HTTP) + 9090 (metrics)
+#   ai-orchestrator-headless ClusterIP/None  5001 (for StatefulSet DNS or direct pod access)
+#   agentic-team             ClusterIP  5002  (HTTP) + 9091 (metrics)
+#   agentic-team-headless    ClusterIP/None  5002 (for StatefulSet DNS or direct pod access)
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── Orchestrator ClusterIP ─────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-orchestrator
+  labels:
+    app: ai-orchestrator
+    component: orchestrator-ui
+spec:
+  type: ClusterIP
+  selector:
+    app: ai-orchestrator
+  ports:
+    - name: http
+      port: 5001
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
+
+---
+# ── Orchestrator Headless (DNS / direct pod discovery) ─────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-orchestrator-headless
+  labels:
+    app: ai-orchestrator
+    component: orchestrator-ui
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: ai-orchestrator
+  ports:
+    - name: http
+      port: 5001
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
+
+---
+# ── Agentic Team ClusterIP ────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: agentic-team
+  labels:
+    app: agentic-team
+    component: agentic-team-ui
+spec:
+  type: ClusterIP
+  selector:
+    app: agentic-team
+  ports:
+    - name: http
+      port: 5002
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9091
+      targetPort: metrics
+      protocol: TCP
+
+---
+# ── Agentic Team Headless (DNS / direct pod discovery) ───────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: agentic-team-headless
+  labels:
+    app: agentic-team
+    component: agentic-team-ui
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: agentic-team
+  ports:
+    - name: http
+      port: 5002
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9091
+      targetPort: metrics
+      protocol: TCP
+
+---
+# ── MCP Server Service ────────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-server
+  labels:
+    app: ai-coding-tools
+    component: mcp-server
+spec:
+  type: ClusterIP
+  selector:
+    app: ai-coding-tools
+    component: mcp-server
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+
+---
+# ── Context Dashboard Service ─────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: context-dashboard
+  labels:
+    app: ai-coding-tools
+    component: context-dashboard
+spec:
+  type: ClusterIP
+  selector:
+    app: ai-coding-tools
+    component: context-dashboard
+  ports:
+    - name: http
+      port: 5003
+      targetPort: 5003
+      protocol: TCP

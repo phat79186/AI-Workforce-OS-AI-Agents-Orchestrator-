@@ -1,0 +1,1636 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Context Graph Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/vis-network@9.1.6/styles/vis-network.min.css"
+    />
+    <script src="https://unpkg.com/vis-network@9.1.6/standalone/umd/vis-network.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+      /* ========== CSS Custom Properties ========== */
+      :root {
+        --bg-base: #0f172a;
+        --bg-surface: #1e293b;
+        --bg-elevated: #273449;
+        --bg-muted: #334155;
+        --border: #334155;
+        --border-subtle: #1e293b;
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --accent: #3b82f6;
+        --accent-light: #60a5fa;
+        --accent-dark: #2563eb;
+        --success: #22c55e;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --purple: #8b5cf6;
+        --cyan: #06b6d4;
+        --pink: #ec4899;
+        --radius: 8px;
+        --radius-lg: 12px;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        --transition: 0.2s ease;
+      }
+
+      /* ========== Reset & Base ========== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-size: 14px;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg-base);
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      a {
+        color: var(--accent-light);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* ========== Scrollbar ========== */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg-base);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--bg-muted);
+        border-radius: 3px;
+      }
+
+      /* ========== Header ========== */
+      .header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+        padding: 0.75rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1.15rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .header-brand svg {
+        flex-shrink: 0;
+      }
+      .system-tabs {
+        display: flex;
+        gap: 2px;
+        background: var(--bg-base);
+        border-radius: var(--radius);
+        padding: 2px;
+      }
+      .system-tab {
+        padding: 0.4rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        background: transparent;
+        border: none;
+        transition: all var(--transition);
+      }
+      .system-tab:hover {
+        color: var(--text-primary);
+      }
+      .system-tab.active {
+        background: var(--accent);
+        color: #fff;
+      }
+      .header-stats {
+        display: flex;
+        gap: 1rem;
+        margin-left: auto;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      .header-stat b {
+        color: var(--text-primary);
+        margin-right: 3px;
+      }
+
+      /* ========== Navigation Tabs ========== */
+      .nav-tabs {
+        display: flex;
+        gap: 0;
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+        padding: 0 1.5rem;
+      }
+      .nav-tab {
+        padding: 0.7rem 1.2rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        border: none;
+        background: none;
+        border-bottom: 2px solid transparent;
+        transition: all var(--transition);
+      }
+      .nav-tab:hover {
+        color: var(--text-primary);
+      }
+      .nav-tab.active {
+        color: var(--accent-light);
+        border-bottom-color: var(--accent);
+      }
+
+      /* ========== Content ========== */
+      .content {
+        padding: 1rem 1.5rem;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ========== Cards ========== */
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        transition: border-color var(--transition);
+      }
+      .card:hover {
+        border-color: var(--bg-muted);
+      }
+      .card-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+      }
+      .card-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+      }
+
+      /* ========== Grid Layouts ========== */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .charts-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      @media (max-width: 768px) {
+        .charts-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ========== Graph Explorer ========== */
+      .graph-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 1rem;
+        height: calc(100vh - 200px);
+        min-height: 500px;
+      }
+      .graph-layout.detail-closed {
+        grid-template-columns: 1fr;
+      }
+      .graph-controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+      }
+      .graph-controls label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+      }
+      .graph-controls input[type="checkbox"] {
+        accent-color: var(--accent);
+      }
+      #graph-container {
+        background: var(--bg-base);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        flex: 1;
+        min-height: 0;
+      }
+      .graph-main {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .detail-panel {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+        overflow-y: auto;
+        display: none;
+      }
+      .detail-panel.open {
+        display: block;
+      }
+      .detail-panel h3 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .detail-close {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .detail-close:hover {
+        background: var(--bg-muted);
+        color: var(--text-primary);
+      }
+      .detail-field {
+        margin-bottom: 0.6rem;
+      }
+      .detail-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.04em;
+      }
+      .detail-value {
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        word-break: break-word;
+        white-space: pre-wrap;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 4px 0;
+      }
+
+      /* ========== Type Badge ========== */
+      .type-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .type-badge.task {
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+      }
+      .type-badge.mistake {
+        background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+      }
+      .type-badge.pattern {
+        background: rgba(34, 197, 94, 0.2);
+        color: #4ade80;
+      }
+      .type-badge.conversation {
+        background: rgba(139, 92, 246, 0.2);
+        color: #a78bfa;
+      }
+      .type-badge.decision {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
+      }
+      .type-badge.code_snippet {
+        background: rgba(6, 182, 212, 0.2);
+        color: #22d3ee;
+      }
+      .type-badge.preference {
+        background: rgba(236, 72, 153, 0.2);
+        color: #f472b6;
+      }
+      .type-badge.file {
+        background: rgba(100, 116, 139, 0.2);
+        color: #94a3b8;
+      }
+      .type-badge.concept {
+        background: rgba(168, 85, 247, 0.2);
+        color: #c084fc;
+      }
+      .type-badge.agent_output {
+        background: rgba(20, 184, 166, 0.2);
+        color: #2dd4bf;
+      }
+
+      /* ========== Search ========== */
+      .search-bar {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .search-bar input,
+      .search-bar select {
+        background: var(--bg-base);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.6rem 0.8rem;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+      }
+      .search-bar input {
+        flex: 1;
+      }
+      .search-bar input:focus,
+      .search-bar select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .search-bar select {
+        min-width: 140px;
+      }
+
+      /* ========== Buttons ========== */
+      .btn {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all var(--transition);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn:hover {
+        background: var(--bg-elevated);
+        border-color: var(--accent);
+      }
+      .btn-primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--accent-dark);
+      }
+      .btn-danger {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+      .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.15);
+      }
+      .btn-success {
+        border-color: var(--success);
+        color: var(--success);
+      }
+      .btn-success:hover {
+        background: rgba(34, 197, 94, 0.15);
+      }
+      .btn-sm {
+        padding: 0.3rem 0.7rem;
+        font-size: 0.8rem;
+      }
+
+      /* ========== Search Results ========== */
+      .result-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+      .result-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-1px);
+      }
+      .result-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.4rem;
+      }
+      .result-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      .result-content {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        max-height: 60px;
+        overflow: hidden;
+      }
+      .result-meta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      /* ========== Management ========== */
+      .mgmt-section {
+        margin-bottom: 1.5rem;
+      }
+      .mgmt-section h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.5rem;
+      }
+      .mgmt-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .mgmt-stat-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      .mgmt-stat-table th,
+      .mgmt-stat-table td {
+        text-align: left;
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .mgmt-stat-table th {
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+      }
+
+      /* ========== Spinner ========== */
+      .spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--bg-muted);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ========== Loading Overlay ========== */
+      .loading-overlay {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.7);
+        border-radius: var(--radius-lg);
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+      .loading-overlay.active {
+        display: flex;
+      }
+
+      /* ========== Empty State ========== */
+      .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-muted);
+      }
+      .empty-state svg {
+        margin-bottom: 1rem;
+        opacity: 0.4;
+      }
+      .empty-state h3 {
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+      }
+      .empty-state p {
+        font-size: 0.85rem;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      /* ========== Toast ========== */
+      .toast-container {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .toast {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+        box-shadow: var(--shadow);
+        animation: slideIn 0.3s ease;
+        max-width: 360px;
+      }
+      .toast.success {
+        border-left: 3px solid var(--success);
+      }
+      .toast.error {
+        border-left: 3px solid var(--danger);
+      }
+      .toast.info {
+        border-left: 3px solid var(--accent);
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* ========== Modal ========== */
+      .modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-backdrop.open {
+        display: flex;
+      }
+      .modal {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        min-width: 360px;
+        max-width: 500px;
+      }
+      .modal h3 {
+        margin-bottom: 0.75rem;
+      }
+      .modal p {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+      }
+
+      /* ========== Chart Containers ========== */
+      .chart-wrapper {
+        position: relative;
+        height: 280px;
+      }
+      .chart-wrapper canvas {
+        max-height: 100%;
+      }
+      .chart-full {
+        height: 220px;
+      }
+
+      /* ========== Vis.js Overrides ========== */
+      div.vis-tooltip {
+        background: var(--bg-elevated) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius) !important;
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        box-shadow: var(--shadow) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ========== Header ========== -->
+    <header class="header">
+      <div class="header-brand">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          style="color: var(--accent)"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"
+          />
+        </svg>
+        <span>Context Graph Dashboard</span>
+      </div>
+      <div class="system-tabs">
+        <button
+          class="system-tab active"
+          onclick="switchSystem('orchestrator')"
+        >
+          Orchestrator
+        </button>
+        <button class="system-tab" onclick="switchSystem('agentic_team')">
+          Agentic Team
+        </button>
+      </div>
+      <div class="header-stats">
+        <span><b id="hdr-nodes">0</b> Nodes</span>
+        <span><b id="hdr-edges">0</b> Edges</span>
+        <span id="hdr-status" style="color: var(--text-muted)">Loading…</span>
+      </div>
+    </header>
+
+    <!-- ========== Nav Tabs ========== -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="graph">⬡ Graph Explorer</button>
+      <button class="nav-tab" data-tab="analytics">📊 Analytics</button>
+      <button class="nav-tab" data-tab="search">🔍 Search</button>
+      <button class="nav-tab" data-tab="management">⚙ Management</button>
+    </nav>
+
+    <!-- ========== Content ========== -->
+    <main class="content">
+      <!-- ===== Tab: Graph Explorer ===== -->
+      <section id="tab-graph" class="tab-panel active">
+        <div class="graph-controls">
+          <label
+            ><input type="checkbox" class="node-filter" value="task" checked />
+            Task</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="node-filter"
+              value="mistake"
+              checked
+            />
+            Mistake</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="node-filter"
+              value="pattern"
+              checked
+            />
+            Pattern</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="node-filter"
+              value="conversation"
+              checked
+            />
+            Conversation</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="node-filter"
+              value="decision"
+              checked
+            />
+            Decision</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="node-filter"
+              value="code_snippet"
+              checked
+            />
+            Code Snippet</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="node-filter"
+              value="preference"
+              checked
+            />
+            Preference</label
+          >
+          <label
+            ><input type="checkbox" class="node-filter" value="file" checked />
+            File</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="node-filter"
+              value="concept"
+              checked
+            />
+            Concept</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="node-filter"
+              value="agent_output"
+              checked
+            />
+            Agent Output</label
+          >
+          <div style="flex: 1"></div>
+          <input
+            type="text"
+            id="graph-search"
+            placeholder="Filter nodes…"
+            style="
+              background: var(--bg-base);
+              border: 1px solid var(--border);
+              border-radius: var(--radius);
+              padding: 4px 8px;
+              color: var(--text-primary);
+              font-size: 0.8rem;
+              width: 160px;
+            "
+          />
+          <button class="btn btn-sm" onclick="fitGraph()" title="Fit to screen">
+            ⊞ Fit
+          </button>
+          <button class="btn btn-sm" onclick="loadGraph()">↻ Reload</button>
+        </div>
+        <div class="graph-layout" id="graph-layout">
+          <div class="graph-main" style="position: relative">
+            <div id="graph-container" style="flex: 1"></div>
+            <div class="loading-overlay" id="graph-loading">
+              <div
+                class="spinner"
+                style="width: 32px; height: 32px; border-width: 3px"
+              ></div>
+            </div>
+          </div>
+          <div class="detail-panel" id="detail-panel">
+            <h3>
+              <span>Node Detail</span>
+              <button class="detail-close" onclick="closeDetail()">✕</button>
+            </h3>
+            <div id="detail-content"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Tab: Analytics ===== -->
+      <section id="tab-analytics" class="tab-panel">
+        <div class="stats-grid" id="analytics-stats"></div>
+        <div class="charts-row">
+          <div class="card">
+            <div class="card-title">Node Type Distribution</div>
+            <div class="chart-wrapper"><canvas id="chart-nodes"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Edge Type Distribution</div>
+            <div class="chart-wrapper"><canvas id="chart-edges"></canvas></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom: 1.5rem">
+          <div class="card-title">Context Growth (Last 30 Days)</div>
+          <div class="chart-wrapper chart-full">
+            <canvas id="chart-growth"></canvas>
+          </div>
+        </div>
+        <div class="charts-row">
+          <div class="card">
+            <div class="card-title">Top Mistakes</div>
+            <div class="chart-wrapper chart-full">
+              <canvas id="chart-mistakes"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Top Patterns</div>
+            <div class="chart-wrapper chart-full">
+              <canvas id="chart-patterns"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Tab: Search ===== -->
+      <section id="tab-search" class="tab-panel">
+        <div class="search-bar">
+          <input
+            type="text"
+            id="search-query"
+            placeholder="Search context graph…"
+            onkeydown="if (event.key === 'Enter') doSearch();"
+          />
+          <select id="search-type">
+            <option value="">All Types</option>
+            <option value="task">Task</option>
+            <option value="mistake">Mistake</option>
+            <option value="pattern">Pattern</option>
+            <option value="conversation">Conversation</option>
+            <option value="decision">Decision</option>
+            <option value="code_snippet">Code Snippet</option>
+            <option value="preference">Preference</option>
+          </select>
+          <button class="btn btn-primary" onclick="doSearch()">Search</button>
+        </div>
+        <div id="search-results"></div>
+      </section>
+
+      <!-- ===== Tab: Management ===== -->
+      <section id="tab-management" class="tab-panel">
+        <div class="mgmt-section">
+          <h3>🧹 Pruning</h3>
+          <div class="mgmt-actions">
+            <button class="btn btn-danger" onclick="confirmPrune('age')">
+              Prune by Age
+            </button>
+            <button class="btn btn-danger" onclick="confirmPrune('duplicates')">
+              Remove Duplicates
+            </button>
+            <button
+              class="btn btn-danger"
+              onclick="confirmPrune('low_importance')"
+            >
+              Prune Low Importance
+            </button>
+          </div>
+        </div>
+        <div class="mgmt-section">
+          <h3>📦 Export / Import</h3>
+          <div class="mgmt-actions">
+            <button class="btn btn-success" onclick="doExport()">
+              ⬇ Export JSON
+            </button>
+            <button
+              class="btn"
+              onclick="document.getElementById('import-file').click()"
+            >
+              ⬆ Import JSON
+            </button>
+            <input
+              type="file"
+              id="import-file"
+              accept=".json"
+              style="display: none"
+              onchange="doImport(this)"
+            />
+          </div>
+        </div>
+        <div class="mgmt-section">
+          <h3>📈 Database Statistics</h3>
+          <div id="mgmt-stats-table"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ========== Toast Container ========== -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ========== Modal ========== -->
+    <div
+      class="modal-backdrop"
+      id="modal-backdrop"
+      onclick="if (event.target === this) closeModal();"
+    >
+      <div class="modal">
+        <h3 id="modal-title">Confirm</h3>
+        <p id="modal-message">Are you sure?</p>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-danger" id="modal-confirm">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ===========================================================================
+   State
+   =========================================================================== */
+      let currentSystem = "orchestrator";
+      let network = null;
+      let charts = {};
+      let allGraphData = { nodes: [], edges: [] };
+      let refreshTimer = null;
+
+      const NODE_COLORS = {
+        task: "#3b82f6",
+        mistake: "#ef4444",
+        pattern: "#22c55e",
+        conversation: "#8b5cf6",
+        decision: "#f59e0b",
+        code_snippet: "#06b6d4",
+        preference: "#ec4899",
+        file: "#64748b",
+        concept: "#a855f7",
+        agent_output: "#14b8a6",
+      };
+
+      /* ===========================================================================
+   Helpers
+   =========================================================================== */
+      function toast(msg, type = "info") {
+        const c = document.getElementById("toast-container");
+        const el = document.createElement("div");
+        el.className = `toast ${type}`;
+        el.textContent = msg;
+        c.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = "0";
+          setTimeout(() => el.remove(), 300);
+        }, 4000);
+      }
+
+      function showModal(title, message, onConfirm) {
+        document.getElementById("modal-title").textContent = title;
+        document.getElementById("modal-message").textContent = message;
+        document.getElementById("modal-backdrop").classList.add("open");
+        const btn = document.getElementById("modal-confirm");
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener("click", () => {
+          closeModal();
+          onConfirm();
+        });
+      }
+      function closeModal() {
+        document.getElementById("modal-backdrop").classList.remove("open");
+      }
+
+      function formatBytes(bytes) {
+        if (bytes === 0) return "0 B";
+        const k = 1024,
+          sizes = ["B", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (bytes / Math.pow(k, i)).toFixed(1) + " " + sizes[i];
+      }
+
+      function truncate(str, len) {
+        if (!str) return "";
+        return str.length > len ? str.substring(0, len) + "…" : str;
+      }
+
+      function setLoading(id, on) {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle("active", on);
+      }
+
+      /* ===========================================================================
+   System Switching
+   =========================================================================== */
+      function switchSystem(system) {
+        currentSystem = system;
+        document.querySelectorAll(".system-tab").forEach((t) => {
+          t.classList.toggle(
+            "active",
+            t.textContent.toLowerCase().replace(/\s+/g, "_") === system,
+          );
+        });
+        loadAll();
+      }
+
+      /* ===========================================================================
+   Tab Navigation
+   =========================================================================== */
+      document.querySelectorAll(".nav-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document
+            .querySelectorAll(".nav-tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-panel")
+            .forEach((p) => p.classList.remove("active"));
+          tab.classList.add("active");
+          document
+            .getElementById("tab-" + tab.dataset.tab)
+            .classList.add("active");
+          if (tab.dataset.tab === "graph" && network)
+            setTimeout(() => network.fit(), 100);
+        });
+      });
+
+      /* ===========================================================================
+   Graph Explorer
+   =========================================================================== */
+      async function loadGraph() {
+        setLoading("graph-loading", true);
+        try {
+          const types = getCheckedTypes();
+          const q =
+            types.length > 0
+              ? `?node_types=${types.join(",")}&limit=300`
+              : "?limit=300";
+          const resp = await fetch(`/api/graph/${currentSystem}${q}`);
+          const data = await resp.json();
+          allGraphData = data;
+          renderGraph(data);
+        } catch (e) {
+          renderEmptyGraph("Failed to load graph data");
+        }
+        setLoading("graph-loading", false);
+      }
+
+      function getCheckedTypes() {
+        return Array.from(
+          document.querySelectorAll(".node-filter:checked"),
+        ).map((cb) => cb.value);
+      }
+
+      function renderGraph(data) {
+        const container = document.getElementById("graph-container");
+        if (!data.nodes.length) {
+          renderEmptyGraph(
+            "No context data yet. Start using the orchestrator to populate the graph.",
+          );
+          return;
+        }
+
+        const filterText = (
+          document.getElementById("graph-search").value || ""
+        ).toLowerCase();
+        const filteredNodes = filterText
+          ? data.nodes.filter((n) =>
+              ((n.title || "") + (n.content || ""))
+                .toLowerCase()
+                .includes(filterText),
+            )
+          : data.nodes;
+
+        const nodeIds = new Set(filteredNodes.map((n) => n.id));
+        const filteredEdges = data.edges.filter(
+          (e) => nodeIds.has(e.source_id) && nodeIds.has(e.target_id),
+        );
+
+        const nodes = new vis.DataSet(
+          filteredNodes.map((n) => ({
+            id: n.id,
+            label: truncate(n.title || n.content || n.id, 30),
+            title: `<b>${n.node_type}</b><br>${truncate(n.content || "", 120)}`,
+            color: {
+              background: NODE_COLORS[n.node_type] || "#64748b",
+              border: "transparent",
+              highlight: { background: "#60a5fa", border: "#3b82f6" },
+            },
+            shape: "dot",
+            size: 8 + (n.importance_score || 0.5) * 18,
+            font: { color: "#e2e8f0", size: 10 },
+          })),
+        );
+
+        const edges = new vis.DataSet(
+          filteredEdges.map((e) => ({
+            from: e.source_id,
+            to: e.target_id,
+            label: e.edge_type || "",
+            arrows: "to",
+            color: { color: "#475569", highlight: "#60a5fa", opacity: 0.7 },
+            font: { size: 8, color: "#64748b", strokeWidth: 0 },
+            smooth: { type: "continuous" },
+          })),
+        );
+
+        const options = {
+          physics: {
+            barnesHut: {
+              gravitationalConstant: -3000,
+              springLength: 150,
+              springConstant: 0.04,
+              damping: 0.09,
+            },
+            stabilization: { iterations: 100, fit: true },
+          },
+          interaction: {
+            hover: true,
+            tooltipDelay: 200,
+            zoomView: true,
+            dragView: true,
+          },
+          nodes: { borderWidth: 0, borderWidthSelected: 2 },
+          edges: { width: 1, selectionWidth: 2 },
+        };
+
+        if (network) network.destroy();
+        network = new vis.Network(container, { nodes, edges }, options);
+        network.on("click", (params) => {
+          if (params.nodes.length > 0) loadNodeDetail(params.nodes[0]);
+        });
+      }
+
+      function renderEmptyGraph(message) {
+        const container = document.getElementById("graph-container");
+        container.innerHTML = `<div class="empty-state" style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+    <h3>No Graph Data</h3>
+    <p>${message}</p>
+  </div>`;
+        if (network) {
+          network.destroy();
+          network = null;
+        }
+      }
+
+      function fitGraph() {
+        if (network)
+          network.fit({
+            animation: { duration: 500, easingFunction: "easeInOutQuad" },
+          });
+      }
+
+      async function loadNodeDetail(nodeId) {
+        const panel = document.getElementById("detail-panel");
+        const content = document.getElementById("detail-content");
+        panel.classList.add("open");
+        document
+          .getElementById("graph-layout")
+          .classList.remove("detail-closed");
+        content.innerHTML = '<div class="spinner"></div>';
+
+        try {
+          const resp = await fetch(`/api/node/${currentSystem}/${nodeId}`);
+          const node = await resp.json();
+          if (node.error) {
+            content.innerHTML = `<p style="color:var(--danger)">${node.error}</p>`;
+            return;
+          }
+
+          let html = `<span class="type-badge ${node.node_type}">${node.node_type}</span>`;
+          html += `<div class="detail-field"><div class="detail-label">Title</div><div class="detail-value">${node.title || "—"}</div></div>`;
+          html += `<div class="detail-field"><div class="detail-label">Content</div><div class="detail-value">${escapeHtml(node.content || "—")}</div></div>`;
+          html += `<div class="detail-field"><div class="detail-label">Importance</div><div class="detail-value">${node.importance_score}</div></div>`;
+          html += `<div class="detail-field"><div class="detail-label">Created</div><div class="detail-value">${node.created_at}</div></div>`;
+          if (node.tags && node.tags.length) {
+            const tags =
+              typeof node.tags === "string" ? JSON.parse(node.tags) : node.tags;
+            html += `<div class="detail-field"><div class="detail-label">Tags</div><div class="detail-value">${tags.map((t) => `<span class="type-badge file">${t}</span>`).join(" ")}</div></div>`;
+          }
+          if (node.edges_from && node.edges_from.length) {
+            html += `<div class="detail-field"><div class="detail-label">Outgoing Edges (${node.edges_from.length})</div><div class="detail-value">${node.edges_from.map((e) => `→ ${e.edge_type} → ${truncate(e.target_id, 12)}`).join("<br>")}</div></div>`;
+          }
+          if (node.edges_to && node.edges_to.length) {
+            html += `<div class="detail-field"><div class="detail-label">Incoming Edges (${node.edges_to.length})</div><div class="detail-value">${node.edges_to.map((e) => `${truncate(e.source_id, 12)} → ${e.edge_type} →`).join("<br>")}</div></div>`;
+          }
+          if (node.metadata && Object.keys(node.metadata).length) {
+            const md =
+              typeof node.metadata === "string"
+                ? JSON.parse(node.metadata)
+                : node.metadata;
+            html += `<div class="detail-field"><div class="detail-label">Metadata</div><div class="detail-value"><pre style="font-size:0.75rem;margin:0;">${JSON.stringify(md, null, 2)}</pre></div></div>`;
+          }
+          content.innerHTML = html;
+        } catch (e) {
+          content.innerHTML = `<p style="color:var(--danger)">Error loading detail</p>`;
+        }
+      }
+
+      function closeDetail() {
+        document.getElementById("detail-panel").classList.remove("open");
+        document.getElementById("graph-layout").classList.add("detail-closed");
+      }
+
+      function escapeHtml(str) {
+        const d = document.createElement("div");
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      // Filter listeners
+      document
+        .querySelectorAll(".node-filter")
+        .forEach((cb) => cb.addEventListener("change", loadGraph));
+      document.getElementById("graph-search").addEventListener("input", () => {
+        if (allGraphData.nodes.length) renderGraph(allGraphData);
+      });
+
+      /* ===========================================================================
+   Analytics
+   =========================================================================== */
+      async function loadAnalytics() {
+        try {
+          const resp = await fetch(`/api/analytics/${currentSystem}`);
+          const data = await resp.json();
+
+          // Stat cards
+          const statsEl = document.getElementById("analytics-stats");
+          statsEl.innerHTML = `
+      <div class="card"><div class="card-title">Total Nodes</div><div class="card-value" style="color:var(--accent)">${data.total_nodes || 0}</div></div>
+      <div class="card"><div class="card-title">Total Edges</div><div class="card-value" style="color:var(--purple)">${data.total_edges || 0}</div></div>
+      <div class="card"><div class="card-title">Avg Importance</div><div class="card-value" style="color:var(--warning)">${data.avg_importance || 0}</div></div>
+      <div class="card"><div class="card-title">DB Size</div><div class="card-value" style="color:var(--success)">${formatBytes(data.db_size_bytes || 0)}</div></div>
+    `;
+
+          // Destroy old charts
+          Object.values(charts).forEach((c) => c.destroy());
+          charts = {};
+
+          const chartColors = [
+            "#3b82f6",
+            "#ef4444",
+            "#22c55e",
+            "#8b5cf6",
+            "#f59e0b",
+            "#06b6d4",
+            "#ec4899",
+            "#64748b",
+            "#a855f7",
+            "#14b8a6",
+            "#f97316",
+            "#84cc16",
+          ];
+          const chartDefaults = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: "#94a3b8", font: { size: 11 } } },
+            },
+          };
+
+          // Node type doughnut
+          const nodeTypes = data.nodes_by_type || {};
+          if (Object.keys(nodeTypes).length) {
+            charts.nodes = new Chart(document.getElementById("chart-nodes"), {
+              type: "doughnut",
+              data: {
+                labels: Object.keys(nodeTypes),
+                datasets: [
+                  {
+                    data: Object.values(nodeTypes),
+                    backgroundColor: chartColors.slice(
+                      0,
+                      Object.keys(nodeTypes).length,
+                    ),
+                    borderWidth: 0,
+                  },
+                ],
+              },
+              options: { ...chartDefaults, cutout: "60%" },
+            });
+          }
+
+          // Edge type doughnut
+          const edgeTypes = data.edges_by_type || {};
+          if (Object.keys(edgeTypes).length) {
+            charts.edges = new Chart(document.getElementById("chart-edges"), {
+              type: "doughnut",
+              data: {
+                labels: Object.keys(edgeTypes),
+                datasets: [
+                  {
+                    data: Object.values(edgeTypes),
+                    backgroundColor: chartColors.slice(
+                      0,
+                      Object.keys(edgeTypes).length,
+                    ),
+                    borderWidth: 0,
+                  },
+                ],
+              },
+              options: { ...chartDefaults, cutout: "60%" },
+            });
+          }
+
+          // Growth line chart
+          const growth = data.growth || [];
+          charts.growth = new Chart(document.getElementById("chart-growth"), {
+            type: "line",
+            data: {
+              labels: growth.map((g) => g.date),
+              datasets: [
+                {
+                  label: "New Nodes",
+                  data: growth.map((g) => g.count),
+                  borderColor: "#3b82f6",
+                  backgroundColor: "rgba(59,130,246,0.1)",
+                  fill: true,
+                  tension: 0.3,
+                  pointRadius: 3,
+                  pointBackgroundColor: "#3b82f6",
+                },
+              ],
+            },
+            options: {
+              ...chartDefaults,
+              scales: {
+                x: {
+                  ticks: { color: "#64748b" },
+                  grid: { color: "rgba(255,255,255,0.04)" },
+                },
+                y: {
+                  ticks: { color: "#64748b" },
+                  grid: { color: "rgba(255,255,255,0.04)" },
+                  beginAtZero: true,
+                },
+              },
+            },
+          });
+
+          // Top mistakes bar
+          const mistakes = data.top_mistakes || [];
+          charts.mistakes = new Chart(
+            document.getElementById("chart-mistakes"),
+            {
+              type: "bar",
+              data: {
+                labels: mistakes.map((m) => truncate(m.title, 25)),
+                datasets: [
+                  {
+                    label: "Importance",
+                    data: mistakes.map((m) => m.score),
+                    backgroundColor: "#ef4444",
+                    borderRadius: 4,
+                  },
+                ],
+              },
+              options: {
+                ...chartDefaults,
+                indexAxis: "y",
+                scales: {
+                  x: {
+                    ticks: { color: "#64748b" },
+                    grid: { color: "rgba(255,255,255,0.04)" },
+                  },
+                  y: {
+                    ticks: { color: "#94a3b8", font: { size: 10 } },
+                    grid: { display: false },
+                  },
+                },
+              },
+            },
+          );
+
+          // Top patterns bar
+          const patterns = data.top_patterns || [];
+          charts.patterns = new Chart(
+            document.getElementById("chart-patterns"),
+            {
+              type: "bar",
+              data: {
+                labels: patterns.map((p) => truncate(p.title, 25)),
+                datasets: [
+                  {
+                    label: "Importance",
+                    data: patterns.map((p) => p.score),
+                    backgroundColor: "#22c55e",
+                    borderRadius: 4,
+                  },
+                ],
+              },
+              options: {
+                ...chartDefaults,
+                indexAxis: "y",
+                scales: {
+                  x: {
+                    ticks: { color: "#64748b" },
+                    grid: { color: "rgba(255,255,255,0.04)" },
+                  },
+                  y: {
+                    ticks: { color: "#94a3b8", font: { size: 10 } },
+                    grid: { display: false },
+                  },
+                },
+              },
+            },
+          );
+        } catch (e) {
+          document.getElementById("analytics-stats").innerHTML =
+            '<div class="empty-state"><h3>Analytics Unavailable</h3><p>Could not load analytics data.</p></div>';
+        }
+      }
+
+      /* ===========================================================================
+   Stats (header + management)
+   =========================================================================== */
+      async function loadStats() {
+        try {
+          const resp = await fetch(`/api/stats/${currentSystem}`);
+          const data = await resp.json();
+          const gs = data.graph_stats || {};
+          document.getElementById("hdr-nodes").textContent =
+            gs.total_nodes || 0;
+          document.getElementById("hdr-edges").textContent =
+            gs.total_edges || 0;
+          document.getElementById("hdr-status").textContent = data.available
+            ? "● Connected"
+            : "○ Unavailable";
+          document.getElementById("hdr-status").style.color = data.available
+            ? "var(--success)"
+            : "var(--danger)";
+
+          // Management table
+          const nbt = gs.nodes_by_type || {};
+          const ebt = gs.edges_by_type || {};
+          let rows = Object.entries(nbt)
+            .map(
+              ([k, v]) =>
+                `<tr><td><span class="type-badge ${k}">${k}</span></td><td>Node</td><td>${v}</td></tr>`,
+            )
+            .join("");
+          rows += Object.entries(ebt)
+            .map(([k, v]) => `<tr><td>${k}</td><td>Edge</td><td>${v}</td></tr>`)
+            .join("");
+          document.getElementById("mgmt-stats-table").innerHTML = rows
+            ? `<table class="mgmt-stat-table"><thead><tr><th>Type</th><th>Category</th><th>Count</th></tr></thead><tbody>${rows}</tbody></table>`
+            : '<div class="empty-state"><p>No statistics available.</p></div>';
+        } catch (e) {
+          document.getElementById("hdr-status").textContent = "○ Error";
+          document.getElementById("hdr-status").style.color = "var(--danger)";
+        }
+      }
+
+      /* ===========================================================================
+   Search
+   =========================================================================== */
+      async function doSearch() {
+        const q = document.getElementById("search-query").value.trim();
+        if (!q) return;
+        const type = document.getElementById("search-type").value;
+        const params = new URLSearchParams({ q, limit: 20 });
+        if (type) params.set("node_types", type);
+
+        const container = document.getElementById("search-results");
+        container.innerHTML =
+          '<div style="text-align:center;padding:2rem;"><div class="spinner"></div></div>';
+
+        try {
+          const resp = await fetch(`/api/search/${currentSystem}?${params}`);
+          const data = await resp.json();
+          if (!data.results || !data.results.length) {
+            container.innerHTML =
+              '<div class="empty-state"><h3>No Results</h3><p>Try different search terms or filters.</p></div>';
+            return;
+          }
+          container.innerHTML = data.results
+            .map(
+              (r) => `
+      <div class="result-card" onclick="showSearchDetail('${r.id}')">
+        <div class="result-header">
+          <span class="type-badge ${r.node_type}">${r.node_type}</span>
+          <span class="result-title">${escapeHtml(r.title || "Untitled")}</span>
+        </div>
+        <div class="result-content">${escapeHtml(truncate(r.content, 200))}</div>
+        <div class="result-meta">
+          <span>Importance: ${r.importance_score}</span>
+          <span>Score: ${(r.score || 0).toFixed(3)}</span>
+          <span>${r.created_at || ""}</span>
+        </div>
+      </div>
+    `,
+            )
+            .join("");
+        } catch (e) {
+          container.innerHTML =
+            '<div class="empty-state"><p>Search failed.</p></div>';
+        }
+      }
+
+      function showSearchDetail(nodeId) {
+        document.querySelector('[data-tab="graph"]').click();
+        loadNodeDetail(nodeId);
+      }
+
+      /* ===========================================================================
+   Management
+   =========================================================================== */
+      function confirmPrune(strategy) {
+        const labels = {
+          age: "Prune by Age (>90 days)",
+          duplicates: "Remove Duplicate Nodes",
+          low_importance: "Prune Low Importance (<0.3)",
+        };
+        showModal(
+          "Confirm Pruning",
+          `This will permanently delete nodes. Strategy: ${labels[strategy]}. Continue?`,
+          () => executePrune(strategy),
+        );
+      }
+
+      async function executePrune(strategy) {
+        const bodies = {
+          age: { strategy: "age", max_age_days: 90 },
+          duplicates: { strategy: "duplicates", similarity_threshold: 0.95 },
+          low_importance: {
+            strategy: "low_importance",
+            importance_threshold: 0.3,
+            min_age_days: 7,
+          },
+        };
+        try {
+          const resp = await fetch(`/api/prune/${currentSystem}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bodies[strategy]),
+          });
+          const data = await resp.json();
+          if (data.success) {
+            toast(
+              `Pruning complete: ${JSON.stringify(data.result)}`,
+              "success",
+            );
+            loadAll();
+          } else {
+            toast(`Pruning failed: ${data.error}`, "error");
+          }
+        } catch (e) {
+          toast("Pruning request failed", "error");
+        }
+      }
+
+      function doExport() {
+        window.location.href = `/api/export/${currentSystem}`;
+      }
+
+      async function doImport(input) {
+        if (!input.files.length) return;
+        const formData = new FormData();
+        formData.append("file", input.files[0]);
+        try {
+          const resp = await fetch(`/api/import/${currentSystem}`, {
+            method: "POST",
+            body: formData,
+          });
+          const data = await resp.json();
+          if (data.success) {
+            toast(
+              `Imported ${data.imported_nodes} nodes, ${data.imported_edges} edges`,
+              "success",
+            );
+            loadAll();
+          } else {
+            toast(`Import failed: ${data.error}`, "error");
+          }
+        } catch (e) {
+          toast("Import request failed", "error");
+        }
+        input.value = "";
+      }
+
+      /* ===========================================================================
+   Bootstrap
+   =========================================================================== */
+      function loadAll() {
+        loadGraph();
+        loadAnalytics();
+        loadStats();
+      }
+
+      // Initial load
+      loadAll();
+
+      // Auto-refresh every 30 seconds
+      if (refreshTimer) clearInterval(refreshTimer);
+      refreshTimer = setInterval(loadStats, 30000);
+    </script>
+  </body>
+</html>

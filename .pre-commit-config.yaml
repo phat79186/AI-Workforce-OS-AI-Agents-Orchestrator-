@@ -1,0 +1,66 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: ^deployment/kubernetes/
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: detect-private-key
+        exclude: ^(\.agents|\.codex)/
+      - id: mixed-line-ending
+
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 26.3.1
+    hooks:
+      - id: black
+        language_version: python3
+        exclude: ^(workspace|sessions|\.agents|\.codex)/
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (python)
+        exclude: ^(workspace|sessions|\.agents|\.codex)/
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8-docstrings, flake8-bugbear]
+        exclude: ^(workspace|sessions|\.agents|\.codex)/
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-PyYAML, types-click]
+        args: [--ignore-missing-imports, --no-strict-optional, --allow-untyped-defs, --allow-incomplete-defs, --allow-untyped-calls, --no-warn-return-any]
+        exclude: ^(workspace/|sessions/|examples/|\.agents/|\.codex/|ai-orchestrator$|ai-agentic-team$|ai-orchestrator-wrapper$|ai-agentic-team-wrapper$)
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.6
+    hooks:
+      - id: bandit
+        args: ["-c", "pyproject.toml"]
+        additional_dependencies: ["bandit[toml]"]
+        exclude: ^(workspace|sessions|\.agents|\.codex)/
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.0
+    hooks:
+      - id: pyupgrade
+        args: [--py38-plus]
+        exclude: ^(workspace|sessions|\.agents|\.codex)/
+
+#  - repo: https://github.com/PyCQA/docformatter
+#    rev: v1.7.5
+#    hooks:
+#      - id: docformatter
+#        args: [--in-place, --wrap-summaries=100, --wrap-descriptions=100]

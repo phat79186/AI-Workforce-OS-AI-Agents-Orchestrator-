@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📊 AI Orchestrator — Reports Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --border: #334155;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --green: #4ade80;
+        --red: #f87171;
+        --amber: #fbbf24;
+        --purple: #a78bfa;
+        --pink: #f472b6;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          system-ui,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.25rem;
+      }
+      .subtitle {
+        color: var(--muted);
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+      }
+      .card h3 {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+      }
+      .stat {
+        font-size: 2.2rem;
+        font-weight: 700;
+      }
+      .stat.green {
+        color: var(--green);
+      }
+      .stat.red {
+        color: var(--red);
+      }
+      .stat.accent {
+        color: var(--accent);
+      }
+      .stat.amber {
+        color: var(--amber);
+      }
+      .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .chart-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+      }
+      .chart-card h3 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+      canvas {
+        max-height: 280px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border);
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: rgba(56, 189, 248, 0.05);
+      }
+      code {
+        background: rgba(56, 189, 248, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        color: var(--accent);
+      }
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-top: 3rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📊 AI Coding Tools — Reports Dashboard</h1>
+    <p class="subtitle">
+      Generated April 04, 2026 at 03:11 UTC &middot; 8 tasks analysed
+    </p>
+
+    <!-- KPI Cards -->
+    <div class="grid">
+      <div class="card">
+        <h3>📋 Total Tasks</h3>
+        <div class="stat accent">8</div>
+      </div>
+      <div class="card">
+        <h3>✅ Succeeded</h3>
+        <div class="stat green">7</div>
+      </div>
+      <div class="card">
+        <h3>❌ Failed</h3>
+        <div class="stat red">1</div>
+      </div>
+      <div class="card">
+        <h3>📈 Success Rate</h3>
+        <div class="stat green">87.5%</div>
+      </div>
+      <div class="card">
+        <h3>🤖 Active Agents</h3>
+        <div class="stat accent">3</div>
+      </div>
+      <div class="card">
+        <h3>⚡ Workflows Used</h3>
+        <div class="stat amber">5</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>📈 Daily Task Volume &amp; Success</h3>
+        <canvas id="dailyChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>🤖 Agent Success vs Failure</h3>
+        <canvas id="agentChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>⏱️ Average Duration (seconds)</h3>
+        <canvas id="durationChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>🔀 Workflow Distribution</h3>
+        <canvas id="workflowChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Recent Tasks Table -->
+    <div class="chart-card">
+      <h3>📋 Recent Task Executions</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Task</th>
+            <th>Workflow</th>
+            <th>Iterations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>✅</td>
+            <td>Implement user authentication with JWT tokens</td>
+            <td><code>default</code></td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>✅</td>
+            <td>Build REST API for task management with CRUD operations</td>
+            <td><code>default</code></td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>✅</td>
+            <td>Set up CI/CD pipeline with GitHub Actions</td>
+            <td><code>quick</code></td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>✅</td>
+            <td>Refactor database layer to support async operations</td>
+            <td><code>thorough</code></td>
+            <td>2</td>
+          </tr>
+          <tr>
+            <td>❌</td>
+            <td>Add WebSocket support for real-time notifications</td>
+            <td><code>default</code></td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>✅</td>
+            <td>Generate API documentation with OpenAPI spec</td>
+            <td><code>document</code></td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>✅</td>
+            <td>Implement rate limiting middleware</td>
+            <td><code>default</code></td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>✅</td>
+            <td>Add comprehensive test suite for auth module</td>
+            <td><code>review-only</code></td>
+            <td>1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      🚀 AI Coding Tools Collaborative &middot; Orchestrator Reports
+    </div>
+
+    <script>
+      Chart.defaults.color = "#94a3b8";
+      Chart.defaults.borderColor = "#334155";
+      const fontOpts = { family: "'Inter', system-ui, sans-serif" };
+
+      // Daily Task Volume
+      new Chart(document.getElementById("dailyChart"), {
+        type: "bar",
+        data: {
+          labels: [
+            "03-10",
+            "03-11",
+            "03-12",
+            "03-13",
+            "03-14",
+            "03-15",
+            "03-16",
+            "03-17",
+            "03-18",
+            "03-19",
+          ],
+          datasets: [
+            {
+              label: "Total Tasks",
+              data: [12, 8, 15, 10, 18, 6, 4, 14, 20, 16],
+              backgroundColor: "rgba(56,189,248,.6)",
+              borderRadius: 4,
+            },
+            {
+              label: "Succeeded",
+              data: [11, 7, 14, 10, 16, 6, 4, 13, 18, 15],
+              backgroundColor: "rgba(74,222,128,.6)",
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { font: fontOpts } } },
+          scales: {
+            y: { beginAtZero: true, ticks: { font: fontOpts } },
+            x: { ticks: { font: fontOpts } },
+          },
+        },
+      });
+
+      // Agent Success/Failure
+      new Chart(document.getElementById("agentChart"), {
+        type: "bar",
+        data: {
+          labels: ["codex", "gemini", "claude"],
+          datasets: [
+            {
+              label: "Success",
+              data: [6, 7, 8],
+              backgroundColor: "rgba(74,222,128,.7)",
+              borderRadius: 4,
+            },
+            {
+              label: "Failure",
+              data: [1, 1, 0],
+              backgroundColor: "rgba(248,113,113,.7)",
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { font: fontOpts } } },
+          scales: {
+            x: { stacked: true, ticks: { font: fontOpts } },
+            y: { stacked: true, beginAtZero: true, ticks: { font: fontOpts } },
+          },
+        },
+      });
+
+      // Duration Trend
+      new Chart(document.getElementById("durationChart"), {
+        type: "line",
+        data: {
+          labels: [
+            "03-10",
+            "03-11",
+            "03-12",
+            "03-13",
+            "03-14",
+            "03-15",
+            "03-16",
+            "03-17",
+            "03-18",
+            "03-19",
+          ],
+          datasets: [
+            {
+              label: "Avg Duration (s)",
+              data: [
+                34.2, 41.5, 28.7, 22.1, 38.9, 19.3, 25.0, 31.4, 36.8, 29.5,
+              ],
+              borderColor: "#fbbf24",
+              backgroundColor: "rgba(251,191,36,.15)",
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointBackgroundColor: "#fbbf24",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { font: fontOpts } } },
+          scales: {
+            y: { beginAtZero: true, ticks: { font: fontOpts } },
+            x: { ticks: { font: fontOpts } },
+          },
+        },
+      });
+
+      // Workflow Distribution
+      new Chart(document.getElementById("workflowChart"), {
+        type: "doughnut",
+        data: {
+          labels: ["default", "quick", "thorough", "document", "review-only"],
+          datasets: [
+            {
+              data: [4, 1, 1, 1, 1],
+              backgroundColor: [
+                "#38bdf8",
+                "#4ade80",
+                "#fbbf24",
+                "#a78bfa",
+                "#f472b6",
+                "#fb923c",
+              ],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { font: fontOpts, padding: 16 },
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

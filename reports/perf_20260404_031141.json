@@ -1,0 +1,39 @@
+{
+  "report_type": "agent_performance",
+  "report_id": "perf_20260404_031141",
+  "generated_at": "2026-04-04T03:11:41.846414+00:00",
+  "executions_analysed": 8,
+  "agents": {
+    "codex": {
+      "total_calls": 7,
+      "successes": 6,
+      "failures": 1,
+      "fallback_uses": 0,
+      "task_types": {
+        "implement": 7
+      },
+      "success_rate": 0.8571
+    },
+    "gemini": {
+      "total_calls": 8,
+      "successes": 7,
+      "failures": 1,
+      "fallback_uses": 0,
+      "task_types": {
+        "review": 8
+      },
+      "success_rate": 0.875
+    },
+    "claude": {
+      "total_calls": 8,
+      "successes": 8,
+      "failures": 0,
+      "fallback_uses": 0,
+      "task_types": {
+        "refine": 7,
+        "document": 1
+      },
+      "success_rate": 1.0
+    }
+  }
+}
