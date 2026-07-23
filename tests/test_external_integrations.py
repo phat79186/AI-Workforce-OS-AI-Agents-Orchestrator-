@@ -86,5 +86,6 @@ def test_external_ecosystem_hub():
     hub = ExternalEcosystemHub()
     status = hub.get_status()
 
-    assert status["overall_status"] == "ALL_8_INTEGRATED"
+    assert status["overall_status"] in ("ALL_INTEGRATED", "ALL_8_INTEGRATED")
     assert status["public_apis_count"] >= 2
+    assert status.get("openclaw_status") == "READY"

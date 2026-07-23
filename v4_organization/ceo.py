@@ -20,8 +20,30 @@ class StrategicGoal:
 class AICEOManager:
     """AI CEO formulating company strategy and reviewing executive progress reports."""
 
-    def formulate_strategy(self, user_vision: str) -> StrategicGoal:
-        """Formulate strategic goals from user vision without writing low-level code."""
+    def formulate_strategy(
+        self, user_vision: str, openclaw_spec: Optional[Dict[str, Any]] = None
+    ) -> StrategicGoal:
+        """Formulate strategic goals from user vision or OpenClaw-refined technical specifications."""
+        if openclaw_spec:
+            title = openclaw_spec.get("title", f"Strategic Initiative: {user_vision}")
+            key_objectives = openclaw_spec.get("objectives", [
+                "Establish zero-trust security and architecture standards",
+                "Execute modular software development and automated testing",
+                "Publish comprehensive technical documentation and ADRs to Organizational Memory",
+            ])
+            success_metrics = openclaw_spec.get("testing_criteria", [
+                "100% Pytest pass rate",
+                "Zero high-severity vulnerabilities",
+                "Obsidian Vault ADR indexed",
+            ])
+            return StrategicGoal(
+                goal_id="GOAL-V4-01",
+                title=title,
+                vision_statement=f"Transform raw prompt '{user_vision}' into refined technical initiative '{title}'.",
+                key_objectives=key_objectives,
+                success_metrics=success_metrics,
+            )
+
         return StrategicGoal(
             goal_id="GOAL-V4-01",
             title=f"Strategic Initiative: {user_vision}",

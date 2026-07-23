@@ -1,4 +1,4 @@
-"""Unified Hub for 8 External Tools & Skills Integrations in AI Workforce OS v4.2."""
+"""Unified Hub for External Tools, Skills, and OpenClaw Pre-processor Integrations in AI Workforce OS v4.2."""
 
 from __future__ import annotations
 
@@ -11,10 +11,11 @@ from orchestrator.integrations.ui_ux_pro_max import UIUXProMaxSkill
 from orchestrator.integrations.impeccable_design import ImpeccableDesignSkill
 from orchestrator.integrations.public_apis_catalog import PublicAPIsCatalog
 from orchestrator.integrations.sag_framework import SAGAgentFramework
+from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
 
 
 class ExternalEcosystemHub:
-    """Unified Hub connecting all 8 external tools and skills into AI Workforce OS v4.2."""
+    """Unified Hub connecting external tools, skills, and OpenClaw pre-processor into AI Workforce OS v4.2."""
 
     def __init__(self) -> None:
         self.mattpocock_skills = MattPocockSkillsEngine()
@@ -25,9 +26,10 @@ class ExternalEcosystemHub:
         self.impeccable = ImpeccableDesignSkill()
         self.public_apis = PublicAPIsCatalog()
         self.sag = SAGAgentFramework()
+        self.openclaw = OpenClawPromptProcessor()
 
     def get_status(self) -> Dict[str, Any]:
-        """Return status summary for all 8 integrated tools and skills."""
+        """Return status summary for all integrated tools and skills."""
         return {
             "mattpocock_skills_count": len(self.mattpocock_skills.list_skills()),
             "codegraph_symbols_indexed": len(self.codegraph._symbol_index),
@@ -37,5 +39,6 @@ class ExternalEcosystemHub:
             "impeccable_status": "READY",
             "public_apis_count": len(self.public_apis._entries),
             "sag_node_count": len(self.sag.nodes),
-            "overall_status": "ALL_8_INTEGRATED",
+            "openclaw_status": "READY",
+            "overall_status": "ALL_INTEGRATED",
         }

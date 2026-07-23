@@ -273,6 +273,7 @@ All agent actions are audited by the `PermissionPolicy` and `SecuritySandbox`:
 | **Performance Feedback Loop** | Dynamic reliability score tracking per AI employee | ✅ Verified |
 | **Workforce Resource Budget** | Caps on max total/concurrent agents and execution time | ✅ Verified |
 | **Security Sandbox** | Action classification and human-in-the-loop approval manager | ✅ Verified |
+| **OpenClaw Prompt Refinement** | Raw user input pre-processing & technical spec expansion engine (`openclaw/openclaw`) | ✅ Verified |
 | **8 External Tool Integrations** | Full adapters for CodeGraph, Ponytail, AnySearch, UI/UX Pro Max, Impeccable, Public APIs, SAG, MattPocock Skills | ✅ Verified |
 
 ---
@@ -308,6 +309,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 🏷️ Credits & Acknowledgements
 
 We acknowledge and credit the open-source projects and libraries that inspired or integrate with our ecosystem:
+- **[OpenClaw](https://github.com/openclaw/openclaw)** — Free open-source raw prompt refinement and code pre-processing engine.
 - **[Ollama](https://github.com/ollama/ollama)** — Local LLM runner.
 - **[OpenHands](https://github.com/All-Hands-AI/OpenHands)** — Autonomous AI coding software development agent.
 - **[Obsidian](https://obsidian.md/)** — Personal Knowledge Base & Markdown Vault.

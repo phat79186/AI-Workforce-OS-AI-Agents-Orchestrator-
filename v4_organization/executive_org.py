@@ -31,13 +31,22 @@ class AutonomousAIOrganization:
         self.res_manager = ResearchManager(self.workforce)
         self.ops_manager = OperationsManager(self.workforce)
 
-    def execute_corporate_initiative(self, user_vision: str) -> Dict[str, Any]:
+    def execute_corporate_initiative(
+        self, user_vision: str, use_openclaw: bool = False
+    ) -> Dict[str, Any]:
         """Execute complete corporate initiative through CEO -> CTO -> AI-to-AI Delegation Tree -> Department Managers -> Organizational Memory."""
+        openclaw_spec = None
+        if use_openclaw:
+            from providers.openclaw_provider import OpenClawProvider
+            claw = OpenClawProvider()
+            project_root_str = str(self.memory.bridge.vault_path) if self.memory.bridge.vault_path else None
+            openclaw_spec = claw.refine_raw_prompt(user_vision, project_root=project_root_str)
+
         # 1. Consult Organizational Memory for previous experience before planning
         previous_learnings = self.memory.get_lessons_learned(user_vision)
 
         # 2. AI CEO formulates Strategic Goal
-        goal = self.ceo.formulate_strategy(user_vision)
+        goal = self.ceo.formulate_strategy(user_vision, openclaw_spec=openclaw_spec)
 
         # 3. AI CTO translates strategy to Technical Execution Roadmap & AI-to-AI Delegation Tree
         roadmap = self.cto.build_technical_roadmap(goal)

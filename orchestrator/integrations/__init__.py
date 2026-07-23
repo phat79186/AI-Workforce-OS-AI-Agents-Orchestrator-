@@ -8,6 +8,7 @@ from orchestrator.integrations.ui_ux_pro_max import UIUXProMaxSkill
 from orchestrator.integrations.impeccable_design import ImpeccableDesignSkill
 from orchestrator.integrations.public_apis_catalog import PublicAPIEntry, PublicAPIsCatalog
 from orchestrator.integrations.sag_framework import SAGNode, SAGAgentFramework
+from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
 from orchestrator.integrations.ecosystem_hub import ExternalEcosystemHub
 
 __all__ = [
@@ -24,5 +25,6 @@ __all__ = [
     "PublicAPIsCatalog",
     "SAGNode",
     "SAGAgentFramework",
+    "OpenClawPromptProcessor",
     "ExternalEcosystemHub",
 ]

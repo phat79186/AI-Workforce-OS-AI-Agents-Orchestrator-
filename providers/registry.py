@@ -7,6 +7,7 @@ from typing import Dict, List, Optional
 from providers.base_provider import BaseProvider, ProviderType
 from providers.ollama_provider import OllamaProvider
 from providers.openhands_provider import OpenHandsProvider
+from providers.openclaw_provider import OpenClawProvider
 
 
 class ProviderRegistry:
@@ -20,9 +21,11 @@ class ProviderRegistry:
         """Register default local and open-source providers."""
         ollama = OllamaProvider()
         openhands = OpenHandsProvider()
+        openclaw = OpenClawProvider()
 
         self.register(ollama)
         self.register(openhands)
+        self.register(openclaw)
 
     def register(self, provider: BaseProvider) -> None:
         """Register a provider instance."""
