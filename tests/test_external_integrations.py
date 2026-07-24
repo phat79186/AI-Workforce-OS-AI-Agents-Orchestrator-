@@ -46,10 +46,13 @@ def test_codegraph_tool_integration():
 def test_ponytail_runner_integration():
     runner = PonytailRunner()
     runner.add_step("STEP-1", "code_review", "Reviewer")
-    res = runner.execute_workflow()
+    runner.add_step("STEP-2", "security_audit", "SecuritySpecialist", dependencies=["STEP-1"])
+    res = runner.execute_workflow(parallel_dispatch=True)
 
     assert res["status"] == "SUCCESS"
-    assert res["total_steps"] == 1
+    assert res["total_steps"] == 2
+    assert res["execution_order"] == ["STEP-1", "STEP-2"]
+    assert res["source_repo"] == "DietrichGebert/ponytail"
 
 
 def test_anysearch_skill_integration():

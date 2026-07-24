@@ -35,10 +35,12 @@ def run_external_ecosystem_demo() -> None:
     print(f"  * Callers: {sym_info['callers']} | Callees: {sym_info['callees']}")
 
     # 3. DietrichGebert/ponytail
-    print("\n[3. PONYTAIL RUNNER] Executing Multi-Agent Workflow Step...")
-    hub.ponytail.add_step("PONY-01", "security_audit", "SecuritySpecialist")
-    pony_res = hub.ponytail.execute_workflow()
-    print(f"  * Workflow Executed: {pony_res['completed_steps']} | Status: {pony_res['status']}")
+    print("\n[3. PONYTAIL RUNNER] Executing Multi-Agent DAG Workflow Steps...")
+    hub.ponytail.add_step("PONY-01", "code_review", "LeadSoftwareEngineer")
+    hub.ponytail.add_step("PONY-02", "security_audit", "SecuritySpecialist", dependencies=["PONY-01"])
+    pony_res = hub.ponytail.execute_workflow(parallel_dispatch=True)
+    print(f"  * Total Steps: {pony_res['total_steps']} | Completed: {pony_res['completed_steps']}")
+    print(f"  * Topological Execution Order: {pony_res['execution_order']} | Status: {pony_res['status']}")
 
     # 4. anysearch-ai/anysearch-skill + Panniantong/Agent-Reach
     print("\n[4. ANYSEARCH SKILL + AGENT-REACH] Executing Deep Multi-Engine Search Reach...")
