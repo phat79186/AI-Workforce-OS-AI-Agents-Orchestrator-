@@ -16,7 +16,20 @@ def test_openclaw_provider_metadata():
     assert provider.metadata.is_local is True
     assert "context_aware_scan" in provider.metadata.capabilities
     assert "playwright_visual_qa" in provider.metadata.capabilities
+    assert "linshenkx_prompt_optimization" in provider.metadata.capabilities
     assert provider.check_availability() is True
+
+
+def test_linshenkx_prompt_optimizer_engine():
+    from providers.prompt_optimizer import PromptOptimizerEngine
+    optimizer = PromptOptimizerEngine()
+    opt = optimizer.optimize_prompt("sửa UX UI", domain="ui_ux_refinement")
+
+    assert opt["source_repo"] == "linshenkx/prompt-optimizer"
+    assert opt["clarity_score"] >= 0.85
+    assert len(opt["negative_constraints"]) >= 2
+    assert "Persona Injection" in opt["optimization_techniques"]
+    assert "SYSTEM ROLE:" in opt["optimized_meta_prompt"]
 
 
 def test_openclaw_context_aware_scan_with_existing_theme():

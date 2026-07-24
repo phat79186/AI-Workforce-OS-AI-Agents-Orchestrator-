@@ -40,11 +40,21 @@ def run_openclaw_demo() -> None:
         processed = claw.refine_raw_prompt(raw_user_input, project_root=str(repo_path))
 
         print(f"  * Architecture: {processed['architecture'].upper()}")
+        print(f"  * Prompt Optimizer Source: {processed['prompt_optimizer_source']} (Clarity Score: {processed['clarity_score']} / 1.0)")
         print(f"  * Theme Detection Status: {processed['context_scan']['theme_status']}")
         print(f"  * Palette Decision: {processed['context_scan']['palette_summary']}")
         print(f"  * Detected Domain: {processed['domain']}")
         print(f"  * Enriched Title: {processed['title']}")
         
+        print("\n[LINSHENKX META-PROMPTING TRANSFORMATIONS]")
+        print(f"  * System Role: {processed['optimization']['system_role']}")
+        print("  * Applied Optimization Techniques:")
+        for tech in processed['optimization']['optimization_techniques']:
+            print(f"    - {tech}")
+        print("  * Critical Negative Constraints:")
+        for nc in processed['optimization']['negative_constraints']:
+            print(f"    - {nc}")
+
         print("\n[STRATEGIC OBJECTIVES]")
         for obj in processed['objectives']:
             print(f"    - {obj}")

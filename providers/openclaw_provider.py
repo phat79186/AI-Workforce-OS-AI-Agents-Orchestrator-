@@ -6,12 +6,14 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from providers.base_provider import BaseProvider, ProviderMetadata, ProviderType
+from providers.prompt_optimizer import PromptOptimizerEngine
 
 
 class OpenClawProvider(BaseProvider):
-    """OpenClaw open-source AI provider for context-aware prompt enrichment and code pre-processing (Aegis V5.5)."""
+    """OpenClaw open-source AI provider for context-aware prompt enrichment and code pre-processing (Aegis V5.5 + linshenkx Prompt Optimizer)."""
 
     def __init__(self) -> None:
+        self.prompt_optimizer = PromptOptimizerEngine()
         metadata = ProviderMetadata(
             name="openclaw",
             provider_type=ProviderType.OPEN_SOURCE,
@@ -24,6 +26,7 @@ class OpenClawProvider(BaseProvider):
                 "context_aware_scan",
                 "playwright_visual_qa",
                 "single_lead_contract_checkpoint",
+                "linshenkx_prompt_optimization",
             ],
             context_limit=16384,
             priority=10,  # High priority for pre-processing
@@ -158,10 +161,14 @@ class OpenClawProvider(BaseProvider):
             recommended_roles = ["LeadSoftwareEngineer"]
             testing_criteria = ["Automated unit test suite 100% GREEN"]
 
+        # linshenkx/prompt-optimizer meta-prompt transformation stage
+        optimization = self.prompt_optimizer.optimize_prompt(raw_prompt, domain=domain, context=context)
+
         enriched_spec = (
             f"# OpenClaw Processed Specification: {title}\n"
             f"**Raw User Input:** \"{raw_prompt}\"\n"
             f"**Refinement Domain:** {domain}\n"
+            f"**Prompt Optimizer Clarity Score:** {optimization['clarity_score']} / 1.0 (linshenkx/prompt-optimizer)\n"
             f"**Context Theme Scan:** {context['theme_status']} ({context['palette_summary']})\n"
             f"**Execution Safety:** Aegis V5.5 Per-Node Contract Checkpoint Enabled\n\n"
             f"## Strategic Objectives\n"
@@ -170,11 +177,16 @@ class OpenClawProvider(BaseProvider):
             + "\n".join(f"- {role}" for role in recommended_roles)
             + "\n\n## Automated Verification Criteria\n"
             + "\n".join(f"- {crit}" for crit in testing_criteria)
+            + f"\n\n## Meta-Prompting System Role\n{optimization['system_role']}\n\n"
+            + "## Critical Negative Constraints\n"
+            + "\n".join(f"- {nc}" for nc in optimization['negative_constraints'])
         )
 
         return {
             "raw_prompt": raw_prompt,
             "processed_by": "openclaw",
+            "prompt_optimizer_source": optimization["source_repo"],
+            "clarity_score": optimization["clarity_score"],
             "architecture": "aegis_v5_5",
             "domain": domain,
             "title": title,
@@ -182,5 +194,6 @@ class OpenClawProvider(BaseProvider):
             "objectives": objectives,
             "recommended_roles": recommended_roles,
             "testing_criteria": testing_criteria,
+            "optimization": optimization,
             "enriched_specification": enriched_spec,
         }

@@ -310,6 +310,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 We acknowledge and credit the open-source projects and libraries that inspired or integrate with our ecosystem:
 - **[OpenClaw](https://github.com/openclaw/openclaw)** — Free open-source raw prompt refinement and code pre-processing engine.
+- **[linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer)** — Automated meta-prompting & prompt clarity optimization tool.
 - **[Ollama](https://github.com/ollama/ollama)** — Local LLM runner.
 - **[OpenHands](https://github.com/All-Hands-AI/OpenHands)** — Autonomous AI coding software development agent.
 - **[Obsidian](https://obsidian.md/)** — Personal Knowledge Base & Markdown Vault.
