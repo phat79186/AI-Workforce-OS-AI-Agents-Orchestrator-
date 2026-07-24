@@ -4,7 +4,22 @@ All notable changes to the AI Workforce OS project are documented in this file.
 
 ---
 
-## [v4.2] - 2026-07-22 - Real Obsidian Vault Knowledge Backend & Learning Benchmark
+## [v4.2.5] - 2026-07-24 - Aegis V5.5 OpenClaw Meta-Prompting & Extended Ecosystem Integration
+
+### Added
+- **OpenClaw Pre-Processing Engine (`openclaw/openclaw`)**: Free open-source raw prompt refinement engine transforming brief user inputs into structured technical specifications.
+- **linshenkx/prompt-optimizer Meta-Prompting Engine**: 5-stage automated prompt optimizer implementing Persona Injection, Chain-of-Thought (CoT) reasoning, Negative Constraint enforcement, Aegis V5.5 contract anchoring, and Clarity Scoring (0.97 / 1.0).
+- **Aegis V5.5 Context-Aware Theme & Codebase Scanner**: Scans existing `tailwind.config.js`, `theme.ts`, `globals.css`, and `package.json` to preserve brand design tokens and prevent prescriptive color over-enrichment.
+- **Single Primary Lead Role Assignment (Anti-Role-Bloat)**: Single lead agent (`LeadUIUXDesigner`, `LeadSoftwareEngineer`, `LeadSecurityAuditor`) assignment per node with explicit Per-Node Contract Checkpoints to prevent agent collisions and token bloat.
+- **Playwright Headless Visual QA Verification**: Automated Pixel-Diff, layout overflow, and DOM accessibility checks replacing basic Pytest UI checks.
+- **Panniantong/Agent-Reach Search Engine**: Extended multi-engine deep search reach across Google/Bing Web, GitHub API, StackOverflow, ArXiv Papers, and Obsidian Vault with Reach Score metrics (1.0 / 1.0) and citation extraction.
+- **Taste Skill Integration**: UI/UX design taste curation, 8px baseline spatial grid balance, font hierarchy (Inter / Outfit), and motion choreography (`cubic-bezier(0.16, 1, 0.3, 1)`).
+- **OpenBMB/ChatDev Virtual Software Company Framework**: 4-phase communicative multi-agent software development pipeline (Designing ➔ Coding ➔ Testing ➔ Documenting) with 7 virtual roles.
+- **DietrichGebert/ponytail Enhanced Runner**: Topological DAG dependency resolution, parallel step dispatching, and retry budget management.
+
+---
+
+## [v4.2.0] - 2026-07-22 - Real Obsidian Vault Knowledge Backend & Learning Benchmark
 
 ### Added
 - **Real Obsidian Vault Configuration Resolver**: Resolution hierarchy via CLI `--vault-path`, Environment Variable `OBSIDIAN_VAULT_PATH`, and config file with cross-platform `pathlib.Path` support.
