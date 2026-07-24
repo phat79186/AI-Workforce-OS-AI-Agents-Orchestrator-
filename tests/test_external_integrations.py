@@ -107,6 +107,17 @@ def test_sag_framework_integration():
     assert res["node_count"] == 1
 
 
+def test_chatdev_adapter_integration():
+    from orchestrator.integrations import ChatDevAdapter
+    chatdev = ChatDevAdapter()
+    software = chatdev.run_virtual_software_company("MathUtils", "Build a Python math utility")
+
+    assert software["status"] == "COMPLETED_SOFTWARE_DEVELOPMENT"
+    assert software["source_repo"] == "OpenBMB/ChatDev"
+    assert len(software["completed_phases"]) == 4
+    assert "main.py" in software["generated_files"]
+
+
 def test_external_ecosystem_hub():
     hub = ExternalEcosystemHub()
     status = hub.get_status()
@@ -115,3 +126,4 @@ def test_external_ecosystem_hub():
     assert status["public_apis_count"] >= 2
     assert status.get("openclaw_status") == "READY"
     assert status.get("taste_skill_status") == "READY"
+    assert status.get("chatdev_status") == "READY"

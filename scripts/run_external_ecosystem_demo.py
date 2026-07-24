@@ -70,8 +70,16 @@ def run_external_ecosystem_demo() -> None:
     for a in apis:
         print(f"  * API: [{a.api_name}] | Category: {a.category} | Auth: {a.auth_type} | URL: {a.url}")
 
-    # 8. Zleap-AI/SAG
-    print("\n[8. SAG FRAMEWORK] Synchronizing Semantic Agent Graph Nodes...")
+    # 8. OpenBMB/ChatDev Virtual Software Company
+    print("\n[8. CHATDEV VIRTUAL SOFTWARE COMPANY] Executing Communicative Multi-Agent Development...")
+    chatdev_res = hub.chatdev.run_virtual_software_company("FaceAuthMicroservice", "Build Face Authentication Microservice")
+    print(f"  * Software Name: [{chatdev_res['software_name']}] | Status: {chatdev_res['status']}")
+    print(f"  * Completed Phases ({len(chatdev_res['completed_phases'])} Phases): {chatdev_res['completed_phases']}")
+    print(f"  * Deployed Virtual Roles ({len(chatdev_res['virtual_roles_deployed'])} Roles): {chatdev_res['virtual_roles_deployed']}")
+    print(f"  * Generated Project Files: {chatdev_res['generated_files']}")
+
+    # 9. Zleap-AI/SAG
+    print("\n[9. SAG FRAMEWORK] Synchronizing Semantic Agent Graph Nodes...")
     hub.sag.register_agent("CTO-AGENT", "ExecutiveCTO", {"mode": "strategic_planning"})
     sag_res = hub.sag.synchronize_graph()
     print(f"  * Graph Synchronized: {sag_res['node_count']} Node | Status: {sag_res['status']}")
@@ -79,7 +87,7 @@ def run_external_ecosystem_demo() -> None:
     # Final Overall Hub Status
     status = hub.get_status()
     print("\n=================================================================")
-    print(f"[SUMMARY] All 8 External Tools & Skills Integrated 100% Successfully!")
+    print(f"[SUMMARY] All External Tools, Skills & Frameworks Integrated 100% Successfully!")
     print(f"  * Status: {status['overall_status']}")
     print("=================================================================\n")
 

@@ -313,6 +313,7 @@ We acknowledge and credit the open-source projects and libraries that inspired o
 - **[linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer)** — Automated meta-prompting & prompt clarity optimization tool.
 - **[Ollama](https://github.com/ollama/ollama)** — Local LLM runner.
 - **[OpenHands](https://github.com/All-Hands-AI/OpenHands)** — Autonomous AI coding software development agent.
+- **[OpenBMB/ChatDev](https://github.com/OpenBMB/ChatDev)** — Communicative multi-agent virtual software company framework.
 - **[Obsidian](https://obsidian.md/)** — Personal Knowledge Base & Markdown Vault.
 - **[mattpocock/skills](https://github.com/mattpocock/skills)** — AI agent skills framework.
 - **[colbymchenry/codegraph](https://github.com/colbymchenry/codegraph)** — Code graph analysis.

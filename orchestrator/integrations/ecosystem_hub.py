@@ -14,10 +14,11 @@ from orchestrator.integrations.public_apis_catalog import PublicAPIsCatalog
 from orchestrator.integrations.sag_framework import SAGAgentFramework
 from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
 from orchestrator.integrations.agent_reach import AgentReachEngine
+from orchestrator.integrations.chatdev_adapter import ChatDevAdapter
 
 
 class ExternalEcosystemHub:
-    """Unified Hub connecting external tools, UI/UX skills (Pro Max, Impeccable, Taste), Agent-Reach, and OpenClaw pre-processor into AI Workforce OS v4.2."""
+    """Unified Hub connecting external tools, UI/UX skills (Pro Max, Impeccable, Taste), Agent-Reach, ChatDev, and OpenClaw pre-processor into AI Workforce OS v4.2."""
 
     def __init__(self) -> None:
         self.mattpocock_skills = MattPocockSkillsEngine()
@@ -31,6 +32,7 @@ class ExternalEcosystemHub:
         self.public_apis = PublicAPIsCatalog()
         self.sag = SAGAgentFramework()
         self.openclaw = OpenClawPromptProcessor()
+        self.chatdev = ChatDevAdapter()
 
     def get_status(self) -> Dict[str, Any]:
         """Return status summary for all integrated tools and skills."""
@@ -46,5 +48,6 @@ class ExternalEcosystemHub:
             "public_apis_count": len(self.public_apis._entries),
             "sag_node_count": len(self.sag.nodes),
             "openclaw_status": "READY",
+            "chatdev_status": "READY",
             "overall_status": "ALL_INTEGRATED",
         }
