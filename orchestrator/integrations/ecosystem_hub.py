@@ -16,13 +16,15 @@ from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
 from orchestrator.integrations.agent_reach import AgentReachEngine
 from orchestrator.integrations.chatdev_adapter import ChatDevAdapter
 from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
+from orchestrator.integrations.karpathy_skills import KarpathySkillsEngine
 
 
 class ExternalEcosystemHub:
-    """Unified Hub connecting external tools, UI/UX skills, RTK Token Compressor, Agent-Reach, ChatDev, and OpenClaw into AI Workforce OS v4.2."""
+    """Unified Hub connecting external tools, Matt Pocock & Andrej Karpathy skills, Ponytail workflow runner, RTK Token Compressor, Agent-Reach, ChatDev, and OpenClaw into AI Workforce OS v4.2."""
 
     def __init__(self) -> None:
         self.mattpocock_skills = MattPocockSkillsEngine()
+        self.karpathy_skills = KarpathySkillsEngine()
         self.codegraph = CodeGraphTool()
         self.ponytail = PonytailRunner()
         self.anysearch = AnySearchSkill()
@@ -40,6 +42,7 @@ class ExternalEcosystemHub:
         """Return status summary for all integrated tools and skills."""
         return {
             "mattpocock_skills_count": len(self.mattpocock_skills.list_skills()),
+            "karpathy_skills_count": len(self.karpathy_skills.list_skills()),
             "codegraph_symbols_indexed": len(self.codegraph._symbol_index),
             "ponytail_steps_queued": len(self.ponytail.steps),
             "anysearch_status": "READY",
@@ -52,5 +55,6 @@ class ExternalEcosystemHub:
             "openclaw_status": "READY",
             "chatdev_status": "READY",
             "rtk_token_compressor_status": "READY",
+            "karpathy_skills_status": "READY",
             "overall_status": "ALL_INTEGRATED",
         }

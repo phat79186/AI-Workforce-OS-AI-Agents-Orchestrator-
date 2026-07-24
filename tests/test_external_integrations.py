@@ -136,6 +136,24 @@ def test_rtk_token_compressor_integration():
     assert len(res["compressed_dialog"]) == 2
 
 
+def test_karpathy_skills_and_ponytail_combined_integration():
+    from orchestrator.integrations import KarpathySkillsEngine, PonytailRunner, MattPocockSkillsEngine
+    karpathy = KarpathySkillsEngine()
+    skills = karpathy.list_skills()
+    assert len(skills) >= 5
+
+    skill_res = karpathy.execute_skill_pattern("nanogpt-transformer")
+    assert skill_res["status"] == "PATTERN_EXECUTED"
+    assert "transformer" in skill_res["tags"]
+
+    # Combine Karpathy skill action inside Ponytail runner step
+    runner = PonytailRunner()
+    runner.add_step("NANO-GPT-01", skill_res["skill_name"], "AIMLEngineer")
+    workflow = runner.execute_workflow()
+    assert workflow["status"] == "SUCCESS"
+    assert "NANO-GPT-01" in workflow["completed_steps"]
+
+
 def test_external_ecosystem_hub():
     hub = ExternalEcosystemHub()
     status = hub.get_status()
@@ -146,3 +164,4 @@ def test_external_ecosystem_hub():
     assert status.get("taste_skill_status") == "READY"
     assert status.get("chatdev_status") == "READY"
     assert status.get("rtk_token_compressor_status") == "READY"
+    assert status.get("karpathy_skills_status") == "READY"

@@ -317,6 +317,7 @@ We acknowledge and credit the open-source projects and libraries that inspired o
 - **[rtk-ai/rtk](https://github.com/rtk-ai/rtk)** — Redundant Token Killer & real-time token compression engine for AI-to-AI dialogs.
 - **[Obsidian](https://obsidian.md/)** — Personal Knowledge Base & Markdown Vault.
 - **[mattpocock/skills](https://github.com/mattpocock/skills)** — AI agent skills framework.
+- **[multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)** — Curated AI engineering, neural network autograd, and transformer architecture skill patterns.
 - **[colbymchenry/codegraph](https://github.com/colbymchenry/codegraph)** — Code graph analysis.
 - **[DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)** — Multi-agent runner.
 - **[anysearch-ai/anysearch-skill](https://github.com/anysearch-ai/anysearch-skill)** — Search skill.

@@ -23,10 +23,12 @@ def run_external_ecosystem_demo() -> None:
 
     hub = ExternalEcosystemHub()
 
-    # 1. mattpocock/skills
-    print("\n[1. MATTPOCOCK SKILLS] Discovering AI Agent Skills...")
+    # 1. mattpocock/skills & multica-ai/andrej-karpathy-skills
+    print("\n[1. MATTPOCOCK & KARPATHY SKILLS] Discovering AI & Engineering Agent Skills...")
     skill = hub.mattpocock_skills.find_skill("typescript-pro")
-    print(f"  * Skill Found: [{skill.name}] | Category: {skill.category} | Tags: {skill.tags}")
+    karpathy_res = hub.karpathy_skills.execute_skill_pattern("nanogpt-transformer")
+    print(f"  * Matt Pocock Skill: [{skill.name}] | Category: {skill.category} | Tags: {skill.tags}")
+    print(f"  * Karpathy AI Skill: [{karpathy_res['skill_name']}] | Category: {karpathy_res['category']} | Tags: {karpathy_res['tags']}")
 
     # 2. colbymchenry/codegraph
     print("\n[2. CODEGRAPH] Exploring Code Graph Symbol Call Paths...")
@@ -34,10 +36,11 @@ def run_external_ecosystem_demo() -> None:
     print(f"  * Symbol: [{sym_info['name']}] ({sym_info['type']}) | File: {sym_info['file']}:{sym_info['line']}")
     print(f"  * Callers: {sym_info['callers']} | Callees: {sym_info['callees']}")
 
-    # 3. DietrichGebert/ponytail
-    print("\n[3. PONYTAIL RUNNER] Executing Multi-Agent DAG Workflow Steps...")
+    # 3. DietrichGebert/ponytail + Karpathy Skill Actions
+    print("\n[3. PONYTAIL RUNNER + KARPATHY SKILL] Executing Multi-Agent DAG Workflow Steps...")
     hub.ponytail.add_step("PONY-01", "code_review", "LeadSoftwareEngineer")
     hub.ponytail.add_step("PONY-02", "security_audit", "SecuritySpecialist", dependencies=["PONY-01"])
+    hub.ponytail.add_step("PONY-03", karpathy_res["skill_name"], "AIMLEngineer", dependencies=["PONY-02"])
     pony_res = hub.ponytail.execute_workflow(parallel_dispatch=True)
     print(f"  * Total Steps: {pony_res['total_steps']} | Completed: {pony_res['completed_steps']}")
     print(f"  * Topological Execution Order: {pony_res['execution_order']} | Status: {pony_res['status']}")
