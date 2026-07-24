@@ -55,10 +55,14 @@ def run_external_ecosystem_demo() -> None:
     ds = hub.ui_ux_pro_max.generate_design_system("Dark Glassmorphism")
     print(f"  * Theme: [{ds['theme']}] | Primary: {ds['palette']['primary']} | Font: {ds['typography']['font_family']}")
 
-    # 6. pbakaus/impeccable
-    print("\n[6. IMPECCABLE DESIGN] Performing UI Visual Polish & Accessibility Audit...")
+    # 6. pbakaus/impeccable & Taste Skill
+    print("\n[6. IMPECCABLE DESIGN & TASTE SKILL] Performing Visual Curation & Accessibility Audit...")
     audit = hub.impeccable.audit_ui_component("ExecutiveDashboardHeader")
-    print(f"  * Component: [{audit['component']}] | WCAG: {audit['wcag_compliance']} | Status: {audit['status']}")
+    taste_curation = hub.taste.curate_design_taste("ExecutiveDashboardHeader")
+    print(f"  * Component: [{audit['component']}] | WCAG: {audit['wcag_compliance']} | Audit Status: {audit['status']}")
+    print(f"  * Taste Curation Score: {taste_curation['visual_taste_score']} / 1.0 | Status: {taste_curation['status']}")
+    print(f"  * Spatial Harmony: {taste_curation['spatial_harmony']['grid_system']} ({taste_curation['spatial_harmony']['alignment']})")
+    print(f"  * Motion Choreography: {taste_curation['motion_choreography']['hover_interaction']} ({taste_curation['motion_choreography']['easing']})")
 
     # 7. public-apis/public-apis
     print("\n[7. PUBLIC APIS DIRECTORY] Searching External Microservice Endpoints...")

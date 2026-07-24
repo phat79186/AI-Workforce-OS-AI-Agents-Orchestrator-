@@ -9,6 +9,7 @@ from orchestrator.integrations.ponytail_runner import PonytailRunner
 from orchestrator.integrations.anysearch_skill import AnySearchSkill
 from orchestrator.integrations.ui_ux_pro_max import UIUXProMaxSkill
 from orchestrator.integrations.impeccable_design import ImpeccableDesignSkill
+from orchestrator.integrations.taste_skill import TasteSkill
 from orchestrator.integrations.public_apis_catalog import PublicAPIsCatalog
 from orchestrator.integrations.sag_framework import SAGAgentFramework
 from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
@@ -16,7 +17,7 @@ from orchestrator.integrations.agent_reach import AgentReachEngine
 
 
 class ExternalEcosystemHub:
-    """Unified Hub connecting external tools, skills, Agent-Reach, and OpenClaw pre-processor into AI Workforce OS v4.2."""
+    """Unified Hub connecting external tools, UI/UX skills (Pro Max, Impeccable, Taste), Agent-Reach, and OpenClaw pre-processor into AI Workforce OS v4.2."""
 
     def __init__(self) -> None:
         self.mattpocock_skills = MattPocockSkillsEngine()
@@ -26,6 +27,7 @@ class ExternalEcosystemHub:
         self.agent_reach = AgentReachEngine()
         self.ui_ux_pro_max = UIUXProMaxSkill()
         self.impeccable = ImpeccableDesignSkill()
+        self.taste = TasteSkill()
         self.public_apis = PublicAPIsCatalog()
         self.sag = SAGAgentFramework()
         self.openclaw = OpenClawPromptProcessor()
@@ -40,6 +42,7 @@ class ExternalEcosystemHub:
             "agent_reach_status": "READY",
             "ui_ux_pro_max_theme": "Dark Glassmorphism",
             "impeccable_status": "READY",
+            "taste_skill_status": "READY",
             "public_apis_count": len(self.public_apis._entries),
             "sag_node_count": len(self.sag.nodes),
             "openclaw_status": "READY",

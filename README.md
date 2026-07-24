@@ -321,6 +321,7 @@ We acknowledge and credit the open-source projects and libraries that inspired o
 - **[Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach)** — Multi-engine deep search reach & retrieval engine.
 - **[nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** — Design system skill.
 - **[pbakaus/impeccable](https://github.com/pbakaus/impeccable)** — UI visual polish assistant.
+- **[Taste Skill](https://github.com/hoangsonww/AI-Agents-Orchestrator)** — Aesthetic curation, spatial harmony, typography hierarchy, and motion choreography skill.
 - **[public-apis/public-apis](https://github.com/public-apis/public-apis)** — Public API directory.
 - **[Zleap-AI/SAG](https://github.com/Zleap-AI/SAG)** — Semantic Agent Graph framework.
 

@@ -6,6 +6,7 @@ from orchestrator.integrations.ponytail_runner import PonytailWorkflowStep, Pony
 from orchestrator.integrations.anysearch_skill import AnySearchSkill
 from orchestrator.integrations.ui_ux_pro_max import UIUXProMaxSkill
 from orchestrator.integrations.impeccable_design import ImpeccableDesignSkill
+from orchestrator.integrations.taste_skill import TasteSkill
 from orchestrator.integrations.public_apis_catalog import PublicAPIEntry, PublicAPIsCatalog
 from orchestrator.integrations.sag_framework import SAGNode, SAGAgentFramework
 from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
@@ -22,6 +23,7 @@ __all__ = [
     "AnySearchSkill",
     "UIUXProMaxSkill",
     "ImpeccableDesignSkill",
+    "TasteSkill",
     "PublicAPIEntry",
     "PublicAPIsCatalog",
     "SAGNode",

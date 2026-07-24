@@ -79,6 +79,17 @@ def test_impeccable_design_integration():
     assert audit["wcag_compliance"] == "AA Passed"
 
 
+def test_taste_skill_integration():
+    from orchestrator.integrations import TasteSkill
+    taste = TasteSkill()
+    curation = taste.curate_design_taste("ExecutiveDashboardHeader")
+
+    assert curation["status"] == "CURATED_WITH_TASTE"
+    assert curation["visual_taste_score"] >= 0.95
+    assert "Inter, Outfit, sans-serif" in curation["typography_hierarchy"]["font_family"]
+    assert len(curation["taste_guidelines"]) >= 3
+
+
 def test_public_apis_catalog_integration():
     cat = PublicAPIsCatalog()
     results = cat.search_apis("Security")
@@ -103,3 +114,4 @@ def test_external_ecosystem_hub():
     assert status["overall_status"] in ("ALL_INTEGRATED", "ALL_8_INTEGRATED")
     assert status["public_apis_count"] >= 2
     assert status.get("openclaw_status") == "READY"
+    assert status.get("taste_skill_status") == "READY"
