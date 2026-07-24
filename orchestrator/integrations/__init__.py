@@ -9,6 +9,7 @@ from orchestrator.integrations.impeccable_design import ImpeccableDesignSkill
 from orchestrator.integrations.public_apis_catalog import PublicAPIEntry, PublicAPIsCatalog
 from orchestrator.integrations.sag_framework import SAGNode, SAGAgentFramework
 from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
+from orchestrator.integrations.agent_reach import AgentReachEngine
 from orchestrator.integrations.ecosystem_hub import ExternalEcosystemHub
 
 __all__ = [
@@ -26,5 +27,6 @@ __all__ = [
     "SAGNode",
     "SAGAgentFramework",
     "OpenClawPromptProcessor",
+    "AgentReachEngine",
     "ExternalEcosystemHub",
 ]

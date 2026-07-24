@@ -6,6 +6,7 @@ from orchestrator.integrations import (
     CodeGraphTool,
     PonytailRunner,
     AnySearchSkill,
+    AgentReachEngine,
     UIUXProMaxSkill,
     ImpeccableDesignSkill,
     PublicAPIsCatalog,
@@ -21,6 +22,16 @@ def test_mattpocock_skills_integration():
     assert skill is not None
     assert skill.name == "typescript-pro"
     assert "typescript" in skill.tags
+
+
+def test_agent_reach_engine():
+    engine = AgentReachEngine()
+    reach = engine.search_reach("Face Liveness Security", max_depth=2)
+
+    assert reach["source_repo"] == "Panniantong/Agent-Reach"
+    assert reach["reach_radius_score"] >= 0.7
+    assert len(reach["citations"]) >= 3
+    assert "GitHub API" in reach["engines_searched"]
 
 
 def test_codegraph_tool_integration():
@@ -47,6 +58,9 @@ def test_anysearch_skill_integration():
 
     assert res["status"] == "COMPLETED"
     assert "codebase" in res["sources_searched"]
+    assert res["agent_reach_enabled"] is True
+    assert res["agent_reach_source"] == "Panniantong/Agent-Reach"
+    assert res["reach_metadata"] is not None
 
 
 def test_ui_ux_pro_max_integration():

@@ -40,10 +40,15 @@ def run_external_ecosystem_demo() -> None:
     pony_res = hub.ponytail.execute_workflow()
     print(f"  * Workflow Executed: {pony_res['completed_steps']} | Status: {pony_res['status']}")
 
-    # 4. anysearch-ai/anysearch-skill
-    print("\n[4. ANYSEARCH SKILL] Executing Unified Search Query...")
-    search_res = hub.anysearch.execute_search("Face Liveness Security Architecture")
-    print(f"  * Query: '{search_res['query']}' | Sources: {search_res['sources_searched']} | Results: {search_res['results_count']}")
+    # 4. anysearch-ai/anysearch-skill + Panniantong/Agent-Reach
+    print("\n[4. ANYSEARCH SKILL + AGENT-REACH] Executing Deep Multi-Engine Search Reach...")
+    search_res = hub.anysearch.execute_search("Face Liveness Security Architecture", enable_agent_reach=True, max_depth=2)
+    print(f"  * Query: '{search_res['query']}' | Agent-Reach Source: {search_res['agent_reach_source']}")
+    print(f"  * Sources Searched ({len(search_res['sources_searched'])} Engines): {search_res['sources_searched']}")
+    print(f"  * Total Results & Citations: {search_res['results_count']}")
+    if search_res.get("reach_metadata"):
+        print(f"  * Reach Radius Score: {search_res['reach_metadata']['reach_radius_score']} / 1.0")
+        print(f"  * Deep Retrieval Summary: {search_res['reach_metadata']['deep_retrieval_summary']}")
 
     # 5. nextlevelbuilder/ui-ux-pro-max-skill
     print("\n[5. UI/UX PRO MAX] Generating Modern Design System...")

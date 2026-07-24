@@ -318,6 +318,7 @@ We acknowledge and credit the open-source projects and libraries that inspired o
 - **[colbymchenry/codegraph](https://github.com/colbymchenry/codegraph)** — Code graph analysis.
 - **[DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)** — Multi-agent runner.
 - **[anysearch-ai/anysearch-skill](https://github.com/anysearch-ai/anysearch-skill)** — Search skill.
+- **[Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach)** — Multi-engine deep search reach & retrieval engine.
 - **[nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** — Design system skill.
 - **[pbakaus/impeccable](https://github.com/pbakaus/impeccable)** — UI visual polish assistant.
 - **[public-apis/public-apis](https://github.com/public-apis/public-apis)** — Public API directory.
