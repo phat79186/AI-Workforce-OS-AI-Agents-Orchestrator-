@@ -121,6 +121,21 @@ def test_chatdev_adapter_integration():
     assert "main.py" in software["generated_files"]
 
 
+def test_rtk_token_compressor_integration():
+    from orchestrator.integrations import RTKTokenCompressor
+    rtk = RTKTokenCompressor()
+    messages = [
+        {"role": "system", "content": "You are an AI CTO. Formulate technical roadmap with DAG steps."},
+        {"role": "agent", "content": "Executing task...\nExecuting task...\nTraceback: Exception in thread main."},
+    ]
+    res = rtk.compress_agent_dialog(messages)
+
+    assert res["status"] == "DIALOG_COMPRESSED"
+    assert res["source_repo"] == "rtk-ai/rtk"
+    assert res["saved_total_tokens"] >= 0
+    assert len(res["compressed_dialog"]) == 2
+
+
 def test_external_ecosystem_hub():
     hub = ExternalEcosystemHub()
     status = hub.get_status()
@@ -130,3 +145,4 @@ def test_external_ecosystem_hub():
     assert status.get("openclaw_status") == "READY"
     assert status.get("taste_skill_status") == "READY"
     assert status.get("chatdev_status") == "READY"
+    assert status.get("rtk_token_compressor_status") == "READY"

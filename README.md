@@ -314,6 +314,7 @@ We acknowledge and credit the open-source projects and libraries that inspired o
 - **[Ollama](https://github.com/ollama/ollama)** — Local LLM runner.
 - **[OpenHands](https://github.com/All-Hands-AI/OpenHands)** — Autonomous AI coding software development agent.
 - **[OpenBMB/ChatDev](https://github.com/OpenBMB/ChatDev)** — Communicative multi-agent virtual software company framework.
+- **[rtk-ai/rtk](https://github.com/rtk-ai/rtk)** — Redundant Token Killer & real-time token compression engine for AI-to-AI dialogs.
 - **[Obsidian](https://obsidian.md/)** — Personal Knowledge Base & Markdown Vault.
 - **[mattpocock/skills](https://github.com/mattpocock/skills)** — AI agent skills framework.
 - **[colbymchenry/codegraph](https://github.com/colbymchenry/codegraph)** — Code graph analysis.

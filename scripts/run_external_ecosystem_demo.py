@@ -80,8 +80,19 @@ def run_external_ecosystem_demo() -> None:
     print(f"  * Deployed Virtual Roles ({len(chatdev_res['virtual_roles_deployed'])} Roles): {chatdev_res['virtual_roles_deployed']}")
     print(f"  * Generated Project Files: {chatdev_res['generated_files']}")
 
-    # 9. Zleap-AI/SAG
-    print("\n[9. SAG FRAMEWORK] Synchronizing Semantic Agent Graph Nodes...")
+    # 9. rtk-ai/rtk Redundant Token Killer
+    print("\n[9. RTK TOKEN COMPRESSOR] Compressing Inter-Agent Dialog Tokens...")
+    sample_dialog = [
+        {"role": "CEO", "content": "You are the Lead CTO. Please formulate a technical roadmap for Face Authentication Microservice with Pytest checks.\nPlease formulate a technical roadmap for Face Authentication Microservice with Pytest checks."},
+        {"role": "CTO", "content": "Roadmap created:\n  - Step 1: Initialize FastApi Backend\n  - Step 2: Integrate Silent-Face Anti-Spoofing Model\n  - Step 3: Run Playwright Visual QA Checks"},
+    ]
+    rtk_res = hub.rtk.compress_agent_dialog(sample_dialog)
+    print(f"  * Source Repo: {rtk_res['source_repo']} | Status: {rtk_res['status']}")
+    print(f"  * Token Savings: {rtk_res['original_total_tokens']} ➔ {rtk_res['compressed_total_tokens']} tokens (-{rtk_res['token_reduction_percentage']}%)")
+    print(f"  * Tokens Saved: {rtk_res['saved_total_tokens']} tokens eliminated without semantic loss")
+
+    # 10. Zleap-AI/SAG
+    print("\n[10. SAG FRAMEWORK] Synchronizing Semantic Agent Graph Nodes...")
     hub.sag.register_agent("CTO-AGENT", "ExecutiveCTO", {"mode": "strategic_planning"})
     sag_res = hub.sag.synchronize_graph()
     print(f"  * Graph Synchronized: {sag_res['node_count']} Node | Status: {sag_res['status']}")
