@@ -100,6 +100,14 @@ def run_external_ecosystem_demo() -> None:
     sag_res = hub.sag.synchronize_graph()
     print(f"  * Graph Synchronized: {sag_res['node_count']} Node | Status: {sag_res['status']}")
 
+    # 11. abhigyanpatwari/GitNexus Multi-platform Sync & Health Audit
+    print("\n[11. GITNEXUS ENGINE] Performing Multi-Remote Sync & Repo Health Auditing...")
+    git_nexus_res = hub.git_nexus.sync_multi_remotes(".")
+    health_res = hub.git_nexus.audit_repository_health(".")
+    print(f"  * Source Repo: {git_nexus_res['source_repo']} | Status: {git_nexus_res['status']}")
+    print(f"  * Synced Remotes: {len(git_nexus_res['synced_remotes'])} remotes (GitHub, GitLab) synchronized")
+    print(f"  * Repository Health Score: {health_res['repo_health_score']}/100 | Status: {health_res['status']}")
+
     # Final Overall Hub Status
     status = hub.get_status()
     print("\n=================================================================")

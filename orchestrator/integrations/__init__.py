@@ -14,6 +14,7 @@ from orchestrator.integrations.agent_reach import AgentReachEngine
 from orchestrator.integrations.chatdev_adapter import ChatDevAdapter
 from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
 from orchestrator.integrations.karpathy_skills import KarpathySkill, KarpathySkillsEngine
+from orchestrator.integrations.git_nexus import GitNexusEngine
 from orchestrator.integrations.ecosystem_hub import ExternalEcosystemHub
 
 __all__ = [
@@ -21,6 +22,7 @@ __all__ = [
     "MattPocockSkillsEngine",
     "KarpathySkill",
     "KarpathySkillsEngine",
+    "GitNexusEngine",
     "CodeSymbol",
     "CodeGraphTool",
     "PonytailWorkflowStep",

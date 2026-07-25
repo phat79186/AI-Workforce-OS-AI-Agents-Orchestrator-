@@ -17,10 +17,11 @@ from orchestrator.integrations.agent_reach import AgentReachEngine
 from orchestrator.integrations.chatdev_adapter import ChatDevAdapter
 from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
 from orchestrator.integrations.karpathy_skills import KarpathySkillsEngine
+from orchestrator.integrations.git_nexus import GitNexusEngine
 
 
 class ExternalEcosystemHub:
-    """Unified Hub connecting external tools, Matt Pocock & Andrej Karpathy skills, Ponytail workflow runner, RTK Token Compressor, Agent-Reach, ChatDev, and OpenClaw into AI Workforce OS v4.2."""
+    """Unified Hub connecting external tools, Matt Pocock & Andrej Karpathy skills, GitNexus sync engine, Ponytail workflow runner, RTK Token Compressor, Agent-Reach, ChatDev, and OpenClaw into AI Workforce OS v4.2."""
 
     def __init__(self) -> None:
         self.mattpocock_skills = MattPocockSkillsEngine()
@@ -37,6 +38,7 @@ class ExternalEcosystemHub:
         self.openclaw = OpenClawPromptProcessor()
         self.chatdev = ChatDevAdapter()
         self.rtk = RTKTokenCompressor()
+        self.git_nexus = GitNexusEngine()
 
     def get_status(self) -> Dict[str, Any]:
         """Return status summary for all integrated tools and skills."""
@@ -56,5 +58,6 @@ class ExternalEcosystemHub:
             "chatdev_status": "READY",
             "rtk_token_compressor_status": "READY",
             "karpathy_skills_status": "READY",
+            "git_nexus_status": "READY",
             "overall_status": "ALL_INTEGRATED",
         }

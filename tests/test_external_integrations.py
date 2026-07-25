@@ -154,6 +154,22 @@ def test_karpathy_skills_and_ponytail_combined_integration():
     assert "NANO-GPT-01" in workflow["completed_steps"]
 
 
+def test_git_nexus_integration():
+    from orchestrator.integrations import GitNexusEngine
+    nexus = GitNexusEngine()
+    
+    sync_res = nexus.sync_multi_remotes("/dummy/path")
+    assert sync_res["status"] == "ALL_REMOTES_SYNCHRONIZED"
+    assert len(sync_res["synced_remotes"]) == 2
+    
+    health_res = nexus.audit_repository_health("/dummy/path")
+    assert health_res["status"] == "HEALTHY"
+    assert health_res["repo_health_score"] > 90
+    
+    board_res = nexus.list_pr_issue_nexus()
+    assert board_res["unified_board_status"] == "SYNCHRONIZED"
+
+
 def test_external_ecosystem_hub():
     hub = ExternalEcosystemHub()
     status = hub.get_status()
@@ -165,3 +181,4 @@ def test_external_ecosystem_hub():
     assert status.get("chatdev_status") == "READY"
     assert status.get("rtk_token_compressor_status") == "READY"
     assert status.get("karpathy_skills_status") == "READY"
+    assert status.get("git_nexus_status") == "READY"
