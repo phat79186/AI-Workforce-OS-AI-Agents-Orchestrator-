@@ -1,4 +1,4 @@
-"""Enterprise Obsidian Vault Incremental Indexer, AST Markdown Parser, and RAG Integrator."""
+"""Enterprise Obsidian Vault Incremental Indexer, AST Markdown Parser, and PageIndex RAG Integrator."""
 
 from __future__ import annotations
 
@@ -7,6 +7,18 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 from orchestrator.context.obsidian_config import resolve_obsidian_vault_path
+
+
+@dataclass
+class PageIndexPage:
+    """A layout-preserved document page segment matching VectifyAI/PageIndex."""
+
+    page_number: int
+    parent_document_title: str
+    layout_hierarchy: List[str]
+    content: str
+    tags: List[str]
+    scope: str
 
 
 @dataclass
@@ -19,16 +31,17 @@ class ObsidianDocument:
     content: str
     mtime: float
     frontmatter: Dict[str, Any] = field(default_factory=dict)
-    sections: List[Dict[str, str]] = field(default_factory=list)
+    sections: List[Dict[str, str]] = field(default_factory=dict)
     tags: List[str] = field(default_factory=list)
     aliases: List[str] = field(default_factory=list)
     wikilinks: List[str] = field(default_factory=list)
     backlinks: List[str] = field(default_factory=list)
     scope: str = "ORGANIZATION"  # GLOBAL, ORGANIZATION, DEPARTMENT, PROJECT, TASK
+    pages: List[PageIndexPage] = field(default_factory=list)
 
-    def to_dict(self, score: float = 0.0) -> Dict[str, Any]:
+    def to_dict(self, score: float = 0.0, page_info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Convert to structured dictionary for RAG query results."""
-        return {
+        res = {
             "title": self.title,
             "path": self.file_path,
             "file_path": self.file_path,
@@ -42,11 +55,16 @@ class ObsidianDocument:
             "backlinks": self.backlinks,
             "frontmatter": self.frontmatter,
             "scope": self.scope,
+            "is_page_index_enabled": True,
+            "source_engine": "VectifyAI/PageIndex",
         }
+        if page_info:
+            res.update(page_info)
+        return res
 
 
 class ObsidianVaultRAG:
-    """Enterprise Incremental Indexer and RAG Query Engine for Obsidian Vaults."""
+    """Enterprise PageIndex Document Indexer and Page-Scoped RAG Query Engine for Obsidian Vaults."""
 
     def __init__(self, vault_path: Optional[str] = None) -> None:
         self.vault_path: Optional[Path] = resolve_obsidian_vault_path(cli_vault_path=vault_path, create_if_missing=bool(vault_path))
@@ -63,7 +81,7 @@ class ObsidianVaultRAG:
             self.index_vault()
 
     def parse_markdown(self, full_path: Path, relative_path: str, content: str, mtime: float) -> ObsidianDocument:
-        """Parse Markdown file extracting YAML Frontmatter, Headings, Wikilinks, Tags, and Aliases."""
+        """Parse Markdown file extracting YAML Frontmatter, Headings, Wikilinks, Tags, Aliases, and PageIndex pages."""
         frontmatter: Dict[str, Any] = {}
         body = content
 
@@ -104,7 +122,7 @@ class ObsidianVaultRAG:
         elif isinstance(fm_aliases, str):
             aliases = [fm_aliases]
 
-        # 4. Extract Wikilinks [[Target Note]] or [[Target Note|Display Text]]
+        # 4. Extract Wikilinks [[Target Note]]
         wikilinks: List[str] = []
         raw_wikilinks = re.findall(r"\[\[(.*?)\]\]", body)
         for wl in raw_wikilinks:
@@ -129,6 +147,45 @@ class ObsidianVaultRAG:
         if current_text:
             sections.append({"heading": current_heading, "content": "\n".join(current_text).strip()})
 
+        # 6. PageIndex Layout-Preserving Page Chunking
+        # Partition pages by '<!-- page -->', '<!-- slide -->', or by sections H1/H2.
+        pages: List[PageIndexPage] = []
+        raw_pages = re.split(r"<!--\s*(?:page|slide)\s*-->", body)
+        
+        page_num = 1
+        for raw_page in raw_pages:
+            trimmed_page = raw_page.strip()
+            if not trimmed_page:
+                continue
+
+            # Further partition if page is exceptionally long (> 1000 characters)
+            if len(trimmed_page) > 1000:
+                sub_chunks = [trimmed_page[i:i+1000] for i in range(0, len(trimmed_page), 1000)]
+                for chunk in sub_chunks:
+                    pages.append(
+                        PageIndexPage(
+                            page_number=page_num,
+                            parent_document_title=title,
+                            layout_hierarchy=[current_heading],
+                            content=chunk.strip(),
+                            tags=sorted(list(tags)),
+                            scope=scope if isinstance(scope, str) else "ORGANIZATION",
+                        )
+                    )
+                    page_num += 1
+            else:
+                pages.append(
+                    PageIndexPage(
+                        page_number=page_num,
+                        parent_document_title=title,
+                        layout_hierarchy=[current_heading],
+                        content=trimmed_page,
+                        tags=sorted(list(tags)),
+                        scope=scope if isinstance(scope, str) else "ORGANIZATION",
+                    )
+                )
+                page_num += 1
+
         return ObsidianDocument(
             title=title,
             file_path=relative_path,
@@ -142,6 +199,7 @@ class ObsidianVaultRAG:
             wikilinks=wikilinks,
             backlinks=[],
             scope=scope if isinstance(scope, str) else "ORGANIZATION",
+            pages=pages,
         )
 
     def index_vault(self, vault_path: Optional[str] = None) -> int:
@@ -208,36 +266,57 @@ class ObsidianVaultRAG:
     def query(
         self, query_text: str, top_k: int = 5, scope: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        """Query knowledge base returning rich structured metadata matching keywords and optional scope."""
+        """Query knowledge base returning PageIndex page-scoped results with layout-preserving context."""
         if not self._documents:
             return []
 
         keywords = [k.lower() for k in query_text.split() if len(k) > 2]
-        scored_docs = []
+        scored_pages = []
 
         for doc in self._documents.values():
             if scope and doc.scope.upper() != scope.upper() and doc.scope.upper() != "GLOBAL":
                 continue
 
-            content_lower = doc.content.lower()
-            title_lower = doc.title.lower()
+            for page in doc.pages:
+                content_lower = page.content.lower()
+                title_lower = page.parent_document_title.lower()
 
-            score = 0.0
-            for kw in keywords:
-                if kw in title_lower:
-                    score += 5.0
-                if any(kw in tag.lower() for tag in doc.tags):
-                    score += 3.0
-                score += content_lower.count(kw) * 1.0
+                score = 0.0
+                for kw in keywords:
+                    if kw in title_lower:
+                        score += 5.0
+                    if any(kw in tag.lower() for tag in page.tags):
+                        score += 3.0
+                    score += content_lower.count(kw) * 1.0
 
-            if score > 0:
-                scored_docs.append((score, doc))
+                if score > 0:
+                    scored_pages.append((score, page, doc))
 
-        scored_docs.sort(key=lambda x: x[0], reverse=True)
-        return [doc.to_dict(score=score) for score, doc in scored_docs[:top_k]]
+        scored_pages.sort(key=lambda x: x[0], reverse=True)
+        
+        # Deduplicate to avoid returning the exact same page segments multiple times if top_k is small
+        seen_pages = set()
+        results = []
+        for score, page, doc in scored_pages:
+            page_id = (page.parent_document_title, page.page_number)
+            if page_id in seen_pages:
+                continue
+            seen_pages.add(page_id)
+
+            page_info = {
+                "page_number": page.page_number,
+                "layout_hierarchy": page.layout_hierarchy,
+                "page_content": page.content,
+                "is_page_scoped": True,
+            }
+            results.append(doc.to_dict(score=score, page_info=page_info))
+            if len(results) >= top_k:
+                break
+
+        return results
 
     def search_vault(self, query_text: str) -> List[Dict[str, Any]]:
-        """Search vault documents matching query."""
+        """Search vault pages matching query."""
         return self.query(query_text, top_k=10)
 
     def get_document(self, title: str) -> Optional[Dict[str, Any]]:
