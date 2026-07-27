@@ -170,6 +170,20 @@ def test_git_nexus_integration():
     assert board_res["unified_board_status"] == "SYNCHRONIZED"
 
 
+def test_playwright_moderator_integration():
+    from orchestrator.integrations import PlaywrightVisualAuditor
+    moderator = PlaywrightVisualAuditor()
+    
+    html = "<html><head><meta name='viewport' content='width=device-width'></head><body><h1>Welcome</h1><img src='placeholder.png'/></body></html>"
+    res = moderator.run_ui_moderation(html)
+    assert res["status"] == "APPROVED"
+    assert res["visual_qa_score"] == 85.0  # missing placeholder warning only
+    
+    diff = moderator.pixel_diff("baseline.png", "candidate.png")
+    assert diff["status"] == "VISUAL_MATCH_PASSED"
+    assert diff["regression_detected"] is False
+
+
 def test_external_ecosystem_hub():
     hub = ExternalEcosystemHub()
     status = hub.get_status()
@@ -182,3 +196,4 @@ def test_external_ecosystem_hub():
     assert status.get("rtk_token_compressor_status") == "READY"
     assert status.get("karpathy_skills_status") == "READY"
     assert status.get("git_nexus_status") == "READY"
+    assert status.get("playwright_moderator_status") == "READY"

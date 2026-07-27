@@ -108,6 +108,15 @@ def run_external_ecosystem_demo() -> None:
     print(f"  * Synced Remotes: {len(git_nexus_res['synced_remotes'])} remotes (GitHub, GitLab) synchronized")
     print(f"  * Repository Health Score: {health_res['repo_health_score']}/100 | Status: {health_res['status']}")
 
+    # 12. microsoft/playwright Visual Moderation & Layout Auditing
+    print("\n[12. PLAYWRIGHT MODERATOR] Executing Headless Visual QA & Layout Auditing...")
+    html_sample = "<html><head><meta name='viewport' content='width=device-width'></head><body><h1>Dashboard</h1><img src='placeholder.png'/></body></html>"
+    playwright_res = hub.playwright_moderator.run_ui_moderation(html_sample)
+    diff_res = hub.playwright_moderator.pixel_diff("baseline.png", "candidate.png")
+    print(f"  * Source Repo: {playwright_res['source_repo']} | Status: {playwright_res['status']}")
+    print(f"  * Visual QA Score: {playwright_res['visual_qa_score']}/100 | WCAG AA Contrast Pass: {playwright_res['wcag_aa_contrast_pass']}")
+    print(f"  * Regression Check: {diff_res['status']} | Diff: {diff_res['diff_pixels_percentage']}% pixels mismatch")
+
     # Final Overall Hub Status
     status = hub.get_status()
     print("\n=================================================================")

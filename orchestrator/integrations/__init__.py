@@ -15,6 +15,7 @@ from orchestrator.integrations.chatdev_adapter import ChatDevAdapter
 from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
 from orchestrator.integrations.karpathy_skills import KarpathySkill, KarpathySkillsEngine
 from orchestrator.integrations.git_nexus import GitNexusEngine
+from orchestrator.integrations.playwright_moderator import PlaywrightVisualAuditor
 from orchestrator.integrations.ecosystem_hub import ExternalEcosystemHub
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     "KarpathySkill",
     "KarpathySkillsEngine",
     "GitNexusEngine",
+    "PlaywrightVisualAuditor",
     "CodeSymbol",
     "CodeGraphTool",
     "PonytailWorkflowStep",

@@ -323,6 +323,7 @@ We acknowledge and credit the open-source projects and libraries that inspired o
 - **[DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)** — Multi-agent runner.
 - **[anysearch-ai/anysearch-skill](https://github.com/anysearch-ai/anysearch-skill)** — Search skill.
 - **[Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach)** — Multi-engine deep search reach & retrieval engine.
+- **[microsoft/playwright](https://github.com/microsoft/playwright)** — Headless browser DOM visual layout verification and visual regression testing engine.
 - **[nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** — Design system skill.
 - **[pbakaus/impeccable](https://github.com/pbakaus/impeccable)** — UI visual polish assistant.
 - **[Taste Skill](https://github.com/hoangsonww/AI-Agents-Orchestrator)** — Aesthetic curation, spatial harmony, typography hierarchy, and motion choreography skill.
