@@ -7,7 +7,9 @@ Uses FTS5 (SQLite built-in) for search; no external embedding dependency.
 
 from __future__ import annotations
 
+import json
 import logging
+import os
 from typing import Any
 from uuid import uuid4
 
@@ -34,20 +36,136 @@ from agentic_team.context.store.graph_store import GraphStore
 class MemoryManager:
     """High-level API for agentic team context management.
 
-    Provides storage, search (BM25 + FTS5 hybrid), analytics,
+    Provides storage, search (BM25 + FTS5 hybrid or agentmemory), analytics,
     pruning, and export capabilities backed by an SQLite graph store.
     """
 
-    def __init__(self, db_path: str | None = None):
+    def __init__(self, db_path: str | None = None, provider: str | None = None):
         """Initialize the memory manager.
 
         Args:
             db_path: Path to database file. Defaults to ~/.agentic-team/context.db
+            provider: Memory backend provider ('sqlite' or 'agentmemory').
         """
         self.logger = logging.getLogger("agentic_team.context.memory_manager")
+        self.provider = (
+            provider
+            or os.environ.get("AGENTIC_TEAM_MEMORY_PROVIDER")
+            or os.environ.get("ORCHESTRATOR_MEMORY_PROVIDER", "sqlite")
+        ).lower()
         self.graph_store = GraphStore(db_path)
         self._bm25 = BM25Index(self.graph_store)
         self._fts = FTSSearch(self.graph_store)
+
+    def _sync_to_agentmemory(self, node: Node) -> None:
+        """Sync a node to agentmemory backend."""
+        if self.provider != "agentmemory":
+            return
+        try:
+            import agentmemory
+
+            category = node.node_type.value
+            metadata: dict[str, Any] = {
+                "id": node.id,
+                "node_type": node.node_type.value,
+                "title": node.title or "",
+                "project_id": getattr(node, "project_id", "") or "",
+                "importance_score": float(getattr(node, "importance_score", 1.0)),
+            }
+            for k, v in node.to_dict().items():
+                if k in ("id", "node_type", "title", "content", "project_id", "importance_score"):
+                    continue
+                if isinstance(v, (dict, list)):
+                    metadata[f"_json_{k}"] = json.dumps(v)
+                elif isinstance(v, (str, int, float, bool)):
+                    metadata[k] = v
+
+            agentmemory.create_memory(
+                category=category,
+                document=node.content or node.title or "empty",
+                metadata=metadata,
+            )
+        except Exception as e:
+            self.logger.warning("Failed to sync node %s to agentmemory: %s", node.id, e)
+
+    def _search_agentmemory(
+        self,
+        query: str,
+        limit: int = 20,
+        node_types: list[NodeType] | None = None,
+        project_id: str | None = None,
+    ) -> list[SearchResult]:
+        """Search context using agentmemory backend."""
+        try:
+            import agentmemory
+        except ImportError:
+            self.logger.warning("agentmemory package not installed, falling back to FTS5 search")
+            return self.search(query=query, limit=limit, node_types=node_types)
+
+        results: list[SearchResult] = []
+        target_types = node_types if node_types else list(NodeType)
+
+        for nt in target_types:
+            category = nt.value
+            filter_meta = {"project_id": project_id} if project_id else None
+            try:
+                if filter_meta:
+                    memories = agentmemory.search_memory(
+                        category=category,
+                        search_term=query,
+                        n_results=limit,
+                        filter_metadata=filter_meta,
+                    )
+                else:
+                    memories = agentmemory.search_memory(
+                        category=category,
+                        search_term=query,
+                        n_results=limit,
+                    )
+            except Exception as e:
+                self.logger.debug("agentmemory search failed for category %s: %s", category, e)
+                continue
+
+            for mem in (memories or []):
+                mem_meta = mem.get("metadata", {}) or {}
+                node_dict: dict[str, Any] = {
+                    "id": mem_meta.get("id") or str(mem.get("id", "")),
+                    "node_type": mem_meta.get("node_type", category),
+                    "title": mem_meta.get("title", ""),
+                    "content": mem.get("document", ""),
+                    "project_id": mem_meta.get("project_id", ""),
+                    "importance_score": float(mem_meta.get("importance_score", 1.0)),
+                    "tags": [],
+                    "metadata": {},
+                }
+                for k, v in mem_meta.items():
+                    if k in ("id", "node_type", "title", "project_id", "importance_score"):
+                        continue
+                    if k.startswith("_json_"):
+                        orig_key = k[len("_json_"):]
+                        try:
+                            node_dict[orig_key] = json.loads(v)
+                        except Exception:
+                            pass
+                    else:
+                        node_dict[k] = v
+
+                try:
+                    node = Node.from_dict(node_dict)
+                    dist = float(mem.get("distance", 0.0) or 0.0)
+                    score = max(0.0, 1.0 - (dist / 2.0)) if dist else 1.0
+                    results.append(
+                        SearchResult(
+                            node=node,
+                            score=score,
+                            match_type="agentmemory",
+                        )
+                    )
+                except Exception as e:
+                    self.logger.debug("Failed to reconstruct node from agentmemory result: %s", e)
+
+        results.sort(key=lambda r: r.score, reverse=True)
+        return results[:limit]
 
     def store_conversation(
         self,
@@ -85,6 +203,7 @@ class MemoryManager:
         )
 
         self.graph_store.add_node(node)
+        self._sync_to_agentmemory(node)
         return node.id
 
     def store_task(
@@ -130,6 +249,7 @@ class MemoryManager:
         )
 
         self.graph_store.add_node(node)
+        self._sync_to_agentmemory(node)
         return node.id
 
     def log_mistake(
@@ -170,6 +290,7 @@ class MemoryManager:
         )
 
         self.graph_store.add_node(node)
+        self._sync_to_agentmemory(node)
         return node.id
 
     def store_pattern(
@@ -206,6 +327,7 @@ class MemoryManager:
         )
 
         self.graph_store.add_node(node)
+        self._sync_to_agentmemory(node)
         return node.id
 
     def store_decision(
@@ -243,6 +365,7 @@ class MemoryManager:
         )
 
         self.graph_store.add_node(node)
+        self._sync_to_agentmemory(node)
         return node.id
 
     def search(
@@ -251,7 +374,7 @@ class MemoryManager:
         limit: int = 20,
         node_types: list[NodeType] | None = None,
     ) -> list[SearchResult]:
-        """Search the context graph using FTS5.
+        """Search the context graph using FTS5 or agentmemory.
 
         Args:
             query: Search query.
@@ -261,6 +384,13 @@ class MemoryManager:
         Returns:
             List of search results.
         """
+        if self.provider == "agentmemory":
+            return self._search_agentmemory(
+                query=query,
+                limit=limit,
+                node_types=node_types,
+            )
+
         safe_query = self._sanitize_fts_query(query)
         if not safe_query:
             return []

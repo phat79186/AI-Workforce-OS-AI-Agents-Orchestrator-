@@ -1,6 +1,5 @@
 """Unit tests for 3-Layer Routers (Agent, Model, Tool) and Provider Registry."""
 
-import pytest
 from providers.base_provider import ProviderType
 from providers.registry import ProviderRegistry
 from orchestrator.routing.agent_router import AgentRouter

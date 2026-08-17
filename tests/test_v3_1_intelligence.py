@@ -1,11 +1,9 @@
 """Unit tests for v3.1 Workforce Intelligence & AI CTO Manager."""
 
 import tempfile
-import pytest
 
 from workforce import (
     AIEmployee,
-    AIWorkforceRegistry,
     CandidateRanker,
     PerformanceMetrics,
     SeniorityLevel,

@@ -8,14 +8,13 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
 # Ensure project root on path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from orchestrator.adapters.base import AgentResponse
 
 # We need to patch the engines before importing the server so the lifespan
 # doesn't try to initialise real adapters (which call shutil.which).

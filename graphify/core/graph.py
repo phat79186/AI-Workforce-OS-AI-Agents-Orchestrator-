@@ -592,7 +592,7 @@ class GraphStore:
                 try:
                     conn.close()
                 except Exception:  # pylint: disable=broad-except
-                    pass
+                    logger.debug("Error closing a tracked SQLite connection", exc_info=True)
             self._all_conns.clear()
         self._local.conn = None
         self._closed = True

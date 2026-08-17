@@ -6,6 +6,7 @@ import argparse
 import sys
 import tempfile
 from pathlib import Path
+from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -15,7 +16,6 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
-from orchestrator.context.obsidian_config import resolve_obsidian_vault_path
 from orchestrator.context.obsidian_rag import ObsidianVaultRAG
 from shared_knowledge import KnowledgeBridge
 from v4_organization import AutonomousAIOrganization, OrganizationalLearningRecord

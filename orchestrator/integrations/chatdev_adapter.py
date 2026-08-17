@@ -1,14 +1,22 @@
-"""Adapter for OpenBMB/ChatDev virtual software company communicative multi-agent framework."""
+"""SIMULATED adapter named after OpenBMB/ChatDev multi-agent software framework.
+
+⚠️ No agents actually run and no code is actually generated. Every phase
+returns the same fixed dialog summaries and file names regardless of the
+task prompt. See `orchestrator/integrations/README.md`.
+"""
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
+
+from orchestrator.integrations._simulated import warn_simulated
 
 
 class ChatDevAdapter:
-    """ChatDev adapter executing communicative multi-agent software development across Designing, Coding, Testing, and Documenting phases."""
+    """SIMULATED ChatDev adapter — returns scripted phase summaries, runs no real agents."""
 
     def __init__(self) -> None:
+        warn_simulated("ChatDevAdapter", "OpenBMB/ChatDev")
         self.version = "1.0.0"
         self.source_repo = "OpenBMB/ChatDev"
         self.supported_phases = [

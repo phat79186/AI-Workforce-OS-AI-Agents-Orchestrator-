@@ -3,7 +3,6 @@
 import tempfile
 from pathlib import Path
 
-import pytest
 
 from orchestrator.core.dependency_graph import DependencyGraph
 from orchestrator.core.task_queue import TaskQueue

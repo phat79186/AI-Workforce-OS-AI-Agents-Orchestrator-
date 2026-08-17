@@ -18,7 +18,6 @@ import time
 
 import pytest
 
-from graphify.core.cache import ContentCache
 from graphify.core.config import GraphifyConfig
 from graphify.core.differ import GraphDiff, GraphDiffer
 from graphify.core.exceptions import (
@@ -39,7 +38,7 @@ from graphify.core.graph import GraphStore
 from graphify.core.metrics import MetricsStore, ScanMetrics
 from graphify.core.migrations import LATEST_VERSION, get_current_version, migrate
 from graphify.core.scanner import Scanner
-from graphify.core.schema import Edge, EdgeType, Node, NodeType
+from graphify.core.schema import Node, NodeType
 from graphify.core.validation import (
     sanitize_search_query,
     validate_node_name,

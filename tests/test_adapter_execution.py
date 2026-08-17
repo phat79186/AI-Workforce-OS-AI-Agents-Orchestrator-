@@ -8,9 +8,8 @@ import subprocess
 from unittest.mock import MagicMock, Mock, patch
 
 import httpx
-import pytest
 
-from orchestrator.adapters.base import AgentCapability, AgentResponse, BaseAdapter
+from orchestrator.adapters.base import AgentCapability, BaseAdapter
 
 
 class ConcreteAdapter(BaseAdapter):

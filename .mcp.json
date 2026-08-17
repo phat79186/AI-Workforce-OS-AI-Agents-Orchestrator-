@@ -27,6 +27,14 @@
       "command": "npx",
       "args": ["-y", "@anthropic-ai/mcp-memory"],
       "description": "Persistent memory storage for conversation context"
+    },
+    "agentmemory": {
+      "command": "npx",
+      "args": ["-y", "@agentmemory/mcp"],
+      "env": {
+        "AGENTMEMORY_URL": "http://localhost:3111"
+      },
+      "description": "Persistent memory for AI coding agents based on real-world benchmarks"
     }
   },
   "defaults": {

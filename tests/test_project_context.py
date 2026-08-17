@@ -5,8 +5,6 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -100,7 +98,7 @@ class TestProjectScanner:
         assert len(result["edges"]) > 0
 
     def test_scanner_project_id_deterministic(self, sample_project):
-        from orchestrator.context.ops.project_scanner import ProjectScanner, generate_project_id
+        from orchestrator.context.ops.project_scanner import generate_project_id
 
         pid1 = generate_project_id(str(sample_project))
         pid2 = generate_project_id(str(sample_project))
@@ -205,7 +203,6 @@ class TestProjectScopedMemoryManager:
         assert len(file_nodes) > 0
 
     def test_store_task_with_project_id(self, manager, sample_project):
-        from orchestrator.context.models.schemas import NodeType
 
         pid = manager.register_project(str(sample_project))
         task_id = manager.store_task(
@@ -226,7 +223,6 @@ class TestProjectScopedMemoryManager:
         assert isinstance(ctx["files"], list)
 
     def test_delete_project_graph(self, manager, sample_project):
-        from orchestrator.context.models.schemas import NodeType
 
         pid = manager.register_project(str(sample_project))
         nodes_before = manager.graph_store.query_nodes(project_id=pid)
@@ -285,7 +281,6 @@ class TestMultiProjectIsolation:
         assert pid_a != pid_b
 
     def test_project_nodes_isolated(self, manager, project_a, project_b):
-        from orchestrator.context.models.schemas import NodeType
 
         pid_a = manager.register_project(str(project_a))
         pid_b = manager.register_project(str(project_b))
@@ -399,7 +394,7 @@ class TestGraphStoreProjectScoping:
         return GraphStore(temp_db)
 
     def test_node_has_project_id(self, store):
-        from orchestrator.context.models.schemas import Node, NodeType
+        from orchestrator.context.models.schemas import Node
 
         node = Node(title="Test", content="Content", project_id="proj123")
         store.add_node(node)

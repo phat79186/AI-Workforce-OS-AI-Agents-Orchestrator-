@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from workforce.budget import WorkforceBudget
 from workforce.employee import AIEmployee, SeniorityLevel
@@ -101,6 +101,7 @@ class AIWorkforceRegistry:
 
         ranked = self.ranker.rank_candidates(candidates, required_skills, task_complexity)
         best_candidate, match_score = ranked[0]
+        self._active_concurrent_count += 1
         return best_candidate
 
     def evaluate_and_update(
@@ -120,6 +121,8 @@ class AIWorkforceRegistry:
                 review_passed=review_passed,
                 duration_sec=duration_sec,
             )
+            # Task has finished: free up the concurrency slot that `recruit()` reserved.
+            self._active_concurrent_count = max(0, self._active_concurrent_count - 1)
         return emp
 
     def list_employees(self, department: Optional[str] = None) -> List[AIEmployee]:

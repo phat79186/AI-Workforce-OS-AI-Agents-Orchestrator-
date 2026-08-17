@@ -1,16 +1,13 @@
 """Comprehensive Integration Tests for Real Obsidian Vault Backend in AI Workforce OS v4.2."""
 
-import os
 import tempfile
 from pathlib import Path
-import pytest
 
 from orchestrator.context.obsidian_config import resolve_obsidian_vault_path
 from orchestrator.context.obsidian_rag import ObsidianVaultRAG
 from orchestrator.security.permission_policy import ActionLevel, PermissionPolicy
 from shared_knowledge import KnowledgeBridge
 from v4_organization import (
-    AutonomousAIOrganization,
     OrganizationalLearningRecord,
     OrganizationalMemory,
 )

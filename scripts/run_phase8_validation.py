@@ -2,16 +2,14 @@
 
 from __future__ import annotations
 
-import json
 import os
 import psutil
-import shutil
 import subprocess
 import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 # Add repo root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -22,7 +20,6 @@ from providers.openhands_provider import OpenHandsProvider
 from providers.registry import ProviderRegistry
 from orchestrator.routing import AgentRouter, ModelRouter, ToolRouter, RoutingMode
 from orchestrator.core.dependency_graph import DependencyGraph
-from orchestrator.core.task_queue import TaskQueue
 from orchestrator.events import Event, EventBus, EventStore, EventType
 from orchestrator.security import ActionLevel, ApprovalManager, PermissionPolicy, SecuritySandbox
 from orchestrator.context.obsidian_rag import ObsidianVaultRAG

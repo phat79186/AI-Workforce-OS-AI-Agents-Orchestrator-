@@ -2,14 +2,11 @@
 Tests for orchestrator core functionality
 """
 
-import tempfile
-from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
-import pytest
 import yaml
 
-from orchestrator.adapters import AgentCapability, AgentResponse, BaseAdapter
+from orchestrator.adapters import AgentResponse, BaseAdapter
 from orchestrator.core import Orchestrator, TaskManager, WorkflowEngine, WorkflowStep
 
 

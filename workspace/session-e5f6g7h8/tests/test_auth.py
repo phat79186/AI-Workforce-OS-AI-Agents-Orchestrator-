@@ -1,6 +1,5 @@
 """Tests for the authentication system."""
 
-import pytest
 from auth.jwt_handler import create_access_token, create_refresh_token, decode_token
 
 

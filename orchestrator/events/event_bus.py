@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Callable, Dict, List
 from orchestrator.events.events import Event, EventType
+
+logger = logging.getLogger(__name__)
 
 EventHandler = Callable[[Event], None]
 
@@ -27,4 +30,8 @@ class EventBus:
             try:
                 handler(event)
             except Exception:
-                pass  # Event handlers must not break execution flow
+                # A broken subscriber must not break the publish loop for others,
+                # but the failure is still logged so it doesn't vanish silently.
+                logger.exception(
+                    "Event handler %r raised while handling %s", handler, event.event_type
+                )

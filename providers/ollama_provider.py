@@ -40,8 +40,8 @@ class OllamaProvider(BaseProvider):
                 if resp.status == 200:
                     data = json.loads(resp.read().decode("utf-8"))
                     models = [m.get("name", "") for m in data.get("models", [])]
-                    self.metadata.is_available = any(self.model_name in m for m in models) or True
-                    return True
+                    self.metadata.is_available = any(self.model_name in m for m in models)
+                    return self.metadata.is_available
         except Exception:
             pass
         self.metadata.is_available = False

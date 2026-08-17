@@ -1,14 +1,26 @@
-"""Prompt Optimizer Engine inspired by linshenkx/prompt-optimizer for meta-prompt enhancement."""
+"""SIMULATED template engine named after linshenkx/prompt-optimizer.
+
+⚠️ There is no meta-prompting, no LLM call, and no real "optimization" here.
+`optimize_prompt()` picks one of 4 hardcoded text templates via a simple
+`if domain == ...` branch, and `clarity_score` is a fabricated formula
+(`0.85 + len(prompt) * 0.002 + 0.1`, capped at 0.98) — a longer prompt always
+scores higher, regardless of actual clarity. See
+`orchestrator/integrations/README.md` for the project-wide context on why
+these mock modules exist.
+"""
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
+
+from simulated_integration_warning import warn_simulated
 
 
 class PromptOptimizerEngine:
-    """Prompt Optimization Engine applying systematic meta-prompting techniques for AI Agents."""
+    """SIMULATED prompt engine — picks a hardcoded template by keyword, not a real optimizer."""
 
     def __init__(self) -> None:
+        warn_simulated("PromptOptimizerEngine", "linshenkx/prompt-optimizer")
         self.version = "1.2.0"
         self.source_repo = "linshenkx/prompt-optimizer"
 

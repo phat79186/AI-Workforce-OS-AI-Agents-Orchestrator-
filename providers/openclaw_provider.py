@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 from providers.base_provider import BaseProvider, ProviderMetadata, ProviderType
 from providers.prompt_optimizer import PromptOptimizerEngine
+
+logger = logging.getLogger(__name__)
 
 
 class OpenClawProvider(BaseProvider):
@@ -64,7 +67,7 @@ class OpenClawProvider(BaseProvider):
                 elif "react" in deps or "vue" in deps:
                     detected_framework = "Modern Web Framework"
             except Exception:
-                pass
+                logger.debug("Failed to parse package.json for theme detection", exc_info=True)
 
         for cfg in (tailwind_config, tailwind_ts, theme_ts, theme_json, globals_css):
             if cfg.exists():

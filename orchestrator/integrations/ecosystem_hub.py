@@ -1,8 +1,27 @@
-"""Unified Hub for External Tools, Skills, and OpenClaw Pre-processor Integrations in AI Workforce OS v4.2."""
+"""Hub composing the integrations in `orchestrator/integrations/`.
+
+As of this revision, 7 of the sub-integrations run real logic (real `git`
+subprocess calls, real AST parsing, real GitHub data fetch, a real headless
+Chromium browser, real WCAG contrast math) — the rest remain local
+simulations. See each module's docstring and `orchestrator/integrations/README.md`
+for the exact status of each one.
+
+Two of the real integrations need extra care at hub-construction time:
+
+- `CodeGraphTool` and `PublicAPIsCatalog` no longer eagerly populate
+  themselves in `__init__` (indexing a codebase / fetching ~1,700 real API
+  entries on every hub construction would be slow and, for the catalog,
+  requires network). Call `hub.codegraph.index_directory(path)` /
+  `hub.public_apis.load()` explicitly when you actually need that data.
+- `PlaywrightVisualAuditor` now raises `PlaywrightNotAvailableError` if the
+  real `playwright` package/browser isn't installed. The hub catches that so
+  a missing optional dependency doesn't take down the whole hub —
+  `hub.playwright_moderator` is `None` in that case.
+"""
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from orchestrator.integrations.mattpocock_skills import MattPocockSkillsEngine
 from orchestrator.integrations.codegraph_tool import CodeGraphTool
 from orchestrator.integrations.ponytail_runner import PonytailRunner
@@ -18,11 +37,11 @@ from orchestrator.integrations.chatdev_adapter import ChatDevAdapter
 from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
 from orchestrator.integrations.karpathy_skills import KarpathySkillsEngine
 from orchestrator.integrations.git_nexus import GitNexusEngine
-from orchestrator.integrations.playwright_moderator import PlaywrightVisualAuditor
+from orchestrator.integrations.playwright_moderator import PlaywrightVisualAuditor, PlaywrightNotAvailableError
 
 
 class ExternalEcosystemHub:
-    """Unified Hub connecting external tools, Matt Pocock & Andrej Karpathy skills, GitNexus sync engine, Playwright visual moderator, Ponytail workflow runner, RTK Token Compressor, Agent-Reach, ChatDev, and OpenClaw into AI Workforce OS v4.2."""
+    """Unified hub wiring together AI Workforce OS's real and simulated integrations."""
 
     def __init__(self) -> None:
         self.mattpocock_skills = MattPocockSkillsEngine()
@@ -40,27 +59,39 @@ class ExternalEcosystemHub:
         self.chatdev = ChatDevAdapter()
         self.rtk = RTKTokenCompressor()
         self.git_nexus = GitNexusEngine()
-        self.playwright_moderator = PlaywrightVisualAuditor()
+
+        self.playwright_moderator: Optional[PlaywrightVisualAuditor] = None
+        self._playwright_unavailable_reason: Optional[str] = None
+        try:
+            self.playwright_moderator = PlaywrightVisualAuditor()
+        except PlaywrightNotAvailableError as e:
+            self._playwright_unavailable_reason = str(e)
 
     def get_status(self) -> Dict[str, Any]:
-        """Return status summary for all integrated tools and skills."""
+        """Return a real status summary reflecting each sub-integration's actual state."""
         return {
             "mattpocock_skills_count": len(self.mattpocock_skills.list_skills()),
             "karpathy_skills_count": len(self.karpathy_skills.list_skills()),
             "codegraph_symbols_indexed": len(self.codegraph._symbol_index),
+            "codegraph_status": "READY (call index_directory() to populate)"
+            if not self.codegraph._symbol_index else "INDEXED",
             "ponytail_steps_queued": len(self.ponytail.steps),
-            "anysearch_status": "READY",
-            "agent_reach_status": "READY",
-            "ui_ux_pro_max_theme": "Dark Glassmorphism",
-            "impeccable_status": "READY",
-            "taste_skill_status": "READY",
-            "public_apis_count": len(self.public_apis._entries),
+            "anysearch_status": "READY (simulated)",
+            "agent_reach_status": "READY (simulated)",
+            "ui_ux_pro_max_status": "READY (4 real distinct themes + real contrast verification)",
+            "impeccable_status": "READY (real WCAG contrast math)",
+            "taste_skill_status": "READY (curated guidelines + real contrast math)",
+            "public_apis_loaded": len(self.public_apis),
+            "public_apis_status": "READY (call load() to fetch the real catalog)"
+            if len(self.public_apis) == 0 else "LOADED",
             "sag_node_count": len(self.sag.nodes),
-            "openclaw_status": "READY",
-            "chatdev_status": "READY",
-            "rtk_token_compressor_status": "READY",
-            "karpathy_skills_status": "READY",
-            "git_nexus_status": "READY",
-            "playwright_moderator_status": "READY",
+            "openclaw_status": "READY (real file scan, templated refinement)",
+            "chatdev_status": "READY (simulated)",
+            "rtk_token_compressor_status": "READY (real text dedup)",
+            "git_nexus_status": "READY (real git operations)",
+            "playwright_moderator_status": (
+                "READY (real headless Chromium)" if self.playwright_moderator is not None
+                else f"UNAVAILABLE: {self._playwright_unavailable_reason}"
+            ),
             "overall_status": "ALL_INTEGRATED",
         }

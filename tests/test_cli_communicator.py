@@ -1,6 +1,6 @@
 """Tests for CLI communicator command building and command parsing."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from orchestrator.adapters.base import AgentResponse, BaseAdapter
 from orchestrator.adapters.cli_communicator import CLICommunicator

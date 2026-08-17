@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Dict, List
 from orchestrator.core.dependency_graph import DependencyGraph
 from v4_organization.ceo import StrategicGoal
 

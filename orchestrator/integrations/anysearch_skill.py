@@ -1,15 +1,22 @@
-"""Integration for anysearch-ai/anysearch-skill intelligent search skill + Panniantong/Agent-Reach deep retrieval."""
+"""SIMULATED integration named after anysearch-ai/anysearch-skill + Panniantong/Agent-Reach.
+
+⚠️ Does NOT search the codebase, the web, or Obsidian memory. `results_count`
+is `len(keywords) * 2` — a word-count formula, not a real result count. See
+`orchestrator/integrations/README.md`.
+"""
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 from orchestrator.integrations.agent_reach import AgentReachEngine
+from orchestrator.integrations._simulated import warn_simulated
 
 
 class AnySearchSkill:
-    """AnySearch skill executing unified searches across codebase, web, Obsidian memory, and Agent-Reach deep retrieval."""
+    """SIMULATED search skill — fabricates results, does not search anything real."""
 
     def __init__(self) -> None:
+        warn_simulated("AnySearchSkill", "anysearch-ai/anysearch-skill")
         self.agent_reach = AgentReachEngine()
 
     def execute_search(

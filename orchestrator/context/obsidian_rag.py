@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 from orchestrator.context.obsidian_config import resolve_obsidian_vault_path
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -232,7 +235,7 @@ class ObsidianVaultRAG:
                     self._documents[full_path_str] = doc
                     self._title_map[doc.title.lower()] = doc
                 except Exception:
-                    pass
+                    logger.warning("Skipping unparsable vault note: %s", full_path_str, exc_info=True)
 
         # Remove deleted files
         deleted_files = set(self._documents.keys()) - current_files

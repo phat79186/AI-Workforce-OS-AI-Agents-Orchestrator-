@@ -1,9 +1,15 @@
-"""Integration for mattpocock/skills AI Agent Skill Framework."""
+"""SIMULATED integration named after mattpocock/skills AI Agent Skill Framework.
+
+⚠️ The 2 seeded skills are hand-written by this project's authors, not
+fetched from the named repo. See `orchestrator/integrations/README.md`.
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
+
+from orchestrator.integrations._simulated import warn_simulated
 
 
 @dataclass
@@ -18,9 +24,10 @@ class MattPocockSkill:
 
 
 class MattPocockSkillsEngine:
-    """Skill discovery and execution engine for mattpocock/skills framework."""
+    """SIMULATED skill engine — serves 2 hardcoded entries, not fetched from the real repo."""
 
     def __init__(self) -> None:
+        warn_simulated("MattPocockSkillsEngine", "mattpocock/skills")
         self._registry: Dict[str, MattPocockSkill] = {}
         self._register_default_skills()
 

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
-from orchestrator.core.dependency_graph import DependencyGraph, TaskNode
+from typing import Dict, Optional
+from orchestrator.core.dependency_graph import DependencyGraph
 from shared_knowledge import KnowledgeBridge
 from workforce import AIWorkforceRegistry, AIEmployee
 

@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
-from v4_organization.ceo import AICEOManager, StrategicGoal
+from v4_organization.ceo import AICEOManager
 from v4_organization.cto import AICTO
-from v4_organization.delegation import AIToAIDelegator, DelegationNode
+from v4_organization.delegation import AIToAIDelegator
 from v4_organization.department_managers import (
     EngineeringManager,
     ResearchManager,

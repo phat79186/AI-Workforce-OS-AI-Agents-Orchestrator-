@@ -1,7 +1,6 @@
 """Unit tests for v4.1 AI-to-AI Delegation & Cross-Project Organizational Memory Learning."""
 
 import tempfile
-import pytest
 
 from v4_organization import (
     AIToAIDelegator,

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Run health checks and generate a report."""
 
-import json
 import sys
 
 sys.path.insert(0, ".")

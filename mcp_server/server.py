@@ -98,7 +98,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="AI Coding Tools MCP Server")
     parser.add_argument("--transport", choices=["stdio", "http"], default="stdio")
-    parser.add_argument("--host", default="0.0.0.0")
+    parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Bind address (default: 127.0.0.1, localhost-only). "
+        "Pass 0.0.0.0 explicitly to expose this MCP tool-execution server on the network.",
+    )
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
 

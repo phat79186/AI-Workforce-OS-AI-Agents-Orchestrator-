@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import io
 import json
+import logging
 import os
 import sys
 import uuid
@@ -22,6 +23,8 @@ from typing import Any
 
 from flask import Flask, jsonify, render_template, request, send_file
 from flask_cors import CORS
+
+logger = logging.getLogger(__name__)
 
 # Ensure project root is on sys.path for orchestrator/agentic_team imports
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -50,7 +53,7 @@ def get_orchestrator_context():
 
             _orchestrator_ctx = MemoryManager()
         except Exception:
-            pass
+            logger.exception("Failed to initialize orchestrator MemoryManager")
     return _orchestrator_ctx
 
 
@@ -63,7 +66,7 @@ def get_agentic_team_context():
 
             _agentic_team_ctx = MemoryManager()
         except Exception:
-            pass
+            logger.exception("Failed to initialize agentic_team MemoryManager")
     return _agentic_team_ctx
 
 
@@ -269,7 +272,7 @@ def api_analytics(system: str):
                 )
                 growth = [{"date": r[0], "count": r[1]} for r in cursor.fetchall()]
         except Exception:
-            pass
+            logger.debug("Analytics: growth query failed", exc_info=True)
 
         # Top mistakes
         top_mistakes: list[dict[str, Any]] = []
@@ -283,7 +286,7 @@ def api_analytics(system: str):
                     {"title": r[0] or "Untitled", "score": r[1]} for r in cursor.fetchall()
                 ]
         except Exception:
-            pass
+            logger.debug("Analytics: top_mistakes query failed", exc_info=True)
 
         # Top patterns
         top_patterns: list[dict[str, Any]] = []
@@ -297,7 +300,7 @@ def api_analytics(system: str):
                     {"title": r[0] or "Untitled", "score": r[1]} for r in cursor.fetchall()
                 ]
         except Exception:
-            pass
+            logger.debug("Analytics: top_patterns query failed", exc_info=True)
 
         # Average importance
         avg_importance = 0.0
@@ -307,7 +310,7 @@ def api_analytics(system: str):
                 row = cursor.fetchone()
                 avg_importance = round(row[0], 3) if row and row[0] else 0.0
         except Exception:
-            pass
+            logger.debug("Analytics: avg_importance query failed", exc_info=True)
 
         # DB size
         db_size_bytes = 0
@@ -316,7 +319,7 @@ def api_analytics(system: str):
             if db_path and db_path.exists():
                 db_size_bytes = db_path.stat().st_size
         except Exception:
-            pass
+            logger.debug("Analytics: db_size lookup failed", exc_info=True)
 
         return jsonify(
             {
@@ -601,6 +604,8 @@ def api_import(system: str):
     edges = payload.get("edges", [])
     imported_nodes = 0
     imported_edges = 0
+    skipped_nodes = 0
+    skipped_edges = 0
 
     store = manager.graph_store
     try:
@@ -639,7 +644,11 @@ def api_import(system: str):
                     )
                     imported_nodes += cursor.rowcount
                 except Exception:
-                    pass
+                    skipped_nodes += 1
+                    logger.warning(
+                        "Import: skipped node id=%s (%s)", n.get("id", "?"), n.get("title", "?"),
+                        exc_info=True,
+                    )
 
             for e in edges:
                 try:
@@ -663,10 +672,21 @@ def api_import(system: str):
                     )
                     imported_edges += cursor.rowcount
                 except Exception:
-                    pass
+                    skipped_edges += 1
+                    logger.warning(
+                        "Import: skipped edge id=%s (%s -> %s)",
+                        e.get("id", "?"), e.get("source_id", "?"), e.get("target_id", "?"),
+                        exc_info=True,
+                    )
 
         return jsonify(
-            {"success": True, "imported_nodes": imported_nodes, "imported_edges": imported_edges}
+            {
+                "success": True,
+                "imported_nodes": imported_nodes,
+                "imported_edges": imported_edges,
+                "skipped_nodes": skipped_nodes,
+                "skipped_edges": skipped_edges,
+            }
         )
     except Exception:
         app.logger.exception("Import failed")
@@ -784,7 +804,7 @@ def _auto_seed_if_empty():
                 if result.returncode != 0:
                     app.logger.warning("Auto-seed failed: %s", result.stderr[:500])
     except Exception:
-        pass
+        logger.debug("Auto-seed check failed", exc_info=True)
 
 
 # ---------------------------------------------------------------------------

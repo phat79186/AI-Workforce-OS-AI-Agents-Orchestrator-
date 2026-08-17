@@ -12,12 +12,10 @@ Includes:
 
 import json
 import os
-import shutil
 import tempfile
 import threading
-from datetime import datetime, timedelta
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 

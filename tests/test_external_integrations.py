@@ -1,6 +1,7 @@
-"""Unit tests for 8 External Tools & Skills Integrations in AI Workforce OS v4.2."""
+"""Unit tests for the External Tools & Skills Integrations in AI Workforce OS v4.2."""
 
 import pytest
+
 from orchestrator.integrations import (
     MattPocockSkillsEngine,
     CodeGraphTool,
@@ -10,6 +11,7 @@ from orchestrator.integrations import (
     UIUXProMaxSkill,
     ImpeccableDesignSkill,
     PublicAPIsCatalog,
+    PublicAPIsFetchError,
     SAGAgentFramework,
     ExternalEcosystemHub,
 )
@@ -35,12 +37,16 @@ def test_agent_reach_engine():
 
 
 def test_codegraph_tool_integration():
+    """CodeGraphTool now does REAL ast-based parsing — index this project and check a real symbol."""
     cg = CodeGraphTool()
-    info = cg.explore_symbol("execute_corporate_initiative")
+    summary = cg.index_directory(".")
 
+    assert summary["symbols_indexed"] > 0
+    assert summary["files_indexed"] > 0
+
+    info = cg.explore_symbol("recruit")
     assert info is not None
-    assert info["line"] == 32
-    assert "formulate_strategy" in info["callees"]
+    assert info["file"].replace("\\", "/") == "workforce/registry.py"
 
 
 def test_ponytail_runner_integration():
@@ -67,38 +73,67 @@ def test_anysearch_skill_integration():
 
 
 def test_ui_ux_pro_max_integration():
+    """UIUXProMaxSkill now genuinely varies by theme and verifies contrast with real WCAG math."""
     ui_skill = UIUXProMaxSkill()
     ds = ui_skill.generate_design_system("Dark Glassmorphism")
 
     assert ds["status"] == "READY"
     assert ds["palette"]["primary"] == "#6366f1"
+    assert ds["contrast_verified"]["wcag_aa_pass"] is True
+
+    brutalism = ui_skill.generate_design_system("Neo Brutalism")
+    assert brutalism["palette"]["primary"] != ds["palette"]["primary"]
 
 
 def test_impeccable_design_integration():
+    """ImpeccableDesignSkill now computes a REAL WCAG contrast ratio from given colors."""
     imp = ImpeccableDesignSkill()
-    audit = imp.audit_ui_component("Navbar")
 
-    assert audit["status"] == "APPROVED"
-    assert audit["wcag_compliance"] == "AA Passed"
+    good = imp.audit_ui_component("Navbar", foreground_color="#000000", background_color="#ffffff")
+    assert good["status"] == "APPROVED"
+    assert good["wcag_compliance"] in ("AA", "AAA")
+    assert good["contrast_ratio"] == "21.0:1"
+
+    bad = imp.audit_ui_component("Navbar", foreground_color="#999999", background_color="#aaaaaa")
+    assert bad["status"] == "REJECTED"
+    assert bad["wcag_compliance"] == "FAIL"
+
+    unknown = imp.audit_ui_component("Navbar")
+    assert unknown["status"] == "NEEDS_INPUT"
 
 
 def test_taste_skill_integration():
+    """TasteSkill no longer fabricates a numeric taste score; it reports real contrast when given colors."""
     from orchestrator.integrations import TasteSkill
     taste = TasteSkill()
-    curation = taste.curate_design_taste("ExecutiveDashboardHeader")
 
-    assert curation["status"] == "CURATED_WITH_TASTE"
-    assert curation["visual_taste_score"] >= 0.95
+    curation = taste.curate_design_taste("ExecutiveDashboardHeader")
+    assert curation["status"] == "GUIDELINES_PROVIDED"
+    assert "visual_taste_score" not in curation
     assert "Inter, Outfit, sans-serif" in curation["typography_hierarchy"]["font_family"]
     assert len(curation["taste_guidelines"]) >= 3
 
+    with_colors = taste.curate_design_taste(
+        "ExecutiveDashboardHeader",
+        context={"foreground_color": "#000000", "background_color": "#ffffff"},
+    )
+    assert with_colors["status"] == "GUIDELINES_PROVIDED_WITH_CONTRAST_CHECK"
+    assert with_colors["measured_contrast"]["ratio"] == "21.0:1"
+    assert with_colors["measured_contrast"]["wcag_aa_pass"] is True
+
 
 def test_public_apis_catalog_integration():
+    """PublicAPIsCatalog now fetches the REAL public-apis/public-apis README (network required)."""
     cat = PublicAPIsCatalog()
-    results = cat.search_apis("Security")
+    try:
+        n = cat.load()
+    except PublicAPIsFetchError as e:
+        pytest.skip(f"No network access to raw.githubusercontent.com: {e}")
 
+    assert n > 500  # the real catalog has ~1,700 entries as of writing
+    results = cat.search_apis("cat")
     assert len(results) >= 1
-    assert "Face Recognition API" in results[0].api_name
+    assert all("cat" in r.name.lower() or "cat" in r.description.lower() for r in results)
 
 
 def test_sag_framework_integration():
@@ -137,7 +172,7 @@ def test_rtk_token_compressor_integration():
 
 
 def test_karpathy_skills_and_ponytail_combined_integration():
-    from orchestrator.integrations import KarpathySkillsEngine, PonytailRunner, MattPocockSkillsEngine
+    from orchestrator.integrations import KarpathySkillsEngine, PonytailRunner
     karpathy = KarpathySkillsEngine()
     skills = karpathy.list_skills()
     assert len(skills) >= 5
@@ -155,31 +190,49 @@ def test_karpathy_skills_and_ponytail_combined_integration():
 
 
 def test_git_nexus_integration():
+    """GitNexusEngine now runs REAL git subprocess calls against an actual repo path."""
     from orchestrator.integrations import GitNexusEngine
     nexus = GitNexusEngine()
-    
-    sync_res = nexus.sync_multi_remotes("/dummy/path")
-    assert sync_res["status"] == "ALL_REMOTES_SYNCHRONIZED"
-    assert len(sync_res["synced_remotes"]) == 2
-    
-    health_res = nexus.audit_repository_health("/dummy/path")
-    assert health_res["status"] == "HEALTHY"
-    assert health_res["repo_health_score"] > 90
-    
+
+    sync_res = nexus.sync_multi_remotes(".")
+    assert sync_res["status"] in ("ALL_REMOTES_SYNCHRONIZED", "SYNC_DRIFT_DETECTED", "NO_REMOTES_CONFIGURED")
+    assert sync_res["latest_commit_hash"]  # real HEAD hash, non-empty
+
+    health_res = nexus.audit_repository_health(".")
+    assert health_res["status"] in ("HEALTHY", "NEEDS_ATTENTION", "UNHEALTHY")
+    assert isinstance(health_res["repo_health_score"], float)
+    assert isinstance(health_res["uncommitted_changes"], int)
+
     board_res = nexus.list_pr_issue_nexus()
     assert board_res["unified_board_status"] == "SYNCHRONIZED"
 
 
-def test_playwright_moderator_integration():
-    from orchestrator.integrations import PlaywrightVisualAuditor
-    moderator = PlaywrightVisualAuditor()
-    
-    html = "<html><head><meta name='viewport' content='width=device-width'></head><body><h1>Welcome</h1><img src='placeholder.png'/></body></html>"
-    res = moderator.run_ui_moderation(html)
+def test_playwright_moderator_integration(tmp_path):
+    """PlaywrightVisualAuditor now runs a REAL headless Chromium and real Pillow pixel-diff."""
+    from orchestrator.integrations import PlaywrightVisualAuditor, PlaywrightNotAvailableError
+
+    try:
+        moderator = PlaywrightVisualAuditor()
+    except PlaywrightNotAvailableError as e:
+        pytest.skip(f"playwright/chromium not installed: {e}")
+
+    good_html = "<html><head><meta name='viewport' content='width=device-width'></head><body><h1>Welcome</h1></body></html>"
+    res = moderator.run_ui_moderation(good_html)
     assert res["status"] == "APPROVED"
-    assert res["visual_qa_score"] == 85.0  # missing placeholder warning only
-    
-    diff = moderator.pixel_diff("baseline.png", "candidate.png")
+    assert res["visual_qa_score"] == 100.0
+    assert res["layout_overflow_detected"] is False
+
+    bad_html = "<html><body style='margin:0'><div style='color:#999;background:#aaa'>low contrast</div><div style='width:3000px;height:10px;background:red'></div></body></html>"
+    bad_res = moderator.run_ui_moderation(bad_html)
+    assert bad_res["status"] == "REJECTED"
+    assert bad_res["layout_overflow_detected"] is True
+
+    from PIL import Image
+    base_path, cand_path = tmp_path / "baseline.png", tmp_path / "candidate.png"
+    Image.new("RGB", (50, 50), color=(0, 0, 255)).save(base_path)
+    Image.new("RGB", (50, 50), color=(0, 0, 255)).save(cand_path)
+
+    diff = moderator.pixel_diff(str(base_path), str(cand_path))
     assert diff["status"] == "VISUAL_MATCH_PASSED"
     assert diff["regression_detected"] is False
 
@@ -188,12 +241,11 @@ def test_external_ecosystem_hub():
     hub = ExternalEcosystemHub()
     status = hub.get_status()
 
-    assert status["overall_status"] in ("ALL_INTEGRATED", "ALL_8_INTEGRATED")
-    assert status["public_apis_count"] >= 2
-    assert status.get("openclaw_status") == "READY"
-    assert status.get("taste_skill_status") == "READY"
-    assert status.get("chatdev_status") == "READY"
-    assert status.get("rtk_token_compressor_status") == "READY"
-    assert status.get("karpathy_skills_status") == "READY"
-    assert status.get("git_nexus_status") == "READY"
-    assert status.get("playwright_moderator_status") == "READY"
+    assert status["overall_status"] == "ALL_INTEGRATED"
+    assert status["public_apis_loaded"] == 0  # not loaded until .load() is called
+    assert status.get("openclaw_status") == "READY (real file scan, templated refinement)"
+    assert status.get("taste_skill_status") == "READY (curated guidelines + real contrast math)"
+    assert status.get("chatdev_status") == "READY (simulated)"
+    assert status.get("rtk_token_compressor_status") == "READY (real text dedup)"
+    assert status.get("git_nexus_status") == "READY (real git operations)"
+    assert status.get("playwright_moderator_status", "").startswith(("READY", "UNAVAILABLE"))

@@ -2,7 +2,6 @@
 
 import tempfile
 from pathlib import Path
-import pytest
 from providers import OpenClawProvider, ProviderRegistry, ProviderType
 from orchestrator.integrations import OpenClawPromptProcessor, ExternalEcosystemHub
 from v4_organization import AutonomousAIOrganization
@@ -84,7 +83,7 @@ def test_openclaw_prompt_processor_and_ecosystem_hub():
 
     hub = ExternalEcosystemHub()
     status = hub.get_status()
-    assert status["openclaw_status"] == "READY"
+    assert status["openclaw_status"] == "READY (real file scan, templated refinement)"
     assert hub.openclaw is not None
 
 

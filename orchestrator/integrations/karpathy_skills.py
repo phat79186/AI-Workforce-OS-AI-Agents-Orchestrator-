@@ -1,9 +1,17 @@
-"""Integration for multica-ai/andrej-karpathy-skills AI engineering and neural network skills library."""
+"""SIMULATED integration named after multica-ai/andrej-karpathy-skills.
+
+⚠️ The 5 "skills" below are hand-written summaries by this project's authors,
+not fetched from or verified against the named repo. `execute_skill_pattern()`
+does not execute anything — it just returns the matching skill's static text.
+See `orchestrator/integrations/README.md`.
+"""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+
+from orchestrator.integrations._simulated import warn_simulated
 
 
 @dataclass
@@ -18,9 +26,10 @@ class KarpathySkill:
 
 
 class KarpathySkillsEngine:
-    """Karpathy Skills Engine discovering and serving AI engineering, transformer architecture, and PyTorch skill patterns."""
+    """SIMULATED skills engine — serves 5 hardcoded static entries, does not execute anything."""
 
     def __init__(self) -> None:
+        warn_simulated("KarpathySkillsEngine", "multica-ai/andrej-karpathy-skills")
         self.source_repo = "multica-ai/andrej-karpathy-skills"
         self.version = "1.0.0"
         self.skills: Dict[str, KarpathySkill] = {

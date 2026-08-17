@@ -14,8 +14,7 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
-from v3_orchestrator import AICTOManager, V3WorkforceManager
-from workforce import AIEmployee, SeniorityLevel, WorkforceBudget
+from v3_orchestrator import AICTOManager
 
 
 def run_v3_1_demo() -> None:

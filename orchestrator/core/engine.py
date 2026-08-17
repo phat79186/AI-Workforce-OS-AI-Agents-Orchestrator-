@@ -643,7 +643,8 @@ class Orchestrator:
             from orchestrator.context.ops.project_scanner import generate_project_id
 
             return generate_project_id(project_path)
-        except Exception:
+        except Exception as e:
+            self.logger.debug("Failed to generate project id for %s: %s", project_path, e)
             return ""
 
     def _maybe_register_project(self) -> None:

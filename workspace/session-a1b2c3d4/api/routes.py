@@ -1,6 +1,5 @@
 """API routes for blog posts CRUD operations."""
 
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 

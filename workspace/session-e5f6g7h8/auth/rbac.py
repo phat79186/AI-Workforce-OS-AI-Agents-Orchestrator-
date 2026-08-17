@@ -1,7 +1,6 @@
 """Role-based access control decorator."""
 
 from functools import wraps
-from typing import List
 
 from fastapi import HTTPException, Request
 

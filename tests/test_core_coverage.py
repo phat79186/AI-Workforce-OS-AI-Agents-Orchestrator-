@@ -6,10 +6,8 @@ WorkflowStep task descriptions, BaseAdapter.is_available with shutil.which,
 and the full WorkflowEngine.execute chain.
 """
 
-import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
 
 from orchestrator.adapters.base import AgentCapability, AgentResponse, BaseAdapter
 

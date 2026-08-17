@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
-from workforce import AIWorkforceRegistry, AIEmployee
+from typing import List
+from workforce import AIWorkforceRegistry
 
 
 @dataclass

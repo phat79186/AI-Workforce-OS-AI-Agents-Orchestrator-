@@ -1,7 +1,6 @@
 """Unit tests for v4.2 Organizational Learning Benchmark."""
 
 import tempfile
-import pytest
 from v4_organization import OrganizationalLearningBenchmark
 
 

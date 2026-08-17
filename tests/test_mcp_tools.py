@@ -1,9 +1,7 @@
 """Tests for new MCP tools."""
 
-import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 
-import pytest
 
 
 class TestCodeAnalysisToolsImport:

@@ -1,8 +1,6 @@
 """Tests for the report generator module."""
 
 import json
-import tempfile
-from pathlib import Path
 
 import pytest
 

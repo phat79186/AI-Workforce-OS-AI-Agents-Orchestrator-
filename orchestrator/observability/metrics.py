@@ -1,5 +1,6 @@
 """Metrics collection and monitoring for the orchestrator."""
 
+import logging
 import threading
 import time
 from functools import wraps
@@ -15,6 +16,8 @@ from prometheus_client import (
     Summary,
     generate_latest,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class MetricsCollector:
@@ -205,7 +208,7 @@ def track_execution_time(metric_name: str, labels: Optional[Dict[str, str]] = No
                     agent = (labels or {}).get("agent", metric_name)
                     metrics.agent_duration.labels(agent=agent).observe(duration)
                 except Exception:
-                    pass
+                    logger.debug("Failed to record agent_duration metric", exc_info=True)
 
         return wrapper
 

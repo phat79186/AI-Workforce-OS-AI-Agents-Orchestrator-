@@ -17,7 +17,7 @@ import pytest
 # ---------------------------------------------------------------------------
 # 1. Task manager - atomic counter & cleanup
 # ---------------------------------------------------------------------------
-from orchestrator.core.task_manager import Task, TaskManager, TaskStatus
+from orchestrator.core.task_manager import TaskManager
 
 
 class TestTaskManagerConcurrency:

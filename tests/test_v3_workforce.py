@@ -3,15 +3,13 @@
 import tempfile
 from pathlib import Path
 
-import pytest
 from domains import (
     SoftwareEngineeringDomain,
     ResearchDomain,
     DevOpsDomain,
-    KnowledgeManagementDomain,
 )
 from shared_knowledge import KnowledgeBridge
-from workforce import AIEmployee, AIWorkforceRegistry
+from workforce import AIWorkforceRegistry
 from v3_orchestrator import V3WorkforceManager
 
 

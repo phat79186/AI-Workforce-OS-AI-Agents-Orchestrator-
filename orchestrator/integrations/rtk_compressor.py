@@ -1,13 +1,20 @@
-"""RTK (Redundant Token Killer) Token Compressor inspired by rtk-ai/rtk for inter-agent communication."""
+"""Own compressor named after rtk-ai/rtk (Redundant Token Killer).
+
+Note (not a fake-data warning — this one actually works): the dedup /
+whitespace-collapse logic below is a real, self-contained implementation
+that genuinely processes whatever text you give it. It is NOT the real
+rtk-ai/rtk library and `estimate_tokens()` uses a rough "~4 chars/token"
+rule rather than a real tokenizer, so treat the token counts as approximate.
+"""
 
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 class RTKTokenCompressor:
-    """RTK Token Compressor pruning boilerplate, duplicate prompts, and verbose tracebacks during AI-to-AI exchanges."""
+    """Own simple text-dedup compressor (real logic) — not the rtk-ai/rtk library, and token counts are approximate."""
 
     def __init__(self) -> None:
         self.version = "1.0.0"

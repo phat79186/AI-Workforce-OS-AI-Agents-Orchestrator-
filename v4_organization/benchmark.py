@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 from v4_organization.executive_org import AutonomousAIOrganization
 from v4_organization.organizational_memory import OrganizationalLearningRecord
 

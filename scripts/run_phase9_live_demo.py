@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 import tempfile
@@ -20,7 +19,6 @@ if hasattr(sys.stdout, "reconfigure"):
 
 from providers.ollama_provider import OllamaProvider
 from providers.openhands_provider import OpenHandsProvider
-from providers.registry import ProviderRegistry
 from orchestrator.routing import AgentRouter, ModelRouter, ToolRouter, RoutingMode
 from orchestrator.core.dependency_graph import DependencyGraph
 from orchestrator.events import Event, EventBus, EventStore, EventType

@@ -1,14 +1,22 @@
-"""Agent-Reach Engine inspired by Panniantong/Agent-Reach for deep multi-engine web search retrieval."""
+"""SIMULATED integration named after Panniantong/Agent-Reach (deep multi-engine web search retrieval).
+
+⚠️ This module does NOT call GitHub, StackOverflow, ArXiv, or any web search
+engine. `search_reach()` fabricates plausible-looking citation URLs from the
+query text alone. See `orchestrator/integrations/README.md`.
+"""
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
+
+from orchestrator.integrations._simulated import warn_simulated
 
 
 class AgentReachEngine:
-    """Agent Reach engine enabling deep search reach across web, GitHub, StackOverflow, ArXiv, and Obsidian memory."""
+    """SIMULATED Agent Reach engine — fabricates search results, does not query any real source."""
 
     def __init__(self) -> None:
+        warn_simulated("AgentReachEngine", "Panniantong/Agent-Reach")
         self.version = "1.0.0"
         self.source_repo = "Panniantong/Agent-Reach"
         self.supported_engines = ["Google/Bing Web", "GitHub API", "StackOverflow", "ArXiv Papers", "Obsidian Vault"]

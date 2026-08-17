@@ -2,9 +2,8 @@
 Tests for AI agent adapters
 """
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
-import pytest
 
 from orchestrator.adapters import (
     AgentCapability,

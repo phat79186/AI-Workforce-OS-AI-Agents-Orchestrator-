@@ -264,7 +264,7 @@ class TestCacheImprovements:
 class TestMetricsImprovements:
     def test_track_execution_time_records_duration(self):
         """track_execution_time decorator should actually record metrics."""
-        from orchestrator.observability.metrics import MetricsCollector, track_execution_time
+        from orchestrator.observability.metrics import track_execution_time
 
         @track_execution_time("test_func", labels={"agent": "test"})
         def slow_func():

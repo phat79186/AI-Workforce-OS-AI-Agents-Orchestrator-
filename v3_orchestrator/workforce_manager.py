@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
-from workforce import AIWorkforceRegistry, AIEmployee
+from workforce import AIWorkforceRegistry
 from shared_knowledge import KnowledgeBridge
 from orchestrator.routing import AgentRouter, ModelRouter, ToolRouter
 from orchestrator.events import EventBus, EventStore, Event, EventType

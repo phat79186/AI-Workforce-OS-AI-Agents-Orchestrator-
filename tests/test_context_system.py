@@ -3,7 +3,6 @@
 import os
 import tempfile
 from datetime import datetime, timezone
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -470,7 +469,6 @@ class TestObsidianExport:
     @pytest.fixture
     def populated_exporter(self, tmp_path):
         """Create a ContextExporter with a populated graph store."""
-        import json as _json
 
         from orchestrator.context.graph_store import GraphStore
         from orchestrator.context.ops.export import ContextExporter
@@ -643,7 +641,7 @@ class TestAgenticTeamObsidianExport:
         """Create an Agentic Team ContextExporter with populated graph store."""
         from agentic_team.context.graph_store import GraphStore
         from agentic_team.context.ops.export import ContextExporter
-        from agentic_team.context.schemas import ConversationNode, DecisionNode, EdgeType, TaskNode
+        from agentic_team.context.schemas import DecisionNode, EdgeType, TaskNode
 
         db_path = str(tmp_path / "at_ctx.db")
         store = GraphStore(db_path)

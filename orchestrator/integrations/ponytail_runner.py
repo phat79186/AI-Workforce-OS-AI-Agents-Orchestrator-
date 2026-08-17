@@ -1,9 +1,19 @@
-"""Integration for DietrichGebert/ponytail multi-agent workflow runner with dependency graph resolution and retry management."""
+"""Runner named after DietrichGebert/ponytail multi-agent workflow runner.
+
+⚠️ PARTIALLY SIMULATED: `_resolve_execution_order()` performs genuine
+topological/DAG ordering over step dependencies — that part is real. But
+`execute_workflow()` never calls any real agent; every step is immediately
+marked "COMPLETED" with a canned message, and `max_retries`/`retry_count`
+are declared but never actually used to retry anything. See
+`orchestrator/integrations/README.md`.
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
+
+from orchestrator.integrations._simulated import warn_simulated
 
 
 @dataclass
@@ -21,9 +31,10 @@ class PonytailWorkflowStep:
 
 
 class PonytailRunner:
-    """Ponytail multi-agent workflow runner executing DAG steps with topological ordering and parallel step dispatch."""
+    """PARTIALLY SIMULATED runner — real topological ordering, but no real agent execution or retries."""
 
     def __init__(self) -> None:
+        warn_simulated("PonytailRunner.execute_workflow (real DAG order, no real execution)", "DietrichGebert/ponytail")
         self.version = "1.0.0"
         self.source_repo = "DietrichGebert/ponytail"
         self.steps: List[PonytailWorkflowStep] = []

@@ -1,7 +1,6 @@
 """Unit tests for v4.0 Autonomous AI Organization."""
 
 import tempfile
-import pytest
 from v4_organization import (
     AICEOManager,
     AICTO,
