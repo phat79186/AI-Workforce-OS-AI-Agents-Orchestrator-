@@ -38,10 +38,11 @@ from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
 from orchestrator.integrations.karpathy_skills import KarpathySkillsEngine
 from orchestrator.integrations.git_nexus import GitNexusEngine
 from orchestrator.integrations.playwright_moderator import PlaywrightVisualAuditor, PlaywrightNotAvailableError
+from orchestrator.integrations.omniroute_gateway import OmniRouteGateway
 
 
 class ExternalEcosystemHub:
-    """Unified hub wiring together AI Workforce OS's real and simulated integrations."""
+    """Unified hub wiring together AI Workforce OS's real and simulated integrations including OmniRoute Universal AI Gateway."""
 
     def __init__(self) -> None:
         self.mattpocock_skills = MattPocockSkillsEngine()
@@ -59,13 +60,13 @@ class ExternalEcosystemHub:
         self.chatdev = ChatDevAdapter()
         self.rtk = RTKTokenCompressor()
         self.git_nexus = GitNexusEngine()
-
         self.playwright_moderator: Optional[PlaywrightVisualAuditor] = None
         self._playwright_unavailable_reason: Optional[str] = None
         try:
             self.playwright_moderator = PlaywrightVisualAuditor()
         except PlaywrightNotAvailableError as e:
             self._playwright_unavailable_reason = str(e)
+        self.omniroute = OmniRouteGateway()
 
     def get_status(self) -> Dict[str, Any]:
         """Return a real status summary reflecting each sub-integration's actual state."""
@@ -88,10 +89,15 @@ class ExternalEcosystemHub:
             "openclaw_status": "READY (real file scan, templated refinement)",
             "chatdev_status": "READY (simulated)",
             "rtk_token_compressor_status": "READY (real text dedup)",
+            "karpathy_skills_status": "READY",
             "git_nexus_status": "READY (real git operations)",
             "playwright_moderator_status": (
                 "READY (real headless Chromium)" if self.playwright_moderator is not None
                 else f"UNAVAILABLE: {self._playwright_unavailable_reason}"
             ),
+            "omniroute_status": "READY",
+            "omniroute_providers_count": self.omniroute.total_providers,
+            "omniroute_free_tiers_count": self.omniroute.free_tier_providers,
+            "omniroute_models_count": self.omniroute.total_models_indexed,
             "overall_status": "ALL_INTEGRATED",
         }

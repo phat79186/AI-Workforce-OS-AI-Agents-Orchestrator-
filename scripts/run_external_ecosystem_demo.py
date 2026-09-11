@@ -117,6 +117,20 @@ def run_external_ecosystem_demo() -> None:
     print(f"  * Visual QA Score: {playwright_res['visual_qa_score']}/100 | WCAG AA Contrast Pass: {playwright_res['wcag_aa_contrast_pass']}")
     print(f"  * Regression Check: {diff_res['status']} | Diff: {diff_res['diff_pixels_percentage']}% pixels mismatch")
 
+    # 13. diegosouzapw/OmniRoute Universal AI Gateway
+    print("\n[13. OMNIROUTE GATEWAY] Routing Request with Quota-Aware Auto-Fallback & Token Compression...")
+    route_res = hub.omniroute.route_request(
+        "Please kindly make sure to inspect all microservices and audit distributed load balancer latency.",
+        model_preference="claude-3-5-sonnet",
+        optimize_tokens=True,
+        quota_exhausted=True,  # simulate 429 quota exhaustion fallback
+    )
+    print(f"  * Source Repo: {route_res['gateway']} | Total Providers: {route_res['total_available_providers']} (Free: {route_res['free_providers_count']})")
+    print(f"  * Status: {route_res['status']} (Fallback: {route_res['fallback_applied']})")
+    print(f"  * Selected Route: Provider: [{route_res['provider']}] | Model: [{route_res['model']}]")
+    if route_res["compression"]:
+        print(f"  * RTK+Caveman Compression: {route_res['compression']['original_tokens']} -> {route_res['compression']['compressed_tokens']} tokens (-{route_res['compression']['saved_tokens_percentage']}%)")
+
     # Final Overall Hub Status
     status = hub.get_status()
     print("\n=================================================================")

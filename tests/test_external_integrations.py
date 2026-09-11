@@ -237,6 +237,35 @@ def test_playwright_moderator_integration(tmp_path):
     assert diff["regression_detected"] is False
 
 
+def test_omniroute_gateway_integration():
+    from orchestrator.integrations import OmniRouteGateway
+    gateway = OmniRouteGateway()
+
+    # Catalog validation
+    catalog = gateway.get_catalog()
+    assert catalog["status"] == "ONLINE"
+    assert catalog["providers_total"] == 352
+    assert catalog["free_tiers_total"] == 154
+    assert catalog["models_total"] == 1240
+    assert "Kimi" in catalog["families"]
+    assert "DeepSeek" in catalog["families"]
+
+    # Normal routing with RTK + Caveman compression
+    prompt = "Please kindly make sure to analyze the database cluster thoroughly."
+    route_res = gateway.route_request(prompt, model_preference="deepseek-v3", optimize_tokens=True)
+    assert route_res["status"] == "ROUTED_OPTIMAL"
+    assert route_res["provider"] == "deepseek"
+    assert route_res["fallback_applied"] is False
+    assert route_res["compression"]["saved_tokens"] > 0
+    assert route_res["compression"]["saved_tokens_percentage"] >= 15.0
+
+    # Quota-Aware Auto-Fallback on 429 quota exhaustion
+    fallback_res = gateway.route_request("Review security", model_preference="claude-3-5-sonnet", quota_exhausted=True)
+    assert fallback_res["status"] == "AUTO_FALLBACK_TRIGGERED"
+    assert fallback_res["fallback_applied"] is True
+    assert fallback_res["provider"] == "deepseek"
+
+
 def test_external_ecosystem_hub():
     hub = ExternalEcosystemHub()
     status = hub.get_status()
@@ -247,5 +276,9 @@ def test_external_ecosystem_hub():
     assert status.get("taste_skill_status") == "READY (curated guidelines + real contrast math)"
     assert status.get("chatdev_status") == "READY (simulated)"
     assert status.get("rtk_token_compressor_status") == "READY (real text dedup)"
+    assert status.get("karpathy_skills_status") == "READY"
     assert status.get("git_nexus_status") == "READY (real git operations)"
     assert status.get("playwright_moderator_status", "").startswith(("READY", "UNAVAILABLE"))
+    assert status.get("omniroute_status") == "READY"
+    assert status.get("omniroute_providers_count") == 352
+    assert status.get("omniroute_free_tiers_count") == 154

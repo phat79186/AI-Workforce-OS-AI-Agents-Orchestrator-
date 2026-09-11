@@ -27,6 +27,7 @@ from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
 from orchestrator.integrations.karpathy_skills import KarpathySkill, KarpathySkillsEngine
 from orchestrator.integrations.git_nexus import GitNexusEngine
 from orchestrator.integrations.playwright_moderator import PlaywrightVisualAuditor, PlaywrightNotAvailableError
+from orchestrator.integrations.omniroute_gateway import OmniRouteGateway
 from orchestrator.integrations.ecosystem_hub import ExternalEcosystemHub
 
 __all__ = [
@@ -37,6 +38,7 @@ __all__ = [
     "GitNexusEngine",
     "PlaywrightVisualAuditor",
     "PlaywrightNotAvailableError",
+    "OmniRouteGateway",
     "CodeSymbol",
     "CodeGraphTool",
     "PonytailWorkflowStep",
