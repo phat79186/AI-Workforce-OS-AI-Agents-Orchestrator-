@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
-from orchestrator.security.permission_policy import PermissionPolicy, ActionLevel
+
 from orchestrator.security.approval_manager import ApprovalManager
+from orchestrator.security.permission_policy import ActionLevel, PermissionPolicy
 
 
 class SecuritySandbox:

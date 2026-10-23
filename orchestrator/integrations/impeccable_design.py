@@ -11,7 +11,12 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from orchestrator.integrations._wcag import contrast_ratio, parse_css_color, passes_wcag_aa, passes_wcag_aaa
+from orchestrator.integrations._wcag import (
+    contrast_ratio,
+    parse_css_color,
+    passes_wcag_aa,
+    passes_wcag_aaa,
+)
 
 
 class ImpeccableDesignSkill:
@@ -73,11 +78,15 @@ class ImpeccableDesignSkill:
             "wcag_compliance": compliance,
             "contrast_ratio": f"{ratio}:1",
             "large_text": large_text,
-            "recommendations": recommendations if aa else [
-                f"Contrast ratio {ratio}:1 is below the WCAG AA minimum "
-                f"({'3.0' if large_text else '4.5'}:1 for {'large' if large_text else 'normal'} text). "
-                "Increase the difference between foreground and background lightness.",
-                *recommendations,
-            ],
+            "recommendations": (
+                recommendations
+                if aa
+                else [
+                    f"Contrast ratio {ratio}:1 is below the WCAG AA minimum "
+                    f"({'3.0' if large_text else '4.5'}:1 for {'large' if large_text else 'normal'} text). "
+                    "Increase the difference between foreground and background lightness.",
+                    *recommendations,
+                ]
+            ),
             "status": "APPROVED" if aa else "REJECTED",
         }

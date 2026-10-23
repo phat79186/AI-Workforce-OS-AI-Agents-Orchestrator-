@@ -2,6 +2,7 @@
 
 import tempfile
 
+from v3_orchestrator import AICTOManager
 from workforce import (
     AIEmployee,
     CandidateRanker,
@@ -9,7 +10,6 @@ from workforce import (
     SeniorityLevel,
     WorkforceBudget,
 )
-from v3_orchestrator import AICTOManager
 
 
 def test_performance_feedback_loop():
@@ -56,7 +56,9 @@ def test_candidate_ranker_seniority_matching():
     )
 
     # Complex architecture task (Complexity = 4)
-    ranked = ranker.rank_candidates([junior, senior], required_skills=["Python", "Architecture"], task_complexity=4)
+    ranked = ranker.rank_candidates(
+        [junior, senior], required_skills=["Python", "Architecture"], task_complexity=4
+    )
     best_candidate, best_score = ranked[0]
 
     assert best_candidate.name == "SeniorArchitect"

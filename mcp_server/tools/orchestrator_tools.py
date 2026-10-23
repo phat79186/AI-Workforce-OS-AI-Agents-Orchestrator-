@@ -11,10 +11,9 @@ if sys.version_info >= (3, 9):
 else:
     from typing_extensions import Annotated
 
-from fastmcp import Context
-from fastmcp.exceptions import ToolError
 from pydantic import Field
 
+from mcp_server.compat import Context, ToolError
 from mcp_server.engines import get_engine
 
 

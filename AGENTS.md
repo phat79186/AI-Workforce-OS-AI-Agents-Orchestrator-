@@ -124,6 +124,10 @@ See .claude/skills/testing/unit-testing.md for pytest patterns
 - `context_get_relevant` - Get relevant context for task
 - `context_stats` - Get memory statistics
 
+### Reasoning Tools (2)
+- `sequentialthinking` - Dynamic, reflective multi-step reasoning with revision and hypothesis branching (from GitHub modelcontextprotocol/servers)
+- `sequential_thinking` - Snake_case alias for sequentialthinking
+
 ## Graph Context System
 
 The context system provides persistent memory for AI agents:

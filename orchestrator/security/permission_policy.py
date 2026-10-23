@@ -67,7 +67,12 @@ class PermissionPolicy:
         if action_lower in ("modify_adr", "overwrite_adr") or "corporate_adr" in target_lower:
             return ActionLevel.REQUIRES_APPROVAL
 
-        if action_lower in ("read_knowledge", "query_rag", "create_knowledge", "update_project_memory"):
+        if action_lower in (
+            "read_knowledge",
+            "query_rag",
+            "create_knowledge",
+            "update_project_memory",
+        ):
             return ActionLevel.ALLOWED
 
         return ActionLevel.ALLOWED

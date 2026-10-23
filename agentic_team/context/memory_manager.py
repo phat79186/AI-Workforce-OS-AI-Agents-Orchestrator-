@@ -126,7 +126,7 @@ class MemoryManager:
                 self.logger.debug("agentmemory search failed for category %s: %s", category, e)
                 continue
 
-            for mem in (memories or []):
+            for mem in memories or []:
                 mem_meta = mem.get("metadata", {}) or {}
                 node_dict: dict[str, Any] = {
                     "id": mem_meta.get("id") or str(mem.get("id", "")),
@@ -142,7 +142,7 @@ class MemoryManager:
                     if k in ("id", "node_type", "title", "project_id", "importance_score"):
                         continue
                     if k.startswith("_json_"):
-                        orig_key = k[len("_json_"):]
+                        orig_key = k[len("_json_") :]
                         try:
                             node_dict[orig_key] = json.loads(v)
                         except Exception:

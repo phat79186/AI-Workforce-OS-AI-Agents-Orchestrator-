@@ -56,7 +56,9 @@ class CodeGraphTool:
         """Register (or overwrite) a symbol in the index by lowercase name."""
         self._symbol_index[symbol.name.lower()] = symbol
 
-    def index_directory(self, root_path: str, exclude_dirs: Optional[List[str]] = None) -> Dict[str, Any]:
+    def index_directory(
+        self, root_path: str, exclude_dirs: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
         """Recursively parse every `.py` file under `root_path` and (re)build the real symbol graph.
 
         Returns a summary dict; the indexed symbols themselves are queryable
@@ -68,10 +70,7 @@ class CodeGraphTool:
         self._files_indexed = 0
 
         root = Path(root_path)
-        py_files = [
-            p for p in root.rglob("*.py")
-            if not any(part in excluded for part in p.parts)
-        ]
+        py_files = [p for p in root.rglob("*.py") if not any(part in excluded for part in p.parts)]
 
         # Pass 1: collect every real function/method/class definition.
         parsed_trees: Dict[str, ast.Module] = {}
@@ -83,7 +82,9 @@ class CodeGraphTool:
                 self._parse_errors.append(f"{py_file}: {e}")
                 continue
 
-            rel_path = str(py_file.relative_to(root)) if py_file.is_relative_to(root) else str(py_file)
+            rel_path = (
+                str(py_file.relative_to(root)) if py_file.is_relative_to(root) else str(py_file)
+            )
             parsed_trees[rel_path] = tree
             self._files_indexed += 1
 
@@ -155,6 +156,11 @@ class CodeGraphTool:
         """Return the `top_n` symbols with the most real incoming call edges found in this codebase."""
         ranked = sorted(self._symbol_index.values(), key=lambda s: len(s.callers), reverse=True)
         return [
-            {"name": s.name, "file": s.file_path, "line": s.line_number, "caller_count": len(s.callers)}
+            {
+                "name": s.name,
+                "file": s.file_path,
+                "line": s.line_number,
+                "caller_count": len(s.callers),
+            }
             for s in ranked[:top_n]
         ]

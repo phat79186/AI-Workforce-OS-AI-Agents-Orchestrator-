@@ -4,7 +4,7 @@ import json
 import re
 from typing import Any, Dict, List, Optional
 
-from mcp.server.fastmcp import Context
+from mcp_server.compat import Context
 
 
 async def generate_dockerfile(

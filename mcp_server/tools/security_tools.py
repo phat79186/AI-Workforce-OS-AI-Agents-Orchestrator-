@@ -4,7 +4,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional
 
-from mcp.server.fastmcp import Context
+from mcp_server.compat import Context
 
 logger = logging.getLogger(__name__)
 

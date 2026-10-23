@@ -11,24 +11,32 @@ status, and the reasoning behind this choice are in
 `orchestrator/integrations/README.md`.
 """
 
-from orchestrator.integrations.mattpocock_skills import MattPocockSkill, MattPocockSkillsEngine
-from orchestrator.integrations.codegraph_tool import CodeSymbol, CodeGraphTool
-from orchestrator.integrations.ponytail_runner import PonytailWorkflowStep, PonytailRunner
-from orchestrator.integrations.anysearch_skill import AnySearchSkill
-from orchestrator.integrations.ui_ux_pro_max import UIUXProMaxSkill
-from orchestrator.integrations.impeccable_design import ImpeccableDesignSkill
-from orchestrator.integrations.taste_skill import TasteSkill
-from orchestrator.integrations.public_apis_catalog import PublicAPIEntry, PublicAPIsCatalog, PublicAPIsFetchError
-from orchestrator.integrations.sag_framework import SAGNode, SAGAgentFramework
-from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
 from orchestrator.integrations.agent_reach import AgentReachEngine
+from orchestrator.integrations.anysearch_skill import AnySearchSkill
 from orchestrator.integrations.chatdev_adapter import ChatDevAdapter
-from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
-from orchestrator.integrations.karpathy_skills import KarpathySkill, KarpathySkillsEngine
-from orchestrator.integrations.git_nexus import GitNexusEngine
-from orchestrator.integrations.playwright_moderator import PlaywrightVisualAuditor, PlaywrightNotAvailableError
-from orchestrator.integrations.omniroute_gateway import OmniRouteGateway
+from orchestrator.integrations.codegraph_tool import CodeGraphTool, CodeSymbol
 from orchestrator.integrations.ecosystem_hub import ExternalEcosystemHub
+from orchestrator.integrations.git_nexus import GitNexusEngine
+from orchestrator.integrations.impeccable_design import ImpeccableDesignSkill
+from orchestrator.integrations.karpathy_skills import KarpathySkill, KarpathySkillsEngine
+from orchestrator.integrations.mattpocock_skills import MattPocockSkill, MattPocockSkillsEngine
+from orchestrator.integrations.omniroute_gateway import OmniRouteGateway
+from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
+from orchestrator.integrations.playwright_moderator import (
+    PlaywrightNotAvailableError,
+    PlaywrightVisualAuditor,
+)
+from orchestrator.integrations.ponytail_runner import PonytailRunner, PonytailWorkflowStep
+from orchestrator.integrations.public_apis_catalog import (
+    PublicAPIEntry,
+    PublicAPIsCatalog,
+    PublicAPIsFetchError,
+)
+from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
+from orchestrator.integrations.sag_framework import SAGAgentFramework, SAGNode
+from orchestrator.integrations.sequential_thinking import SequentialThinkingEngine, ThoughtData
+from orchestrator.integrations.taste_skill import TasteSkill
+from orchestrator.integrations.ui_ux_pro_max import UIUXProMaxSkill
 
 __all__ = [
     "MattPocockSkill",
@@ -56,5 +64,7 @@ __all__ = [
     "AgentReachEngine",
     "ChatDevAdapter",
     "RTKTokenCompressor",
+    "ThoughtData",
+    "SequentialThinkingEngine",
     "ExternalEcosystemHub",
 ]

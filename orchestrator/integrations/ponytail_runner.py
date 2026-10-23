@@ -34,7 +34,10 @@ class PonytailRunner:
     """PARTIALLY SIMULATED runner — real topological ordering, but no real agent execution or retries."""
 
     def __init__(self) -> None:
-        warn_simulated("PonytailRunner.execute_workflow (real DAG order, no real execution)", "DietrichGebert/ponytail")
+        warn_simulated(
+            "PonytailRunner.execute_workflow (real DAG order, no real execution)",
+            "DietrichGebert/ponytail",
+        )
         self.version = "1.0.0"
         self.source_repo = "DietrichGebert/ponytail"
         self.steps: List[PonytailWorkflowStep] = []

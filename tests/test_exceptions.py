@@ -1,6 +1,5 @@
 """Tests for custom exceptions."""
 
-
 from orchestrator.core.exceptions import (
     AgentExecutionError,
     AgentNotFoundError,

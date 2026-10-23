@@ -55,7 +55,7 @@ def _init_agentic_team() -> None:
 
 def get_engine(name: str):
     """Retrieve an engine, raising ``ToolError`` if unavailable."""
-    from fastmcp.exceptions import ToolError
+    from mcp_server.compat import ToolError
 
     engine = _engines.get(name)
     if engine is None:

@@ -1,9 +1,10 @@
 """Unit tests for v4.0 Autonomous AI Organization."""
 
 import tempfile
+
 from v4_organization import (
-    AICEOManager,
     AICTO,
+    AICEOManager,
     AutonomousAIOrganization,
     EngineeringManager,
     OperationsManager,

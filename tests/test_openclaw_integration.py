@@ -2,8 +2,9 @@
 
 import tempfile
 from pathlib import Path
+
+from orchestrator.integrations import ExternalEcosystemHub, OpenClawPromptProcessor
 from providers import OpenClawProvider, ProviderRegistry, ProviderType
-from orchestrator.integrations import OpenClawPromptProcessor, ExternalEcosystemHub
 from v4_organization import AutonomousAIOrganization
 
 
@@ -21,6 +22,7 @@ def test_openclaw_provider_metadata():
 
 def test_linshenkx_prompt_optimizer_engine():
     from providers.prompt_optimizer import PromptOptimizerEngine
+
     optimizer = PromptOptimizerEngine()
     opt = optimizer.optimize_prompt("sửa UX UI", domain="ui_ux_refinement")
 
@@ -36,17 +38,25 @@ def test_openclaw_context_aware_scan_with_existing_theme():
     with tempfile.TemporaryDirectory() as tmpdir:
         # Create existing tailwind.config.js
         tw_file = Path(tmpdir) / "tailwind.config.js"
-        tw_file.write_text("module.exports = { theme: { extend: { colors: { primary: '#ef4444' } } } };", encoding="utf-8")
+        tw_file.write_text(
+            "module.exports = { theme: { extend: { colors: { primary: '#ef4444' } } } };",
+            encoding="utf-8",
+        )
 
         res = provider.refine_raw_prompt("sửa UX UI", project_root=tmpdir)
 
         assert res["context_scan"]["theme_status"] == "EXISTING_THEME_DETECTED"
-        assert "Preserve existing project design system tokens" in res["context_scan"]["palette_summary"]
+        assert (
+            "Preserve existing project design system tokens"
+            in res["context_scan"]["palette_summary"]
+        )
         assert "Preserve existing project design system tokens" in res["objectives"][0]
         # Verify Single Lead Agent to prevent Role Bloat
         assert res["recommended_roles"] == ["LeadUIUXDesigner"]
         # Verify Playwright E2E Visual QA
-        assert any("Playwright E2E Headless Visual Check" in crit for crit in res["testing_criteria"])
+        assert any(
+            "Playwright E2E Headless Visual Check" in crit for crit in res["testing_criteria"]
+        )
 
 
 def test_openclaw_context_aware_scan_fallback_smart_default():

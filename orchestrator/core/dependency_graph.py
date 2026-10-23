@@ -25,7 +25,13 @@ class DependencyGraph:
     def __init__(self) -> None:
         self.nodes: Dict[str, TaskNode] = {}
 
-    def add_task(self, task_id: str, description: str, agent_role: str, dependencies: Optional[List[str]] = None) -> TaskNode:
+    def add_task(
+        self,
+        task_id: str,
+        description: str,
+        agent_role: str,
+        dependencies: Optional[List[str]] = None,
+    ) -> TaskNode:
         """Add a subtask node to the DAG."""
         node = TaskNode(
             task_id=task_id,
@@ -47,7 +53,9 @@ class DependencyGraph:
                     ready.append(node)
         return ready
 
-    def mark_completed(self, task_id: str, output: Optional[str] = None, files_changed: Optional[List[str]] = None) -> None:
+    def mark_completed(
+        self, task_id: str, output: Optional[str] = None, files_changed: Optional[List[str]] = None
+    ) -> None:
         """Mark subtask as completed."""
         if task_id in self.nodes:
             self.nodes[task_id].status = "completed"

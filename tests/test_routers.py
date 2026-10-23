@@ -1,10 +1,10 @@
 """Unit tests for 3-Layer Routers (Agent, Model, Tool) and Provider Registry."""
 
-from providers.base_provider import ProviderType
-from providers.registry import ProviderRegistry
 from orchestrator.routing.agent_router import AgentRouter
 from orchestrator.routing.model_router import ModelRouter, RoutingMode
 from orchestrator.routing.tool_router import ToolRouter
+from providers.base_provider import ProviderType
+from providers.registry import ProviderRegistry
 
 
 def test_agent_router_keywords():

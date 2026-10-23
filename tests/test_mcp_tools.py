@@ -3,7 +3,6 @@
 from unittest.mock import MagicMock
 
 
-
 class TestCodeAnalysisToolsImport:
     """Tests for code analysis MCP tool module imports."""
 
@@ -228,6 +227,34 @@ class TestContextToolsImport:
         assert callable(register_context_tools)
 
 
+class TestSequentialThinkingToolsImport:
+    """Test sequential thinking tools module imports and functions."""
+
+    def test_module_imports(self):
+        """Should be able to import sequential_thinking module."""
+        from mcp_server.tools import sequential_thinking
+
+        assert sequential_thinking is not None
+
+    def test_has_sequentialthinking(self):
+        """Should have sequentialthinking function."""
+        from mcp_server.tools import sequential_thinking
+
+        assert hasattr(sequential_thinking, "sequentialthinking")
+
+    def test_has_sequential_thinking(self):
+        """Should have sequential_thinking alias function."""
+        from mcp_server.tools import sequential_thinking
+
+        assert hasattr(sequential_thinking, "sequential_thinking")
+
+    def test_has_register_function(self):
+        """Should have register_sequential_thinking_tools function."""
+        from mcp_server.tools.sequential_thinking import register_sequential_thinking_tools
+
+        assert callable(register_sequential_thinking_tools)
+
+
 class TestToolRegistration:
     """Tests for tool registration with MCP server."""
 
@@ -277,6 +304,15 @@ class TestToolRegistration:
 
         assert mock_mcp.tool.called
 
+    def test_register_sequential_thinking_tools(self):
+        """Should register sequential thinking tools with MCP."""
+        from mcp_server.tools.sequential_thinking import register_sequential_thinking_tools
+
+        mock_mcp = MagicMock()
+        register_sequential_thinking_tools(mock_mcp)
+
+        assert mock_mcp.tool.called
+
 
 class TestToolsModuleStructure:
     """Test the tools module structure."""
@@ -288,6 +324,7 @@ class TestToolsModuleStructure:
             register_context_tools,
             register_devops_tools,
             register_security_tools,
+            register_sequential_thinking_tools,
             register_testing_tools,
         )
 
@@ -296,3 +333,4 @@ class TestToolsModuleStructure:
         assert callable(register_testing_tools)
         assert callable(register_devops_tools)
         assert callable(register_context_tools)
+        assert callable(register_sequential_thinking_tools)

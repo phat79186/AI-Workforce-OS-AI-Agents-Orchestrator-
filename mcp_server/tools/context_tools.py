@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from mcp.server.fastmcp import Context
+from mcp_server.compat import Context
 
 # Lazy import to avoid import errors if context module not available
 _memory_manager = None

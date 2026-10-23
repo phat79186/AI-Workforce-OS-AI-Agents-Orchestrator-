@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import List, Optional
+
 from orchestrator.events.events import Event, EventType
 
 
@@ -16,7 +17,9 @@ class EventStore:
         """Record event into history."""
         self._history.append(event)
 
-    def get_events(self, task_id: Optional[str] = None, event_type: Optional[EventType] = None) -> List[Event]:
+    def get_events(
+        self, task_id: Optional[str] = None, event_type: Optional[EventType] = None
+    ) -> List[Event]:
         """Query recorded events."""
         res = self._history
         if task_id:

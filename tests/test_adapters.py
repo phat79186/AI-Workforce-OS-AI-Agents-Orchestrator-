@@ -4,7 +4,6 @@ Tests for AI agent adapters
 
 from unittest.mock import patch
 
-
 from orchestrator.adapters import (
     AgentCapability,
     AgentResponse,

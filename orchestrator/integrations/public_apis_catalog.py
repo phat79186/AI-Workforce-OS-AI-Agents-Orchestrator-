@@ -60,7 +60,7 @@ class PublicAPIsCatalog:
         """
         try:
             req = urllib.request.Request(README_URL, headers={"User-Agent": "ai-workforce-os"})
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:  # nosec B310
                 text = resp.read().decode("utf-8", errors="ignore")
         except (urllib.error.URLError, TimeoutError, OSError) as e:
             raise PublicAPIsFetchError(f"Could not fetch {README_URL}: {e}") from e
@@ -101,7 +101,9 @@ class PublicAPIsCatalog:
         if not self._loaded:
             self.load()
 
-    def search_apis(self, query: str, category: Optional[str] = None, limit: int = 20) -> List[PublicAPIEntry]:
+    def search_apis(
+        self, query: str, category: Optional[str] = None, limit: int = 20
+    ) -> List[PublicAPIEntry]:
         """Search the real loaded catalog by substring match on name/description (and optional category)."""
         self._ensure_loaded()
         q = query.lower().strip()
@@ -126,4 +128,5 @@ class PublicAPIsCatalog:
         return seen
 
     def __len__(self) -> int:
+        """Return the number of loaded API entries."""
         return len(self._entries)

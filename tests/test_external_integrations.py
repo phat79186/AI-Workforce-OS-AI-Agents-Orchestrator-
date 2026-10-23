@@ -3,17 +3,17 @@
 import pytest
 
 from orchestrator.integrations import (
-    MattPocockSkillsEngine,
-    CodeGraphTool,
-    PonytailRunner,
-    AnySearchSkill,
     AgentReachEngine,
-    UIUXProMaxSkill,
+    AnySearchSkill,
+    CodeGraphTool,
+    ExternalEcosystemHub,
     ImpeccableDesignSkill,
+    MattPocockSkillsEngine,
+    PonytailRunner,
     PublicAPIsCatalog,
     PublicAPIsFetchError,
     SAGAgentFramework,
-    ExternalEcosystemHub,
+    UIUXProMaxSkill,
 )
 
 
@@ -105,6 +105,7 @@ def test_impeccable_design_integration():
 def test_taste_skill_integration():
     """TasteSkill no longer fabricates a numeric taste score; it reports real contrast when given colors."""
     from orchestrator.integrations import TasteSkill
+
     taste = TasteSkill()
 
     curation = taste.curate_design_taste("ExecutiveDashboardHeader")
@@ -147,6 +148,7 @@ def test_sag_framework_integration():
 
 def test_chatdev_adapter_integration():
     from orchestrator.integrations import ChatDevAdapter
+
     chatdev = ChatDevAdapter()
     software = chatdev.run_virtual_software_company("MathUtils", "Build a Python math utility")
 
@@ -158,10 +160,17 @@ def test_chatdev_adapter_integration():
 
 def test_rtk_token_compressor_integration():
     from orchestrator.integrations import RTKTokenCompressor
+
     rtk = RTKTokenCompressor()
     messages = [
-        {"role": "system", "content": "You are an AI CTO. Formulate technical roadmap with DAG steps."},
-        {"role": "agent", "content": "Executing task...\nExecuting task...\nTraceback: Exception in thread main."},
+        {
+            "role": "system",
+            "content": "You are an AI CTO. Formulate technical roadmap with DAG steps.",
+        },
+        {
+            "role": "agent",
+            "content": "Executing task...\nExecuting task...\nTraceback: Exception in thread main.",
+        },
     ]
     res = rtk.compress_agent_dialog(messages)
 
@@ -173,6 +182,7 @@ def test_rtk_token_compressor_integration():
 
 def test_karpathy_skills_and_ponytail_combined_integration():
     from orchestrator.integrations import KarpathySkillsEngine, PonytailRunner
+
     karpathy = KarpathySkillsEngine()
     skills = karpathy.list_skills()
     assert len(skills) >= 5
@@ -192,10 +202,15 @@ def test_karpathy_skills_and_ponytail_combined_integration():
 def test_git_nexus_integration():
     """GitNexusEngine now runs REAL git subprocess calls against an actual repo path."""
     from orchestrator.integrations import GitNexusEngine
+
     nexus = GitNexusEngine()
 
     sync_res = nexus.sync_multi_remotes(".")
-    assert sync_res["status"] in ("ALL_REMOTES_SYNCHRONIZED", "SYNC_DRIFT_DETECTED", "NO_REMOTES_CONFIGURED")
+    assert sync_res["status"] in (
+        "ALL_REMOTES_SYNCHRONIZED",
+        "SYNC_DRIFT_DETECTED",
+        "NO_REMOTES_CONFIGURED",
+    )
     assert sync_res["latest_commit_hash"]  # real HEAD hash, non-empty
 
     health_res = nexus.audit_repository_health(".")
@@ -209,7 +224,7 @@ def test_git_nexus_integration():
 
 def test_playwright_moderator_integration(tmp_path):
     """PlaywrightVisualAuditor now runs a REAL headless Chromium and real Pillow pixel-diff."""
-    from orchestrator.integrations import PlaywrightVisualAuditor, PlaywrightNotAvailableError
+    from orchestrator.integrations import PlaywrightNotAvailableError, PlaywrightVisualAuditor
 
     try:
         moderator = PlaywrightVisualAuditor()
@@ -228,6 +243,7 @@ def test_playwright_moderator_integration(tmp_path):
     assert bad_res["layout_overflow_detected"] is True
 
     from PIL import Image
+
     base_path, cand_path = tmp_path / "baseline.png", tmp_path / "candidate.png"
     Image.new("RGB", (50, 50), color=(0, 0, 255)).save(base_path)
     Image.new("RGB", (50, 50), color=(0, 0, 255)).save(cand_path)
@@ -239,6 +255,7 @@ def test_playwright_moderator_integration(tmp_path):
 
 def test_omniroute_gateway_integration():
     from orchestrator.integrations import OmniRouteGateway
+
     gateway = OmniRouteGateway()
 
     # Catalog validation
@@ -260,7 +277,9 @@ def test_omniroute_gateway_integration():
     assert route_res["compression"]["saved_tokens_percentage"] >= 15.0
 
     # Quota-Aware Auto-Fallback on 429 quota exhaustion
-    fallback_res = gateway.route_request("Review security", model_preference="claude-3-5-sonnet", quota_exhausted=True)
+    fallback_res = gateway.route_request(
+        "Review security", model_preference="claude-3-5-sonnet", quota_exhausted=True
+    )
     assert fallback_res["status"] == "AUTO_FALLBACK_TRIGGERED"
     assert fallback_res["fallback_applied"] is True
     assert fallback_res["provider"] == "deepseek"

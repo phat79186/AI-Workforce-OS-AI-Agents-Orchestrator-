@@ -43,7 +43,9 @@ class AgentRouter:
         "vault": "RAG/Knowledge Agent",
     }
 
-    def route(self, task_description: str, metadata: Optional[Dict[str, Any]] = None) -> AgentRouteResult:
+    def route(
+        self, task_description: str, metadata: Optional[Dict[str, Any]] = None
+    ) -> AgentRouteResult:
         """Route task description to the most appropriate agent role."""
         desc_lower = task_description.lower()
 

@@ -7,6 +7,7 @@ similar to Claude Code and Codex CLIs.
 
 import json
 import os
+
 try:
     import readline
 except ImportError:

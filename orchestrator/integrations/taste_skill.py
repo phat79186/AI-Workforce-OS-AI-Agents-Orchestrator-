@@ -1,4 +1,4 @@
-""""Taste Skill" for aesthetic curation guidelines.
+"""Taste Skill for aesthetic curation guidelines.
 
 Honest scope: "visual taste" is inherently a subjective/curatorial opinion —
 there is no real algorithm that objectively scores it, so this version no
@@ -49,7 +49,9 @@ class TasteSkill:
         self.skill_name = "taste-ui-ux"
 
     def curate_design_taste(
-        self, component_or_page: str = "Global UI Component", context: Optional[Dict[str, Any]] = None
+        self,
+        component_or_page: str = "Global UI Component",
+        context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Return the curated guideline checklist, plus a REAL contrast check if `context` gives colors.
 
@@ -66,13 +68,21 @@ class TasteSkill:
             "version": self.version,
             "target_component": target,
             "note": "The fields below are a curated design opinion (not a computed score) "
-                    "except 'measured_contrast', which is real WCAG math when colors are supplied.",
+            "except 'measured_contrast', which is real WCAG math when colors are supplied.",
             **_GUIDELINES,
             "status": "GUIDELINES_PROVIDED",
         }
 
-        fg = parse_css_color(ctx.get("foreground_color", "")) if ctx.get("foreground_color") else None
-        bg = parse_css_color(ctx.get("background_color", "")) if ctx.get("background_color") else None
+        fg = (
+            parse_css_color(ctx.get("foreground_color", ""))
+            if ctx.get("foreground_color")
+            else None
+        )
+        bg = (
+            parse_css_color(ctx.get("background_color", ""))
+            if ctx.get("background_color")
+            else None
+        )
         if fg and bg:
             ratio = contrast_ratio(fg, bg)
             result["measured_contrast"] = {

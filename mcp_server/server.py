@@ -17,7 +17,7 @@ import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastmcp import FastMCP
+from mcp_server.compat import FastMCP
 
 # Ensure project root is on path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -72,6 +72,7 @@ from mcp_server.tools import (  # noqa: E402
     devops_tools,
     orchestrator_tools,
     security_tools,
+    sequential_thinking,
     shared_tools,
     testing_tools,
 )
@@ -87,6 +88,7 @@ security_tools.register_security_tools(mcp)
 testing_tools.register_testing_tools(mcp)
 devops_tools.register_devops_tools(mcp)
 context_tools.register_context_tools(mcp)
+sequential_thinking.register_sequential_thinking_tools(mcp)
 
 
 # ---------------------------------------------------------------------------

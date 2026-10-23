@@ -12,19 +12,27 @@ specification.
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
-from providers.openclaw_provider import OpenClawProvider
+
 from orchestrator.integrations._simulated import warn_simulated
+from providers.openclaw_provider import OpenClawProvider
 
 
 class OpenClawPromptProcessor:
     """PARTIALLY SIMULATED processor — real file scan, but template-based (not LLM) refinement."""
 
     def __init__(self) -> None:
-        warn_simulated("OpenClawPromptProcessor.refine_raw_prompt (templated, not LLM)", "openclaw/openclaw")
+        warn_simulated(
+            "OpenClawPromptProcessor.refine_raw_prompt (templated, not LLM)", "openclaw/openclaw"
+        )
         self.provider = OpenClawProvider()
 
     def process_raw_input(
-        self, raw_input: str, project_root: Optional[str] = None, domain_context: Optional[str] = None
+        self,
+        raw_input: str,
+        project_root: Optional[str] = None,
+        domain_context: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Pre-process raw input into structured technical specifications using Aegis V5.5 Context Scan."""
-        return self.provider.refine_raw_prompt(raw_input, project_root=project_root, domain_context=domain_context)
+        return self.provider.refine_raw_prompt(
+            raw_input, project_root=project_root, domain_context=domain_context
+        )

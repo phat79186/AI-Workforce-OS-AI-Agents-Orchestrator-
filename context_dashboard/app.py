@@ -646,7 +646,9 @@ def api_import(system: str):
                 except Exception:
                     skipped_nodes += 1
                     logger.warning(
-                        "Import: skipped node id=%s (%s)", n.get("id", "?"), n.get("title", "?"),
+                        "Import: skipped node id=%s (%s)",
+                        n.get("id", "?"),
+                        n.get("title", "?"),
                         exc_info=True,
                     )
 
@@ -675,7 +677,9 @@ def api_import(system: str):
                     skipped_edges += 1
                     logger.warning(
                         "Import: skipped edge id=%s (%s -> %s)",
-                        e.get("id", "?"), e.get("source_id", "?"), e.get("target_id", "?"),
+                        e.get("id", "?"),
+                        e.get("source_id", "?"),
+                        e.get("target_id", "?"),
                         exc_info=True,
                     )
 

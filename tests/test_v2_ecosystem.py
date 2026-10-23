@@ -3,13 +3,12 @@
 import tempfile
 from pathlib import Path
 
-
+from orchestrator.context.obsidian_rag import ObsidianVaultRAG
 from orchestrator.core.dependency_graph import DependencyGraph
 from orchestrator.core.task_queue import TaskQueue
 from orchestrator.events import Event, EventBus, EventStore, EventType
-from orchestrator.security import ActionLevel, ApprovalManager, PermissionPolicy, SecuritySandbox
-from orchestrator.context.obsidian_rag import ObsidianVaultRAG
 from orchestrator.observability.metrics_analyzer import MetricsAnalyzer
+from orchestrator.security import ActionLevel, ApprovalManager, PermissionPolicy, SecuritySandbox
 
 
 def test_dependency_graph_dag():
@@ -80,8 +79,12 @@ def test_security_sandbox():
 def test_obsidian_rag():
     with tempfile.TemporaryDirectory() as tmpdir:
         vault = Path(tmpdir)
-        (vault / "ADR-001.md").write_text("# Face Liveness ADR\nArchitecture for Liveness feature.", encoding="utf-8")
-        (vault / "Glossary.md").write_text("# Glossary\nLiveness definition and specs.", encoding="utf-8")
+        (vault / "ADR-001.md").write_text(
+            "# Face Liveness ADR\nArchitecture for Liveness feature.", encoding="utf-8"
+        )
+        (vault / "Glossary.md").write_text(
+            "# Glossary\nLiveness definition and specs.", encoding="utf-8"
+        )
 
         rag = ObsidianVaultRAG(str(vault))
         assert len(rag._documents) == 2

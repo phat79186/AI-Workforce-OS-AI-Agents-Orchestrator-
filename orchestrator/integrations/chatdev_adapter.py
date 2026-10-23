@@ -47,15 +47,21 @@ class ChatDevAdapter:
             deliverables = ["software_specification.md", "architecture_design.json"]
         elif phase == "Coding Phase":
             participating_roles = ["CTO", "Programmer", "Code Reviewer"]
-            dialog_summary = "Programmer implemented main modules; Code Reviewer approved code quality."
+            dialog_summary = (
+                "Programmer implemented main modules; Code Reviewer approved code quality."
+            )
             deliverables = ["main.py", "utils.py"]
         elif phase == "Testing Phase":
             participating_roles = ["Programmer", "Software Test Engineer"]
-            dialog_summary = "Software Test Engineer executed Pytest assertions and confirmed 100% GREEN."
+            dialog_summary = (
+                "Software Test Engineer executed Pytest assertions and confirmed 100% GREEN."
+            )
             deliverables = ["test_main.py", "test_results.log"]
         else:  # Documenting Phase
             participating_roles = ["CEO", "Technical Writer"]
-            dialog_summary = "Technical Writer generated user manual and environment installation guide."
+            dialog_summary = (
+                "Technical Writer generated user manual and environment installation guide."
+            )
             deliverables = ["manual.md", "requirements.txt"]
 
         return {

@@ -119,7 +119,7 @@ def mcp_server():
 
 # Helper to run tool calls against the mock server
 async def _call(server, tool_name, args=None):
-    from fastmcp import Client
+    from mcp_server.compat import Client
 
     async with Client(server) as c:
         result = await c.call_tool(tool_name, args or {})
@@ -129,14 +129,14 @@ async def _call(server, tool_name, args=None):
 
 
 async def _list_tools(server):
-    from fastmcp import Client
+    from mcp_server.compat import Client
 
     async with Client(server) as c:
         return await c.list_tools()
 
 
 async def _list_resources(server):
-    from fastmcp import Client
+    from mcp_server.compat import Client
 
     async with Client(server) as c:
         return await c.list_resources()

@@ -7,6 +7,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
+
 from orchestrator.context.obsidian_config import resolve_obsidian_vault_path
 
 logger = logging.getLogger(__name__)
@@ -42,7 +43,9 @@ class ObsidianDocument:
     scope: str = "ORGANIZATION"  # GLOBAL, ORGANIZATION, DEPARTMENT, PROJECT, TASK
     pages: List[PageIndexPage] = field(default_factory=list)
 
-    def to_dict(self, score: float = 0.0, page_info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def to_dict(
+        self, score: float = 0.0, page_info: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """Convert to structured dictionary for RAG query results."""
         res = {
             "title": self.title,
@@ -70,7 +73,9 @@ class ObsidianVaultRAG:
     """Enterprise PageIndex Document Indexer and Page-Scoped RAG Query Engine for Obsidian Vaults."""
 
     def __init__(self, vault_path: Optional[str] = None) -> None:
-        self.vault_path: Optional[Path] = resolve_obsidian_vault_path(cli_vault_path=vault_path, create_if_missing=bool(vault_path))
+        self.vault_path: Optional[Path] = resolve_obsidian_vault_path(
+            cli_vault_path=vault_path, create_if_missing=bool(vault_path)
+        )
         if not self.vault_path and vault_path:
             p = Path(vault_path)
             p.mkdir(parents=True, exist_ok=True)
@@ -83,7 +88,9 @@ class ObsidianVaultRAG:
         if self.vault_path and self.vault_path.exists():
             self.index_vault()
 
-    def parse_markdown(self, full_path: Path, relative_path: str, content: str, mtime: float) -> ObsidianDocument:
+    def parse_markdown(
+        self, full_path: Path, relative_path: str, content: str, mtime: float
+    ) -> ObsidianDocument:
         """Parse Markdown file extracting YAML Frontmatter, Headings, Wikilinks, Tags, Aliases, and PageIndex pages."""
         frontmatter: Dict[str, Any] = {}
         body = content
@@ -100,7 +107,11 @@ class ObsidianVaultRAG:
                         k_clean = k.strip()
                         v_clean = v.strip().strip("\"'")
                         if v_clean.startswith("[") and v_clean.endswith("]"):
-                            v_clean = [item.strip().strip("\"'") for item in v_clean[1:-1].split(",") if item.strip()]
+                            v_clean = [
+                                item.strip().strip("\"'")
+                                for item in v_clean[1:-1].split(",")
+                                if item.strip()
+                            ]
                         frontmatter[k_clean] = v_clean
 
         title = frontmatter.get("title", full_path.stem)
@@ -141,20 +152,24 @@ class ObsidianVaultRAG:
         for line in body.splitlines():
             if line.startswith("#"):
                 if current_text:
-                    sections.append({"heading": current_heading, "content": "\n".join(current_text).strip()})
+                    sections.append(
+                        {"heading": current_heading, "content": "\n".join(current_text).strip()}
+                    )
                     current_text.clear()
                 current_heading = line.lstrip("#").strip()
             else:
                 current_text.append(line)
 
         if current_text:
-            sections.append({"heading": current_heading, "content": "\n".join(current_text).strip()})
+            sections.append(
+                {"heading": current_heading, "content": "\n".join(current_text).strip()}
+            )
 
         # 6. PageIndex Layout-Preserving Page Chunking
         # Partition pages by '<!-- page -->', '<!-- slide -->', or by sections H1/H2.
         pages: List[PageIndexPage] = []
         raw_pages = re.split(r"<!--\s*(?:page|slide)\s*-->", body)
-        
+
         page_num = 1
         for raw_page in raw_pages:
             trimmed_page = raw_page.strip()
@@ -163,7 +178,7 @@ class ObsidianVaultRAG:
 
             # Further partition if page is exceptionally long (> 1000 characters)
             if len(trimmed_page) > 1000:
-                sub_chunks = [trimmed_page[i:i+1000] for i in range(0, len(trimmed_page), 1000)]
+                sub_chunks = [trimmed_page[i : i + 1000] for i in range(0, len(trimmed_page), 1000)]
                 for chunk in sub_chunks:
                     pages.append(
                         PageIndexPage(
@@ -218,7 +233,9 @@ class ObsidianVaultRAG:
         for p in self.vault_path.rglob("*.md"):
             # Ignore .obsidian, .git, cache, and tmp folders
             rel_parts = p.relative_to(self.vault_path).parts
-            if any(part.startswith(".") or part in ("__pycache__", "tmp", "temp") for part in rel_parts):
+            if any(
+                part.startswith(".") or part in ("__pycache__", "tmp", "temp") for part in rel_parts
+            ):
                 continue
 
             full_path_str = str(p)
@@ -235,7 +252,9 @@ class ObsidianVaultRAG:
                     self._documents[full_path_str] = doc
                     self._title_map[doc.title.lower()] = doc
                 except Exception:
-                    logger.warning("Skipping unparsable vault note: %s", full_path_str, exc_info=True)
+                    logger.warning(
+                        "Skipping unparsable vault note: %s", full_path_str, exc_info=True
+                    )
 
         # Remove deleted files
         deleted_files = set(self._documents.keys()) - current_files
@@ -296,7 +315,7 @@ class ObsidianVaultRAG:
                     scored_pages.append((score, page, doc))
 
         scored_pages.sort(key=lambda x: x[0], reverse=True)
-        
+
         # Deduplicate to avoid returning the exact same page segments multiple times if top_k is small
         seen_pages = set()
         results = []

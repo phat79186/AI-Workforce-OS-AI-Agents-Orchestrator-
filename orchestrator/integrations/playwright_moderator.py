@@ -63,26 +63,29 @@ class PlaywrightVisualAuditor:
                     client_w = page.evaluate("document.documentElement.clientWidth")
                     overflow_detected = scroll_w > client_w
                     if overflow_detected:
-                        issues.append({
-                            "severity": "CRITICAL",
-                            "element": "html",
-                            "message": f"Horizontal overflow: scrollWidth={scroll_w}px > clientWidth={client_w}px",
-                        })
+                        issues.append(
+                            {
+                                "severity": "CRITICAL",
+                                "element": "html",
+                                "message": f"Horizontal overflow: scrollWidth={scroll_w}px > clientWidth={client_w}px",
+                            }
+                        )
 
                     # --- Real responsive viewport meta tag check (actual DOM query) ---
                     has_viewport_meta = page.evaluate(
                         "!!document.querySelector('meta[name=\"viewport\"]')"
                     )
                     if not has_viewport_meta:
-                        issues.append({
-                            "severity": "CRITICAL",
-                            "element": "head",
-                            "message": "Missing <meta name=\"viewport\"> tag.",
-                        })
+                        issues.append(
+                            {
+                                "severity": "CRITICAL",
+                                "element": "head",
+                                "message": 'Missing <meta name="viewport"> tag.',
+                            }
+                        )
 
                     # --- Real element bounding-box overlap check ---
-                    overlaps = page.evaluate(
-                        """
+                    overlaps = page.evaluate("""
                         () => {
                             const els = Array.from(document.querySelectorAll('body *'))
                                 .filter(e => e.offsetWidth > 0 && e.offsetHeight > 0);
@@ -101,19 +104,19 @@ class PlaywrightVisualAuditor:
                             }
                             return overlapping.slice(0, 10);
                         }
-                        """
-                    )
+                        """)
                     element_overlap_detected = len(overlaps) > 0
                     if element_overlap_detected:
-                        issues.append({
-                            "severity": "WARNING",
-                            "element": "body",
-                            "message": f"{len(overlaps)} sibling element pair(s) overlap by >50% of the smaller element's area.",
-                        })
+                        issues.append(
+                            {
+                                "severity": "WARNING",
+                                "element": "body",
+                                "message": f"{len(overlaps)} sibling element pair(s) overlap by >50% of the smaller element's area.",
+                            }
+                        )
 
                     # --- Real WCAG contrast check on visible text nodes ---
-                    text_styles = page.evaluate(
-                        """
+                    text_styles = page.evaluate("""
                         () => Array.from(document.querySelectorAll('body *'))
                             .filter(e => e.offsetWidth > 0 && e.offsetHeight > 0
                                 && Array.from(e.childNodes).some(n => n.nodeType === 3 && n.textContent.trim()))
@@ -122,8 +125,7 @@ class PlaywrightVisualAuditor:
                                 const s = getComputedStyle(e);
                                 return { color: s.color, bg: s.backgroundColor, fontSize: parseFloat(s.fontSize), fontWeight: s.fontWeight, tag: e.tagName };
                             })
-                        """
-                    )
+                        """)
                     contrast_failures = []
                     worst_ratio: Optional[float] = None
                     for style in text_styles:
@@ -133,7 +135,8 @@ class PlaywrightVisualAuditor:
                             continue  # transparent background: can't reliably compute against this element alone
                         ratio = contrast_ratio(fg, bg)
                         is_large = style["fontSize"] >= 24 or (
-                            style["fontSize"] >= 18.66 and style["fontWeight"] in ("bold", "700", "800", "900")
+                            style["fontSize"] >= 18.66
+                            and style["fontWeight"] in ("bold", "700", "800", "900")
                         )
                         if worst_ratio is None or ratio < worst_ratio:
                             worst_ratio = ratio
@@ -141,11 +144,13 @@ class PlaywrightVisualAuditor:
                             contrast_failures.append({"tag": style["tag"], "ratio": ratio})
 
                     if contrast_failures:
-                        issues.append({
-                            "severity": "CRITICAL",
-                            "element": "text",
-                            "message": f"{len(contrast_failures)} element(s) fail WCAG AA contrast (worst ratio: {worst_ratio}:1).",
-                        })
+                        issues.append(
+                            {
+                                "severity": "CRITICAL",
+                                "element": "text",
+                                "message": f"{len(contrast_failures)} element(s) fail WCAG AA contrast (worst ratio: {worst_ratio}:1).",
+                            }
+                        )
 
                 finally:
                     browser.close()

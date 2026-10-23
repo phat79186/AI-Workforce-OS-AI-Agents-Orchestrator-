@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from typing import Callable, Dict, List
+
 from orchestrator.events.events import Event, EventType
 
 logger = logging.getLogger(__name__)

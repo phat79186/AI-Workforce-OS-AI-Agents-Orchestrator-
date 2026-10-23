@@ -42,7 +42,7 @@ class OrchestratorMCPClient:
     async def _get_client(self):
         """Lazily create the FastMCP client."""
         if self._client is None:
-            from fastmcp import Client
+            from mcp_server.compat import Client
 
             if self._server_url:
                 self._client = Client(self._server_url)

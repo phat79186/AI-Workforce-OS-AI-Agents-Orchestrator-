@@ -28,7 +28,9 @@ class GitNexusEngine:
         self.version = "2.0.0"
         self.source_repo = "abhigyanpatwari/GitNexus"
 
-    def _run_git(self, repo_path: str, *args: str, timeout: int = 15) -> subprocess.CompletedProcess:
+    def _run_git(
+        self, repo_path: str, *args: str, timeout: int = 15
+    ) -> subprocess.CompletedProcess:
         """Run a real `git` subcommand against `repo_path` and return the completed process."""
         return subprocess.run(
             ["git", "-C", repo_path, *args],
@@ -70,7 +72,11 @@ class GitNexusEngine:
             ls_result = self._run_git(repo_path, "ls-remote", "--heads", name, active_branch)
             if ls_result.returncode != 0:
                 entry["sync_status"] = "UNREACHABLE"
-                entry["error"] = ls_result.stderr.strip().splitlines()[-1][:200] if ls_result.stderr.strip() else "git ls-remote failed"
+                entry["error"] = (
+                    ls_result.stderr.strip().splitlines()[-1][:200]
+                    if ls_result.stderr.strip()
+                    else "git ls-remote failed"
+                )
             elif not ls_result.stdout.strip():
                 entry["sync_status"] = "BRANCH_NOT_FOUND_ON_REMOTE"
             else:
@@ -97,8 +103,10 @@ class GitNexusEngine:
         }
 
     def audit_repository_health(self, repo_path: str, large_file_mb: float = 5.0) -> Dict[str, Any]:
-        """Run REAL repository health checks: uncommitted changes, merge conflicts,
-        dangling objects, oversized tracked files, and branch drift vs. origin.
+        """Run REAL repository health checks.
+
+        Audits uncommitted changes, merge conflicts, dangling objects,
+        oversized tracked files, and branch drift vs. origin.
         """
         issues: List[str] = []
         score = 100.0
@@ -111,14 +119,14 @@ class GitNexusEngine:
 
         # 2. Uncommitted / untracked changes (real `git status --porcelain`)
         status_result = self._run_git(repo_path, "status", "--porcelain")
-        uncommitted = [l for l in status_result.stdout.splitlines() if l.strip()]
+        uncommitted = [line for line in status_result.stdout.splitlines() if line.strip()]
         if uncommitted:
             issues.append(f"{len(uncommitted)} uncommitted/untracked change(s)")
             score -= min(20.0, len(uncommitted) * 0.5)
 
         # 3. Dangling objects (real `git fsck`)
         fsck_result = self._run_git(repo_path, "fsck", "--dangling", "--no-progress", timeout=30)
-        dangling = [l for l in fsck_result.stdout.splitlines() if l.startswith("dangling")]
+        dangling = [line for line in fsck_result.stdout.splitlines() if line.startswith("dangling")]
         if dangling:
             issues.append(f"{len(dangling)} dangling git object(s)")
             score -= min(10.0, len(dangling) * 0.5)
@@ -143,7 +151,10 @@ class GitNexusEngine:
         branch_drift = False
         ahead, behind = 0, 0
         drift_result = self._run_git(
-            repo_path, "rev-list", "--left-right", "--count",
+            repo_path,
+            "rev-list",
+            "--left-right",
+            "--count",
             f"{active_branch}...origin/{active_branch}",
         )
         if drift_result.returncode == 0 and drift_result.stdout.strip():
@@ -152,7 +163,9 @@ class GitNexusEngine:
                 ahead, behind = int(parts[0]), int(parts[1])
                 branch_drift = ahead > 0 or behind > 0
                 if branch_drift:
-                    issues.append(f"'{active_branch}' is {ahead} ahead / {behind} behind origin/{active_branch}")
+                    issues.append(
+                        f"'{active_branch}' is {ahead} ahead / {behind} behind origin/{active_branch}"
+                    )
                     score -= 5.0
 
         score = max(0.0, round(score, 1))
@@ -187,7 +200,10 @@ class GitNexusEngine:
         `GET https://api.github.com/repos/{owner}/{repo}/pulls` and
         `.../issues` with an `Authorization: Bearer <token>` header.
         """
-        warn_simulated("GitNexusEngine.list_pr_issue_nexus (needs a GitHub token to be real)", "abhigyanpatwari/GitNexus")
+        warn_simulated(
+            "GitNexusEngine.list_pr_issue_nexus (needs a GitHub token to be real)",
+            "abhigyanpatwari/GitNexus",
+        )
         return {
             "source_repo": self.source_repo,
             "github_open_prs": 2,

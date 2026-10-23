@@ -8,8 +8,9 @@ is `len(keywords) * 2` — a word-count formula, not a real result count. See
 from __future__ import annotations
 
 from typing import Any, Dict
-from orchestrator.integrations.agent_reach import AgentReachEngine
+
 from orchestrator.integrations._simulated import warn_simulated
+from orchestrator.integrations.agent_reach import AgentReachEngine
 
 
 class AnySearchSkill:
@@ -37,7 +38,8 @@ class AnySearchSkill:
             "query": query,
             "matched_keywords": keywords,
             "sources_searched": unique_sources,
-            "results_count": (len(keywords) * 2) + (len(reach_data["citations"]) if reach_data else 0),
+            "results_count": (len(keywords) * 2)
+            + (len(reach_data["citations"]) if reach_data else 0),
             "agent_reach_source": self.agent_reach.source_repo,
             "agent_reach_enabled": enable_agent_reach,
             "reach_metadata": reach_data,

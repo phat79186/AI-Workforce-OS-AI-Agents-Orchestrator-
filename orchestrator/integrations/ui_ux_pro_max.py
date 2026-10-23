@@ -28,7 +28,10 @@ _THEMES: Dict[str, Dict[str, Any]] = {
             "surface": "rgba(30, 41, 59, 0.7)",
             "text": "#e2e8f0",
         },
-        "typography": {"font_family": "Inter, Roboto, sans-serif", "heading_scale": [32, 24, 20, 16]},
+        "typography": {
+            "font_family": "Inter, Roboto, sans-serif",
+            "heading_scale": [32, 24, 20, 16],
+        },
         "animations": {"micro_interactions": "cubic-bezier(0.4, 0, 0.2, 1) 150ms"},
     },
     "light minimal": {
@@ -39,7 +42,10 @@ _THEMES: Dict[str, Dict[str, Any]] = {
             "surface": "#f8fafc",
             "text": "#0f172a",
         },
-        "typography": {"font_family": "Inter, system-ui, sans-serif", "heading_scale": [30, 22, 18, 15]},
+        "typography": {
+            "font_family": "Inter, system-ui, sans-serif",
+            "heading_scale": [30, 22, 18, 15],
+        },
         "animations": {"micro_interactions": "ease-out 120ms"},
     },
     "neo brutalism": {
@@ -50,7 +56,10 @@ _THEMES: Dict[str, Dict[str, Any]] = {
             "surface": "#ffffff",
             "text": "#000000",
         },
-        "typography": {"font_family": "'Space Grotesk', monospace", "heading_scale": [40, 28, 22, 18]},
+        "typography": {
+            "font_family": "'Space Grotesk', monospace",
+            "heading_scale": [40, 28, 22, 18],
+        },
         "animations": {"micro_interactions": "steps(4, end) 200ms"},
     },
     "high contrast accessible": {
@@ -61,7 +70,10 @@ _THEMES: Dict[str, Dict[str, Any]] = {
             "surface": "#ffffff",
             "text": "#000000",
         },
-        "typography": {"font_family": "Atkinson Hyperlegible, Arial, sans-serif", "heading_scale": [32, 24, 20, 18]},
+        "typography": {
+            "font_family": "Atkinson Hyperlegible, Arial, sans-serif",
+            "heading_scale": [32, 24, 20, 18],
+        },
         "animations": {"micro_interactions": "none"},
     },
 }

@@ -53,7 +53,10 @@ def test_obsidian_incremental_indexing():
         assert "note1" in rag._title_map
 
         # Modify file
-        doc1.write_text("---\ntitle: Note 1 Updated\n---\n# Note 1 Updated\nUpdated content #tag1", encoding="utf-8")
+        doc1.write_text(
+            "---\ntitle: Note 1 Updated\n---\n# Note 1 Updated\nUpdated content #tag1",
+            encoding="utf-8",
+        )
         rag.index_vault()
 
         updated_doc = rag.get_document("Note 1 Updated")
@@ -85,8 +88,7 @@ def test_yaml_frontmatter_wikilinks_and_backlinks():
 
         doc_b = vault_path / "BackendService.md"
         doc_b.write_text(
-            "# Backend Service\n"
-            "Logic for backend microservice.\n",
+            "# Backend Service\n" "Logic for backend microservice.\n",
             encoding="utf-8",
         )
 
@@ -146,7 +148,10 @@ def test_organizational_memory_write_and_read():
         # Read back from Obsidian Vault
         learnings = mem.get_lessons_learned("Payment Microservice")
         assert len(learnings) >= 1
-        assert "Payment_Microservice" in learnings[0]["title"] or "payment" in learnings[0]["content"].lower()
+        assert (
+            "Payment_Microservice" in learnings[0]["title"]
+            or "payment" in learnings[0]["content"].lower()
+        )
 
 
 def test_research_to_obsidian_to_rag_to_coding_flow():
@@ -173,13 +178,27 @@ def test_permission_policy_obsidian_protection():
     policy = PermissionPolicy()
 
     # Read/Create -> ALLOWED
-    assert policy.classify_obsidian_action("read_knowledge", "Security/Note.md") == ActionLevel.ALLOWED
-    assert policy.classify_obsidian_action("create_knowledge", "Research/Note.md") == ActionLevel.ALLOWED
+    assert (
+        policy.classify_obsidian_action("read_knowledge", "Security/Note.md") == ActionLevel.ALLOWED
+    )
+    assert (
+        policy.classify_obsidian_action("create_knowledge", "Research/Note.md")
+        == ActionLevel.ALLOWED
+    )
 
     # Touch .obsidian/ -> BLOCKED
     assert policy.classify_obsidian_action("modify", ".obsidian/config.json") == ActionLevel.BLOCKED
-    assert policy.classify_obsidian_action("read", "vault/.obsidian/plugins.json") == ActionLevel.BLOCKED
+    assert (
+        policy.classify_obsidian_action("read", "vault/.obsidian/plugins.json")
+        == ActionLevel.BLOCKED
+    )
 
     # Modify ADR / Delete -> REQUIRES_APPROVAL
-    assert policy.classify_obsidian_action("modify_adr", "Corporate_ADR/ADR-01.md") == ActionLevel.REQUIRES_APPROVAL
-    assert policy.classify_obsidian_action("delete_knowledge", "Research/OldNote.md") == ActionLevel.REQUIRES_APPROVAL
+    assert (
+        policy.classify_obsidian_action("modify_adr", "Corporate_ADR/ADR-01.md")
+        == ActionLevel.REQUIRES_APPROVAL
+    )
+    assert (
+        policy.classify_obsidian_action("delete_knowledge", "Research/OldNote.md")
+        == ActionLevel.REQUIRES_APPROVAL
+    )

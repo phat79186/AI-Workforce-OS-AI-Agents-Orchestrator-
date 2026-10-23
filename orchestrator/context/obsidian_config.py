@@ -13,7 +13,8 @@ def resolve_obsidian_vault_path(
     config_vault_path: Optional[str] = None,
     create_if_missing: bool = False,
 ) -> Optional[Path]:
-    """Resolve Real Obsidian Vault path following priority order:
+    """Resolve Real Obsidian Vault path following priority order.
+
     1. CLI Argument (`--vault-path`)
     2. Environment Variable (`OBSIDIAN_VAULT_PATH`)
     3. Configuration File (`config_vault_path`)
@@ -40,11 +41,17 @@ def resolve_obsidian_vault_path(
         if create_if_missing:
             resolved_path.mkdir(parents=True, exist_ok=True)
         else:
-            print(f"[OBSIDIAN WARNING] Configured Obsidian Vault path does not exist: '{resolved_path}'", file=sys.stderr)
+            print(
+                f"[OBSIDIAN WARNING] Configured Obsidian Vault path does not exist: '{resolved_path}'",
+                file=sys.stderr,
+            )
             return None
 
     if not resolved_path.is_dir():
-        print(f"[OBSIDIAN ERROR] Configured Obsidian Vault path is not a directory: '{resolved_path}'", file=sys.stderr)
+        print(
+            f"[OBSIDIAN ERROR] Configured Obsidian Vault path is not a directory: '{resolved_path}'",
+            file=sys.stderr,
+        )
         return None
 
     return resolved_path

@@ -8,7 +8,6 @@ and the full WorkflowEngine.execute chain.
 
 from unittest.mock import patch
 
-
 from orchestrator.adapters.base import AgentCapability, AgentResponse, BaseAdapter
 
 # ---------------------------------------------------------------------------

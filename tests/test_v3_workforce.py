@@ -4,13 +4,13 @@ import tempfile
 from pathlib import Path
 
 from domains import (
-    SoftwareEngineeringDomain,
-    ResearchDomain,
     DevOpsDomain,
+    ResearchDomain,
+    SoftwareEngineeringDomain,
 )
 from shared_knowledge import KnowledgeBridge
-from workforce import AIWorkforceRegistry
 from v3_orchestrator import V3WorkforceManager
+from workforce import AIWorkforceRegistry
 
 
 def test_layer2_domain_ecosystems():
@@ -47,7 +47,7 @@ def test_layer3_shared_knowledge_bridge():
 
 def test_layer4_ai_workforce_recruitment():
     registry = AIWorkforceRegistry()
-    
+
     # Recruit for Python & Bugfix -> Should match JuniorCoder
     emp = registry.recruit("Python", "Bugfix")
     assert emp is not None
@@ -70,5 +70,10 @@ def test_v3_workforce_manager_e2e():
         )
 
         assert res["status"] == "completed"
-        assert res["assigned_employee"] in ("JuniorCoder", "SeniorArchitect", "Researcher", "SecuritySpecialist")
+        assert res["assigned_employee"] in (
+            "JuniorCoder",
+            "SeniorArchitect",
+            "Researcher",
+            "SecuritySpecialist",
+        )
         assert len(manager.event_store.get_events()) >= 2

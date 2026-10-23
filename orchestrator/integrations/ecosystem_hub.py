@@ -22,23 +22,28 @@ Two of the real integrations need extra care at hub-construction time:
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
-from orchestrator.integrations.mattpocock_skills import MattPocockSkillsEngine
-from orchestrator.integrations.codegraph_tool import CodeGraphTool
-from orchestrator.integrations.ponytail_runner import PonytailRunner
-from orchestrator.integrations.anysearch_skill import AnySearchSkill
-from orchestrator.integrations.ui_ux_pro_max import UIUXProMaxSkill
-from orchestrator.integrations.impeccable_design import ImpeccableDesignSkill
-from orchestrator.integrations.taste_skill import TasteSkill
-from orchestrator.integrations.public_apis_catalog import PublicAPIsCatalog
-from orchestrator.integrations.sag_framework import SAGAgentFramework
-from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
+
 from orchestrator.integrations.agent_reach import AgentReachEngine
+from orchestrator.integrations.anysearch_skill import AnySearchSkill
 from orchestrator.integrations.chatdev_adapter import ChatDevAdapter
-from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
-from orchestrator.integrations.karpathy_skills import KarpathySkillsEngine
+from orchestrator.integrations.codegraph_tool import CodeGraphTool
 from orchestrator.integrations.git_nexus import GitNexusEngine
-from orchestrator.integrations.playwright_moderator import PlaywrightVisualAuditor, PlaywrightNotAvailableError
+from orchestrator.integrations.impeccable_design import ImpeccableDesignSkill
+from orchestrator.integrations.karpathy_skills import KarpathySkillsEngine
+from orchestrator.integrations.mattpocock_skills import MattPocockSkillsEngine
 from orchestrator.integrations.omniroute_gateway import OmniRouteGateway
+from orchestrator.integrations.openclaw_processor import OpenClawPromptProcessor
+from orchestrator.integrations.playwright_moderator import (
+    PlaywrightNotAvailableError,
+    PlaywrightVisualAuditor,
+)
+from orchestrator.integrations.ponytail_runner import PonytailRunner
+from orchestrator.integrations.public_apis_catalog import PublicAPIsCatalog
+from orchestrator.integrations.rtk_compressor import RTKTokenCompressor
+from orchestrator.integrations.sag_framework import SAGAgentFramework
+from orchestrator.integrations.sequential_thinking import SequentialThinkingEngine
+from orchestrator.integrations.taste_skill import TasteSkill
+from orchestrator.integrations.ui_ux_pro_max import UIUXProMaxSkill
 
 
 class ExternalEcosystemHub:
@@ -67,6 +72,7 @@ class ExternalEcosystemHub:
         except PlaywrightNotAvailableError as e:
             self._playwright_unavailable_reason = str(e)
         self.omniroute = OmniRouteGateway()
+        self.sequential_thinking = SequentialThinkingEngine()
 
     def get_status(self) -> Dict[str, Any]:
         """Return a real status summary reflecting each sub-integration's actual state."""
@@ -74,8 +80,11 @@ class ExternalEcosystemHub:
             "mattpocock_skills_count": len(self.mattpocock_skills.list_skills()),
             "karpathy_skills_count": len(self.karpathy_skills.list_skills()),
             "codegraph_symbols_indexed": len(self.codegraph._symbol_index),
-            "codegraph_status": "READY (call index_directory() to populate)"
-            if not self.codegraph._symbol_index else "INDEXED",
+            "codegraph_status": (
+                "READY (call index_directory() to populate)"
+                if not self.codegraph._symbol_index
+                else "INDEXED"
+            ),
             "ponytail_steps_queued": len(self.ponytail.steps),
             "anysearch_status": "READY (simulated)",
             "agent_reach_status": "READY (simulated)",
@@ -83,8 +92,11 @@ class ExternalEcosystemHub:
             "impeccable_status": "READY (real WCAG contrast math)",
             "taste_skill_status": "READY (curated guidelines + real contrast math)",
             "public_apis_loaded": len(self.public_apis),
-            "public_apis_status": "READY (call load() to fetch the real catalog)"
-            if len(self.public_apis) == 0 else "LOADED",
+            "public_apis_status": (
+                "READY (call load() to fetch the real catalog)"
+                if len(self.public_apis) == 0
+                else "LOADED"
+            ),
             "sag_node_count": len(self.sag.nodes),
             "openclaw_status": "READY (real file scan, templated refinement)",
             "chatdev_status": "READY (simulated)",
@@ -92,12 +104,15 @@ class ExternalEcosystemHub:
             "karpathy_skills_status": "READY",
             "git_nexus_status": "READY (real git operations)",
             "playwright_moderator_status": (
-                "READY (real headless Chromium)" if self.playwright_moderator is not None
+                "READY (real headless Chromium)"
+                if self.playwright_moderator is not None
                 else f"UNAVAILABLE: {self._playwright_unavailable_reason}"
             ),
             "omniroute_status": "READY",
             "omniroute_providers_count": self.omniroute.total_providers,
             "omniroute_free_tiers_count": self.omniroute.free_tier_providers,
             "omniroute_models_count": self.omniroute.total_models_indexed,
+            "sequential_thinking_status": "READY",
+            "sequential_thinking_history_length": len(self.sequential_thinking.thought_history),
             "overall_status": "ALL_INTEGRATED",
         }

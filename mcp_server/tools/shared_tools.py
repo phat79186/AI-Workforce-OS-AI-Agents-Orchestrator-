@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import json
 
-from fastmcp import Context
-
+from mcp_server.compat import Context
 from mcp_server.engines import _engines
 
 

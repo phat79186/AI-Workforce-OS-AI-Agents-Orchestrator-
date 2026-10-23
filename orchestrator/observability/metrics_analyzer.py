@@ -11,14 +11,18 @@ class MetricsAnalyzer:
     def __init__(self) -> None:
         self.history: List[Dict[str, Any]] = []
 
-    def record_outcome(self, agent_role: str, provider_name: str, task_type: str, success: bool) -> None:
+    def record_outcome(
+        self, agent_role: str, provider_name: str, task_type: str, success: bool
+    ) -> None:
         """Record task execution outcome."""
-        self.history.append({
-            "agent_role": agent_role,
-            "provider_name": provider_name,
-            "task_type": task_type,
-            "success": success,
-        })
+        self.history.append(
+            {
+                "agent_role": agent_role,
+                "provider_name": provider_name,
+                "task_type": task_type,
+                "success": success,
+            }
+        )
 
     def calculate_success_rates(self) -> Dict[str, float]:
         """Calculate success rates per (Agent, Provider) pair."""
