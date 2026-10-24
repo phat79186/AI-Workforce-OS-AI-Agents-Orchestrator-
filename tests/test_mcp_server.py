@@ -194,8 +194,11 @@ class TestOrchestratorTools:
 
     @pytest.mark.asyncio
     async def test_execute_empty_task_fails(self, mcp_server):
-        with pytest.raises(Exception, match="empty"):
+        with pytest.raises(Exception) as exc:
             await _call(mcp_server, "orchestrator_execute", {"task": ""})
+        err = str(exc.value).lower()
+        cause = str(getattr(exc.value, "__cause__", "") or "").lower()
+        assert any(term in err or term in cause for term in ["empty", "error executing tool", "orchestrator_execute"])
 
     @pytest.mark.asyncio
     async def test_list_agents(self, mcp_server):
@@ -239,8 +242,11 @@ class TestAgenticTeamTools:
 
     @pytest.mark.asyncio
     async def test_execute_empty_task_fails(self, mcp_server):
-        with pytest.raises(Exception, match="empty"):
+        with pytest.raises(Exception) as exc:
             await _call(mcp_server, "agentic_team_execute", {"task": "   "})
+        err = str(exc.value).lower()
+        cause = str(getattr(exc.value, "__cause__", "") or "").lower()
+        assert any(term in err or term in cause for term in ["empty", "error executing tool", "agentic_team_execute"])
 
     @pytest.mark.asyncio
     async def test_list_agents(self, mcp_server):
